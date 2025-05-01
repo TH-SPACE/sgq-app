@@ -1,0 +1,8 @@
+[21/04/2025, 17:23:59] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 0 | Ignorados: 822 (Existentes: 822, Sem BD: 0)
+Pós BD =>[21/04/2025, 17:25:37] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 0 | Ignorados: 822 (Existentes: 822, Sem BD: 0)
+Pós BD => [21/04/2025, 17:26:19] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 0 | Ignorados: 822 (Existentes: 822, Sem BD: 0)
+Pós BD => [21/04/2025, 17:39:24] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 0 | Ignorados: 822 (Existentes: 822, Sem BD: 0)
+Pós BD => [21/04/2025, 18:08:36] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 0 | Ignorados: 822 (Existentes: 822, Sem BD: 0)
+Pós BD => [21/04/2025, 18:09:06] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 31 | Ignorados: 791 (Existentes: 791, Sem BD: 0)
+Pós BD => [21/04/2025, 18:09:56] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 0 | Ignorados: 822 (Existentes: 822, Sem BD: 0)
+Pós BD => [24/04/2025, 20:35:01] Usuário: THIAGO ALVES NUNES | Arquivo: teste.xlsx | Inseridos: 822 | Ignorados: 0 (Existentes: 0, Sem BD: 0)

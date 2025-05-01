@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Indicadores - SGQ</title>
+    <link rel="icon" type="image/png" href="/img/indicador.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/menu.css">
+</head>
+
+<style>
+    .clickable-card:hover {
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+        transform: scale(1.01);
+        transition: 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+    .card:hover {
+        background-color: #ffe7ff !important;
+        /* azul clarinho */
+        cursor: pointer;
+    }
+
+    .status-badge {
+        display: inline-block;
+        min-width: 220px;
+        /* ✅ Tamanho fixo */
+        text-align: center;
+        font-size: 0.85rem;
+        padding: 6px 10px;
+        white-space: nowrap;
+        border-radius: 8px;
+    }
+</style>
+
+<body style="overflow: hidden;">
+    <!-- Navbar -->
+    <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/home">
+                <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
+                <span>SGQ</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/home/ba_b2b">Instalações B2B <span
+                                class=" sr-only">(atual)</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/home/pos_bd_b2b">Pós BD B2B</a>
+                    </li>
+                    <li class=" nav-item active">
+                        <a class="nav-link" href="/relatorios">Relatórios</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Qualidade B2B</a>
+                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
+                            <a class="dropdown-item" href="/config/perfil">Preventiva de Clientes</a>
+                            <a class="dropdown-item" href="/config/equipe">Preventiva em ARD/ERB</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/config/sistema">Informe Idenvido</a>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Usuário -->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
+                        id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i class="fas fa-user-circle fa-lg mr-2"></i>
+                        <span id="nomeUsuario">Usuário</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
+                        <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
+                            <i class="fas fa-cogs text-warning mr-2"></i>Painel ADM
+                        </a>
+                        <a class="dropdown-item" href="/auth/logout">
+                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>Sair
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Banner fixo após navbar -->
+    <div class="container-fluid mb-4 position-sticky">
+        <div class="media bg-info text-white p-3 rounded shadow-sm">
+
+            <div class="media-body">
+                <h5 class="mt-0">
+                    <i class="fa-solid fa-phone mr-2"></i> Pós Contato B2B Avançado
+                </h5>
+                Contato com clientes resolvidos pela Triagem.
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container-fluid mt-2 ">
+        <div class="row">
+
+            <!-- Lado esquerdo com scroll -->
+            <div class="col-md-3">
+                <div class="position-sticky border shadow rounded p-3 bg-white" style="top: 160px;">
+                    <div class="card-header bg-primary text-white">
+                        <strong><i class="fas fa-filter"></i> Filtros</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="cluster">Cluster</label>
+                            <select class="form-control" id="filtrocluster" onchange="renderOrdens()">
+                                <option>TODOS</option>
+                                <option>BRASILIA</option>
+                                <option>CAMPO GRANDE</option>
+                                <option>CUIABA</option>
+                                <option>GOIANIA</option>
+                                <option>PALMAS</option>
+                                <option>MANAUS</option>
+                                <option>BELEM</option>
+                                <option>SAO LUIS</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select class="form-control" id="filtrostatus" onchange="renderOrdens()">
+                                <option>SEM TRATATIVA</option>
+                                <option>TODOS</option>
+                                <option>OK</option>
+                                <option>NOK</option>
+                                <option>SEM CONTATO</option>
+                                <option>JÁ POSSUI REPARO</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-secondary btn-block mb-2"><i class="fas fa-eraser"></i> Limpar
+                            Filtros</button>
+                        <button class="btn btn-dark btn-block"><i class="fas fa-download"></i> Download</button>
+
+                        <hr>
+                        <p class="text-center"><small>by <span class="text-muted">Thiago Alves Nunes</span></small></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordens com scroll interno -->
+            <div class="col-md-9 bg-light rounded shadow p-3"
+                style="max-height: 100vh; display: flex; flex-direction: column;">
+                <!-- Título fixo -->
+                <h4 class="mb-3 bg-light pt-2 pb-2" style="position: sticky; top: 0; z-index: 1;">
+                    <i class="fas fa-list"></i> Ordens de Contato
+                </h4>
+
+                <div id="lista-ordens" class="overflow-auto" style="flex-grow: 1;">
+                    <!-- Exemplo de card -->
+                    <a href="/ordem/6005724" class="text-decoration-none text-dark">
+                        <div class="card mb-2 mr-2 clickable-card">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title mb-1">BD: 6005724</h5>
+                                    <p class="card-text mb-0"><i class="fas fa-user-tie"></i> PROSEGUR BRASIL S/A</p>
+                                    <p class="card-text"><i class="fas fa-map-marker-alt"></i> PARAUAPEBAS - PA</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge badge-warning p-2 mr-3">SEM TRATATIVA</span>
+                                    <i class="fa-solid fa-chevron-right fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JS Usuário -->
+    <script>
+        fetch('/home/usuario')
+            .then(res => res.json())
+            .then(data => {
+                const nomeUsuario = data.nome;
+                const perfilUsuario = data.perfil;
+                document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
+                if (perfilUsuario === 'ADM') {
+                    document.getElementById('painelAdmBtn').style.display = 'inline-block';
+                }
+            });
+    </script>
+
+    <script>
+        function renderOrdens() {
+            fetch('/home/ordens_pos') //acessa o backend /ordens no upload_Posbd.js
+                .then(res => res.json()) //retorna um json
+                .then(ordens => { //criar um array com tudo
+                    const container = document.getElementById('lista-ordens');
+                    container.innerHTML = '' //limpar antes de carregar
+
+                    if (!ordens.length) {
+                        container.innerHTML = '<p class="text-muted p-2">Nenhuma ordem encontrada.</p>';
+                        return;
+                    }
+
+                    const filtroC = document.getElementById('filtrocluster').value.trim().toUpperCase();
+                    const filtroS = document.getElementById('filtrostatus').value.toUpperCase()
+
+                    ordens
+                        .filter(ordem => {
+                            const clusterOk = filtroC === 'TODOS' || (ordem.cluster || '').trim().toUpperCase() === filtroC;
+                            const statusOk = filtroS === 'TODOS' || (ordem.status_app || '').toUpperCase() === filtroS;
+                            return clusterOk && statusOk;
+                        }
+                        )
+
+                        .forEach(ordem => {
+                            const a = document.createElement('a');
+                            a.href = `/ordem/${ordem.bd}`;
+                            a.className = 'text-decoration-none text-dark';
+
+                            a.innerHTML = `
+                        <div class="card mb-2 mr-2 clickable-card">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title mb-1">BD: ${ordem.bd}</h5>
+                                    <p class="card-text mb-0">
+                                        <i class="fas fa-user-tie"></i> ${ordem.cliente || '-'}
+                                    </p>
+                                    <p class="card-text">
+                                        <i class="fas fa-map-marker-alt"></i> ${ordem.cidade || '-'} - ${ordem.uf || ''}
+                                    </p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge badge-warning p-3 mr-5 status-badge">
+                                        ${ordem.status_app}
+                                    </span>
+                                    <i class="fa-solid fa-chevron-right fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                            container.appendChild(a);
+                        });
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar ordens:', error);
+                    const container = document.getElementById('lista-ordens');
+                    container.innerHTML = '<p class="text-danger p-2">Erro ao carregar ordens.</p>';
+                });
+        }
+
+        // Executa ao carregar a página
+        document.addEventListener('DOMContentLoaded', renderOrdens);
+
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

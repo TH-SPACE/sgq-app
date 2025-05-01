@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Indicadores - SGQ</title>
+    <link rel="icon" type="image/png" href="/img/indicador.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="/css/menu.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/home">
+                <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
+                <span>SGQ</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/home/ba_b2b">Instalações B2B <span
+                                class=" sr-only">(atual)</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/home/pos_bd_b2b">Pós BD B2B</a>
+                    </li>
+                    <li class=" nav-item active">
+                        <a class="nav-link" href="/relatorios">Relatórios</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Qualidade B2B</a>
+                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
+                            <a class="dropdown-item" href="/config/perfil">Preventiva de Clientes</a>
+                            <a class="dropdown-item" href="/config/equipe">Preventiva em ARD/ERB</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/config/sistema">Informe Idenvido</a>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Usuário -->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
+                        id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i class="fas fa-user-circle fa-lg mr-2"></i>
+                        <span id="nomeUsuario">Usuário</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
+                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
+                            <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
+                        </a>
+                        <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
+                            <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
+                        </a>
+                        <a class="dropdown-item" href="/auth/logout">
+                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alerta -->
+    <div class="container-fluid mt-1">
+        <div class="alert alert-primary font-weight-bold" role="alert">
+            Bem-vindo(a)!
+        </div>
+    </div>
+
+    <!-- Banner de apresentação -->
+    <div class="container-fluid mb-4">
+        <div class="media bg-info text-white p-3 rounded shadow-sm">
+            <img class="mr-3" src="/img/th.jpg" alt="Ícone Métricas" style="width: 60px;">
+            <div class="media-body">
+                <h5 class="mt-0">Sisema de Gestão de Qualidade</h5>
+                Selecione as opções no Menu acima.
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Usuário -->
+    <script>
+        fetch('/home/usuario')
+            .then(res => res.json())
+            .then(data => {
+                const nomeUsuario = data.nome;
+                const perfilUsuario = data.perfil;
+                document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
+                if (perfilUsuario === 'ADM') {
+                    document.getElementById('painelAdmBtn').style.display = 'inline-block';
+                } if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
+                    document.getElementById('painelUpload').style.display = 'inline-block'
+                }
+            });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
