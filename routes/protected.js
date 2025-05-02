@@ -29,7 +29,7 @@ router.get('/ordens_pos', uploadPosbd.listarOrdensPos);
 
 
 router.get('/upload_bases', (req, res) => {
-    res.sendFile(path.join(__dirname, '../views/upload/upload_bases.html'))
+    res.sendFile(path.join(__dirname, '../views/home/upload_bases.html'))
 })
 
 // ✅ Rota POST de upload Excel
