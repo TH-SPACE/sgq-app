@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const db = require('../db/db');
-const bcrypt = require('bcrypt'); // 🔐 Importa bcrypt
 
 // 📄 Página principal do painel administrativo
 router.get('/', (req, res) => {

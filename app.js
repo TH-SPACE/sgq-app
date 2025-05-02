@@ -5,8 +5,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const dotenv = require('dotenv');
 
-const ad = require("./ad/ad")
-
 const morgan = require('morgan');
 const chalk = require('chalk');
 const { version } = require('./package.json');
