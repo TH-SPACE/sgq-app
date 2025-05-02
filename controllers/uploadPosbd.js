@@ -108,7 +108,7 @@ const processarUpload = async (req, res) => {
         fs.unlinkSync(req.file.path);
 
         // 🔽 Log de upload em .txt
-        const totalIgnorados = ignoradosJaExistem + ignoradosStatus + ignoradosCidade + ignoradosSemBD;
+        const totalIgnorados = ignoradosJaExistem + ignoradosSemBD;
         const usuario = req.session.usuario?.nome || 'Desconhecido';
         const nomeArquivo = req.file.originalname;
         const dataHora = new Date().toLocaleString('pt-BR');
