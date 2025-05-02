@@ -4,9 +4,13 @@ const path = require('path');
 const db = require('../db/db');
 const ad = require("../ad/ad");
 
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 // Defina o admin fixo
-const LOCAL_ADMIN_EMAIL = 'admin@local';
-const LOCAL_ADMIN_SENHA = 'yugioh25569';
+const LOCAL_ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const LOCAL_ADMIN_SENHA = process.env.ADMIN_SENHA;
 
 // 🔐 LOGIN
 router.post('/login', async (req, res) => {
