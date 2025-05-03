@@ -25,7 +25,7 @@ router.get('/pos_bd_b2b', (req, res) => {
 });
 
 // ⬇️ Aqui está sua rota de listagem agora conectada corretamente:
-router.get('/ordens_pos', uploadPosbd.listarOrdensPos);
+router.get('/listar_ordens_pos', uploadPosbd.listarOrdensPos);
 
 
 router.get('/upload_bases', (req, res) => {
