@@ -138,7 +138,7 @@ const processarUpload = async (req, res) => {
 // 🔍 Função para listar todas as ordens do banco
 const listarOrdensPos = async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM pos_bd_b2b ORDER BY data_abertura DESC');
+        const [rows] = await db.query('SELECT * FROM pos_bd_b2b ORDER BY id DESC');
         res.json(rows);
     } catch (err) {
         console.error(err);

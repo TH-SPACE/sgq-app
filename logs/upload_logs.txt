@@ -17,3 +17,4 @@ Pós BD => [02/05/2025, 20:10:23] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.cs
 Pós BD => [02/05/2025, 20:14:58] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 1541 | Ignorados: 16 (Existentes: 0, Sem BD: 0, Quebradas: 16)
 Pós BD => [02/05/2025, 20:18:03] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 1541 | Ignorados: 16 (Existentes: 0, Sem BD: 0, Quebradas: 16)
 Pós BD => [02/05/2025, 20:27:28] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 0 | Ignorados: 1557 (Existentes: 1541, Sem BD: 0, Quebradas: 16)
+Pós BD => [03/05/2025, 20:27:50] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 27 | Ignorados: 1530 (Existentes: 1514, Sem BD: 0, Quebradas com erro na linha: 16)
