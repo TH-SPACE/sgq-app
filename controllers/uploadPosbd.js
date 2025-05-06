@@ -26,6 +26,22 @@ const upload = multer({ storage, fileFilter });      // Middleware configurado
 const statusPermitidos = ['FECHADO'];                // Apenas ordens com status 'FECHADO'
 const procedenciasPermitidas = ['TRIAGEM'];          // Apenas ordens com procedência 'TRIAGEM'
 
+
+const mapearUf = {
+    'PA': 'BELEM',
+    'AP': 'MANAUS',
+    'DF': 'BRASILIA',
+    'AC': 'CAMPO GRANDE',
+    'MS': 'CAMPO GRANDE',
+    'RO': 'CAMPO GRANDE',
+    'MT': 'CUIABA',
+    'GO': 'GOIANIA',
+    'TO': 'PALMAS',
+    'AM': 'MANAUS',
+    'RR': 'MANAUS',
+    'MA': 'SAO LUIS'
+}
+
 // 🚀 Função principal para processar o CSV e inserir dados no banco
 const processarUpload = async (req, res) => {
     try {
@@ -94,6 +110,25 @@ const processarUpload = async (req, res) => {
                 continue;
             }
 
+            const uf = (linha.UF || '').trim().toUpperCase();
+
+            // 🧭 Primeiro tenta usar o UF para definir o cluster
+            if (mapearUf[uf]) {
+                linha.CLUSTER = mapearUf[uf];
+            }
+
+            if ((CIDADE || '').trim().toUpperCase() === 'ANAPOLIS') {
+                linha.CLUSTER = 'ANAPOLIS';
+            } else if ((CIDADE || '').trim().toUpperCase() === 'JARAGUA') {
+                linha.CLUSTER = 'ANAPOLIS';
+            } else if ((CIDADE || '').trim().toUpperCase() === 'LUZIANIA') {
+                linha.CLUSTER = 'BRASILIA';
+            } else if ((CIDADE || '').trim().toUpperCase() === 'CIDADE OCIDENTAL') {
+                linha.CLUSTER = 'BRASILIA';
+            } else if ((CIDADE || '').trim().toUpperCase() === 'FORMOSA') {
+                linha.CLUSTER = 'BRASILIA';
+            }
+
             // ✅ Insere no banco de dados
             await db.query(`
                 INSERT INTO pos_bd_b2b (
@@ -103,7 +138,7 @@ const processarUpload = async (req, res) => {
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
                 BD, BD_RAIZ, ID_VANTIVE, PROCEDENCIA, RECLAMCACAO,
-                CLIENTE, ENDERECO, CIDADE, UF, CLUSTER, LP_13,
+                CLIENTE, ENDERECO, CIDADE, UF, linha.CLUSTER, LP_13,
                 DATA_ABERTURA, DATA_ENCERRAMENTO
             ]);
 

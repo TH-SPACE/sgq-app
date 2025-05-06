@@ -359,18 +359,6 @@
             renderOrdens();
         });
 
-        // (duplicado) Reset manual — pode remover se quiser evitar redundância
-        document.getElementById('btnResetar').addEventListener('click', function () {
-            document.getElementById('filtrostatus').value = 'SEM TRATATIVA';
-            document.getElementById('filtrocluster').value = 'TODOS';
-
-            if (paginaAtual > 1) {
-                paginaAtual = 1;
-                document.getElementById('paginacao-info').innerText = `Página ${paginaAtual}`;
-            }
-
-            renderOrdens();
-        });
     </script>
 
 
