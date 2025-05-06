@@ -27,6 +27,8 @@ router.get('/pos_bd_b2b', (req, res) => {
 // ⬇️ Aqui está sua rota de listagem agora conectada corretamente:
 router.get('/listar_ordens_pos', uploadPosbd.listarOrdensPos);
 
+router.get('/download_csv_pos', uploadPosbd.downloadOrdensPos);
+
 
 router.get('/upload_bases', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/home/upload_bases.html'))

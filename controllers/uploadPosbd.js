@@ -4,6 +4,7 @@ const path = require('path');                        // Para manipulação de ca
 const fs = require('fs');                            // Para manipular arquivos no sistema
 const db = require('../db/db');                      // Conexão com banco de dados MariaDB
 const csv = require('csv-parse/sync');               // Biblioteca para parsear arquivos CSV
+const { Parser } = require('json2csv');
 
 // 📂 Configuração do Multer (gerenciador de uploads)
 const storage = multer.diskStorage({
@@ -51,7 +52,7 @@ const processarUpload = async (req, res) => {
         }
 
         // Lê o conteúdo do CSV
-        let conteudo = fs.readFileSync(req.file.path, 'utf8');
+        let conteudo = fs.readFileSync(req.file.path, 'latin1');
 
         // Corrige aspas mal formatadas no conteúdo
         conteudo = conteudo.replace(/"([^\n"]*?)"([^\s;,])/g, '"$1"$2');
@@ -181,9 +182,42 @@ const listarOrdensPos = async (req, res) => {
     }
 };
 
+const downloadOrdensPos = async (req, res) => {
+    const { inicio, fim } = req.query;
+
+    let sql = 'SELECT * FROM pos_bd_b2b WHERE 1=1';
+    const params = [];
+
+    if (inicio) {
+        sql += ' AND STR_TO_DATE(data_abertura, "%Y-%m-%d %H:%i:%s") >= STR_TO_DATE(?, "%Y-%m-%d")';
+        params.push(inicio);
+    }
+
+    if (fim) {
+        sql += ' AND STR_TO_DATE(data_abertura, "%Y-%m-%d %H:%i:%s") <= STR_TO_DATE(?, "%Y-%m-%d")';
+        params.push(fim);
+    }
+
+    try {
+        const [rows] = await db.query(sql, params);
+        const parser = new Parser({ delimiter: '|' }); // ou '\t' para TAB, ',' para vírgula
+        const csv = parser.parse(rows);
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=base_pos.csv');
+        res.send(csv);
+    } catch (err) {
+        console.error('Erro ao gerar CSV:', err);
+        res.status(500).send('Erro ao gerar CSV');
+    }
+};
+
+
+
 // Exportação das funções e configuração para uso em rotas
 module.exports = {
     upload,
     processarUpload,
-    listarOrdensPos
+    listarOrdensPos,
+    downloadOrdensPos
 };

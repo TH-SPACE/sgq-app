@@ -22,3 +22,4 @@ Pós BD => [05/05/2025, 21:03:34] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.cs
 Pós BD => [05/05/2025, 21:08:54] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 1541 | Ignorados: 16 (Existentes: 0, Sem BD: 0, Quebradas com erro na linha: 16)
 Pós BD => [05/05/2025, 21:14:05] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 1541 | Ignorados: 16 (Existentes: 0, Sem BD: 0, Quebradas com erro na linha: 16)
 Pós BD => [05/05/2025, 21:17:04] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 1541 | Ignorados: 16 (Existentes: 0, Sem BD: 0, Quebradas com erro na linha: 16)
+Pós BD => [05/05/2025, 23:21:24] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.csv | Inseridos: 1541 | Ignorados: 16 (Existentes: 0, Sem BD: 0, Quebradas com erro na linha: 16)
