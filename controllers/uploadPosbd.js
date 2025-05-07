@@ -5,6 +5,7 @@ const fs = require('fs');                            // Para manipular arquivos 
 const db = require('../db/db');                      // Conexão com banco de dados MariaDB
 const csv = require('csv-parse/sync');               // Biblioteca para parsear arquivos CSV
 const { Parser } = require('json2csv');
+const XLSX = require('xlsx');
 
 // 📂 Configuração do Multer (gerenciador de uploads)
 const storage = multer.diskStorage({
@@ -182,7 +183,7 @@ const listarOrdensPos = async (req, res) => {
     }
 };
 
-const downloadOrdensPos = async (req, res) => {
+const downloadOrdensPos2 = async (req, res) => {
     const { inicio, fim } = req.query;
 
     let sql = 'SELECT * FROM pos_bd_b2b WHERE 1=1';
@@ -212,6 +213,41 @@ const downloadOrdensPos = async (req, res) => {
     }
 };
 
+const downloadOrdensPos = async (req, res) => {
+    try {
+        const { inicio, fim } = req.query;
+
+        let sql = 'SELECT * FROM pos_bd_b2b WHERE 1=1';
+        const params = [];
+
+        if (inicio) {
+            sql += ' AND STR_TO_DATE(data_abertura, "%Y-%m-%d") >= ?';
+            params.push(inicio);
+        }
+
+        if (fim) {
+            sql += ' AND STR_TO_DATE(data_abertura, "%Y-%m-%d") <= ?';
+            params.push(fim);
+        }
+
+        const [rows] = await db.query(sql, params);
+
+        // Cria planilha a partir do JSON
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Ordens');
+
+        // Escreve em buffer
+        const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename=ordens.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(buffer);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro ao gerar XLSX');
+    }
+};
 
 
 // Exportação das funções e configuração para uso em rotas
