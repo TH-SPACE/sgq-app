@@ -16,25 +16,23 @@ const LOCAL_ADMIN_SENHA = process.env.ADMIN_SENHA;
 router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
     let nome = email.split(".")[0];
-    console.log(`O nome é: ${nome}`);
-
     let user;
 
     try {
         // 1. Se for admin local, ignora AD
         if (email === LOCAL_ADMIN_EMAIL && senha === LOCAL_ADMIN_SENHA) {
-            const [rows] = await db.query('SELECT * FROM users_sgq WHERE email = ?', [email]);
+            const [rows] = await db.mysqlPool.query('SELECT * FROM users_sgq WHERE email = ?', [email]);
 
             if (rows.length === 0) {
-                const [result] = await db.query(
+                const [result] = await db.mysqlPool.query(
                     'INSERT INTO users_sgq (email, nome, perfil, ultimo_login) VALUES (?, ?, ?, NOW())',
                     [email, 'ADMIN LOCAL', 'ADM']
                 );
-                const [newUserRows] = await db.query('SELECT * FROM users_sgq WHERE id = ?', [result.insertId]);
+                const [newUserRows] = await db.mysqlPool.query('SELECT * FROM users_sgq WHERE id = ?', [result.insertId]);
                 user = newUserRows[0];
             } else {
                 user = rows[0];
-                await db.query('UPDATE users_sgq SET ultimo_login = NOW() WHERE id = ?', [user.id]);
+                await db.mysqlPool.query('UPDATE users_sgq SET ultimo_login = NOW() WHERE id = ?', [user.id]);
             }
 
         } else {
@@ -48,21 +46,21 @@ router.post('/login', async (req, res) => {
             });
 
             // 3. Verificar/atualizar usuário no banco
-            const [rows] = await db.query('SELECT * FROM users_sgq WHERE email = ?', [email]);
+            const [rows] = await db.mysqlPool.query('SELECT * FROM users_sgq WHERE email = ?', [email]);
 
             if (rows.length === 0) {
-                const [result] = await db.query(
+                const [result] = await db.mysqlPool.query(
                     'INSERT INTO users_sgq (email, nome, perfil, ultimo_login) VALUES (?, ?, ?, NOW())',
                     [email, nome.toUpperCase(), 'USER']
                 );
 
                 if (result.insertId) {
-                    const [newUserRows] = await db.query('SELECT * FROM users_sgq WHERE id = ?', [result.insertId]);
+                    const [newUserRows] = await db.mysqlPool.query('SELECT * FROM users_sgq WHERE id = ?', [result.insertId]);
                     user = newUserRows[0];
                 }
             } else {
                 user = rows[0];
-                await db.query('UPDATE users_sgq SET ultimo_login = NOW() WHERE id = ?', [user.id]);
+                await db.mysqlPool.query('UPDATE users_sgq SET ultimo_login = NOW() WHERE id = ?', [user.id]);
             }
         }
 

@@ -4,6 +4,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 const dotenv = require('dotenv');
+const db = require('./db/db');
 
 const morgan = require('morgan');
 const chalk = require('chalk');
@@ -78,6 +79,37 @@ app.use('/auth', require('./routes/auth'));
 app.use('/home', verificaLogin, require('./routes/protected'));
 
 app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
+
+app.get('/sigitm', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'base.html'));
+});
+
+
+// Rota para consultar dados do OracleDB
+app.get('/oracle-data', async (req, res) => {
+    try {
+        const connection = await db.getOracleConnection();
+        const result = await connection.execute(`
+            SELECT 
+                CAST(TQI_CODIGO as int) as TQI_CODIGO,
+                   CAST(TQI_RAIZ as int) as TQI_RAIZ,                   
+                   CASE WHEN TQI_ORIGEM = 20 THEN 'VIVO2' ELSE 'VIVO1' END AS ORIGEM,
+                   sigitm_1_2.tbl_ti.tqi_diagnostico,
+                   sigitm_1_2.tbl_ti.tqi_estado_codigo AS UF,
+                   sigitm_1_2.tbl_ti.tqi_estado_NOME AS ESTADO,
+                   sigitm_1_2.tbl_ti.tqi_municipio_nome AS CIDADE
+            FROM   SIGITM_1_2.tbl_ti
+            WHERE  sigitm_1_2.tbl_ti.tqi_estado_codigo IN ('MS', 'GO', 'MA', 'AM', 'MT', 'PA', 'AP', 'DF', 'TO', 'RO', 'AC', 'RR')
+                   AND EXTRACT(MONTH FROM TQI_DATA_CRIACAO) IN(5)
+                   AND EXTRACT(YEAR FROM sigitm_1_2.tbl_ti.tqi_data_criacao) = 2025
+        `);
+        res.json(result.rows);
+        await connection.close();
+    } catch (err) {
+        console.error('Erro ao consultar dados do OracleDB:', err);
+        res.status(500).send('Erro ao consultar dados do OracleDB');
+    }
+});
 
 
 // 🚀 Inicialização do servidor

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Dados do OracleDB</title>
+</head>
+
+<body>
+    <h1>Dados do OracleDB</h1>
+    <table id="oracle-table" border="1">
+        <thead>
+            <tr>
+                <th>Código TQI</th>
+                <th>Raiz TQI</th>
+                <th>Origem</th>
+                <th>Diagnóstico</th>
+                <th>UF</th>
+                <th>Estado</th>
+                <th>Cidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os dados serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchData(url, tableId) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    row.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+            }
+        }
+
+        // Buscar dados do OracleDB
+        fetchData('/oracle-data', 'oracle-table');
+    </script>
+</body>
+
+</html>
