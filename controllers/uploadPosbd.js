@@ -28,7 +28,6 @@ const upload = multer({ storage, fileFilter });      // Middleware configurado
 const statusPermitidos = ['FECHADO'];                // Apenas ordens com status 'FECHADO'
 const procedenciasPermitidas = ['TRIAGEM'];          // Apenas ordens com procedência 'TRIAGEM'
 
-
 const mapearUf = {
     'PA': 'BELEM',
     'AP': 'MANAUS',
@@ -106,7 +105,7 @@ const processarUpload = async (req, res) => {
             if (!procedenciasPermitidas.includes(procedenciaFormatada)) continue;
 
             // Verifica se já existe no banco
-            const [existe] = await db.query('SELECT 1 FROM pos_bd_b2b WHERE bd = ?', [BD]);
+            const [existe] = await db.mysqlPool.query('SELECT 1 FROM pos_bd_b2b WHERE bd = ?', [BD]);
             if (existe.length > 0) {
                 ignoradosJaExistem++;
                 continue;
@@ -132,7 +131,7 @@ const processarUpload = async (req, res) => {
             }
 
             // ✅ Insere no banco de dados
-            await db.query(`
+            await db.mysqlPool.query(`
                 INSERT INTO pos_bd_b2b (
                     bd, bd_raiz, id_vantive, procedencia, reclamacao,
                     cliente, endereco, cidade, uf, cluster, lp_13,
@@ -175,7 +174,7 @@ const processarUpload = async (req, res) => {
 // 🔍 Função para listar todas as ordens do banco
 const listarOrdensPos = async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM pos_bd_b2b ORDER BY id DESC');
+        const [rows] = await db.mysqlPool.query('SELECT * FROM pos_bd_b2b ORDER BY id DESC');
         res.json(rows);
     } catch (err) {
         console.error(err);
@@ -200,7 +199,7 @@ const downloadOrdensPos2 = async (req, res) => {
     }
 
     try {
-        const [rows] = await db.query(sql, params);
+        const [rows] = await db.mysqlPool.query(sql, params);
         const parser = new Parser({ delimiter: '|' }); // ou '\t' para TAB, ',' para vírgula
         const csv = parser.parse(rows);
 
@@ -230,7 +229,7 @@ const downloadOrdensPos = async (req, res) => {
             params.push(fim);
         }
 
-        const [rows] = await db.query(sql, params);
+        const [rows] = await db.mysqlPool.query(sql, params);
 
         // Cria planilha a partir do JSON
         const workbook = XLSX.utils.book_new();
