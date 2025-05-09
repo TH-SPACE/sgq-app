@@ -26,3 +26,5 @@ Pós BD => [05/05/2025, 23:21:24] Usuário: ADMIN LOCAL | Arquivo: BDS_TOTAIS.cs
 Pós BD => [08/05/2025, 11:13:25] Usuário: ADMIN LOCAL | Arquivo: GPS.csv | Inseridos: 1092 | Ignorados: 10 (Existentes: 0, Sem BD: 0, Quebradas com erro na linha: 10)
 Pós BD => [08/05/2025, 11:57:03] Usuário: ADMIN LOCAL | Arquivo: GPS.csv | Inseridos: 1092 | Ignorados: 10 (Existentes: 0, Sem BD: 0, Quebradas com erro na linha: 10)
 Pós BD => [08/05/2025, 12:37:33] Usuário: THIAGO | Arquivo: GPS.csv | Inseridos: 1092 | Ignorados: 10 (Existentes: 0, Sem BD: 0, Quebradas com erro na linha: 10)
+Pós BD => [08/05/2025, 12:58:33] Usuário: ADMIN LOCAL | Arquivo: GPS.csv | Inseridos: 0 | Ignorados: 1102 (Existentes: 1092, Sem BD: 0, Quebradas com erro na linha: 10)
+Pós BD => [08/05/2025, 13:15:56] Usuário: ADMIN LOCAL | Arquivo: GPS.csv | Inseridos: 0 | Ignorados: 1102 (Existentes: 1092, Sem BD: 0, Quebradas com erro na linha: 10)
