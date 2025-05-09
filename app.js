@@ -100,7 +100,7 @@ app.get('/oracle-data', async (req, res) => {
                    sigitm_1_2.tbl_ti.tqi_municipio_nome AS CIDADE
             FROM   SIGITM_1_2.tbl_ti
             WHERE  sigitm_1_2.tbl_ti.tqi_estado_codigo IN ('MS', 'GO', 'MA', 'AM', 'MT', 'PA', 'AP', 'DF', 'TO', 'RO', 'AC', 'RR')
-                   AND EXTRACT(MONTH FROM TQI_DATA_CRIACAO) IN(5)
+                   AND EXTRACT(MONTH FROM TQI_DATA_CRIACAO) IN(4)
                    AND EXTRACT(YEAR FROM sigitm_1_2.tbl_ti.tqi_data_criacao) = 2025
         `);
         res.json(result.rows);
