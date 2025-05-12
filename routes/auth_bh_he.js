@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
                 if (result.insertId) {
                     const [newUserRows] = await db.mysqlPool.query('SELECT * FROM users_sgq WHERE id = ?', [result.insertId]);
                     user = newUserRows[0];
-                    return res.redirect('/?erro=2');
+                    return res.redirect('/bh_he/?erro=2');
                 }
             } else {
                 user = rows[0];
@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
 
                 } else {
                     console.log('Usuário Inativo!');
-                    return res.redirect('/?erro=2');
+                    return res.redirect('/bh_he/?erro=2');
                 }
             }
         }
@@ -76,7 +76,7 @@ router.post('/login', async (req, res) => {
         // 4. Proteção: checar se user foi realmente preenchido
         if (!user) {
             console.error('Erro: usuário não encontrado nem criado!');
-            return res.redirect('/?erro=email_nao_encontrado');
+            return res.redirect('/bh_he/?erro=email_nao_encontrado');
         }
 
         // 5. Criar sessão
@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
 
     } catch (err) {
         console.error("Erro de autenticação:", err.message || err);
-        return res.redirect('/?erro=1');
+        return res.redirect('/bh_he/?erro=1');
     }
 });
 
