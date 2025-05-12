@@ -91,11 +91,10 @@ app.use('/auth_bh_he', require('./routes/auth_bh_he'));
 
 app.use('/home_bh_he', verificaLogin, require('./routes/protected_bh_he'));
 
+
 app.get('/sigitm', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'base.html'));
 });
-
-
 // Rota para consultar dados do OracleDB
 app.get('/oracle-data', async (req, res) => {
     try {
@@ -111,7 +110,7 @@ app.get('/oracle-data', async (req, res) => {
                    sigitm_1_2.tbl_ti.tqi_municipio_nome AS CIDADE
             FROM   SIGITM_1_2.tbl_ti
             WHERE  sigitm_1_2.tbl_ti.tqi_estado_codigo IN ('MS', 'GO', 'MA', 'AM', 'MT', 'PA', 'AP', 'DF', 'TO', 'RO', 'AC', 'RR')
-                   AND EXTRACT(MONTH FROM TQI_DATA_CRIACAO) IN(4)
+                   AND EXTRACT(MONTH FROM TQI_DATA_CRIACAO) IN(1,2,3,4,5)
                    AND EXTRACT(YEAR FROM sigitm_1_2.tbl_ti.tqi_data_criacao) = 2025
         `);
         res.json(result.rows);
