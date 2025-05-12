@@ -1,105 +1,116 @@
 // 🌐 Módulos Principais
-const express = require('express');
-const session = require('express-session');
-const bodyParser = require('body-parser');
-const path = require('path');
-const dotenv = require('dotenv');
-const db = require('./db/db');
+const express = require("express");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const path = require("path");
+const dotenv = require("dotenv");
+const db = require("./db/db");
 
-const morgan = require('morgan');
-const chalk = require('chalk');
-const { version } = require('./package.json');
+const morgan = require("morgan");
+const chalk = require("chalk");
+const { version } = require("./package.json");
 
 // ⚙️ Inicializações
 dotenv.config(); // Carrega variáveis de ambiente
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.set('trust proxy', true); // Confiança em proxies reversos (ex: nginx)
+app.set("trust proxy", true); // Confiança em proxies reversos (ex: nginx)
 
 // 📁 Arquivos estáticos públicos
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 // 📦 Middlewares globais
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'segredo123',
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "segredo123",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Usar true com HTTPS
-}));
+    cookie: { secure: false }, // Usar true com HTTPS
+  })
+);
 
 // 📊 Morgan com log colorido + IP + usuário
-app.use(morgan((tokens, req, res) => {
-    const user = req.session?.usuario?.email || 'visitante';
+app.use(
+  morgan((tokens, req, res) => {
+    const user = req.session?.usuario?.email || "visitante";
     const status = tokens.status(req, res);
     const method = tokens.method(req, res);
     const url = tokens.url(req, res);
-    const responseTime = tokens['response-time'](req, res);
-    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
+    const responseTime = tokens["response-time"](req, res);
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+      req.socket.remoteAddress;
 
     const colorStatus =
-        status >= 500 ? chalk.red :
-            status >= 400 ? chalk.yellow :
-                status >= 300 ? chalk.cyan :
-                    status >= 200 ? chalk.green :
-                        chalk.white;
+      status >= 500
+        ? chalk.red
+        : status >= 400
+        ? chalk.yellow
+        : status >= 300
+        ? chalk.cyan
+        : status >= 200
+        ? chalk.green
+        : chalk.white;
 
-    return `${chalk.blue(`[${user}]`)} ${chalk.magenta(`[${ip}]`)} ${chalk.yellow(`[${method}]`)} ${url} ${colorStatus(status)} - ${responseTime} ms`;
-}));
+    return `${chalk.blue(`[${user}]`)} ${chalk.magenta(
+      `[${ip}]`
+    )} ${chalk.yellow(`[${method}]`)} ${url} ${colorStatus(
+      status
+    )} - ${responseTime} ms`;
+  })
+);
 
 // 🔐 Middlewares de autenticação
 function verificaLogin(req, res, next) {
-    if (!req.session.usuario) {
-        return res.redirect('/');
-    }
-    next();
+  if (!req.session.usuario) {
+    return res.redirect("/");
+  }
+  next();
 }
 
 function verificaADM(req, res, next) {
-    if (!req.session.usuario || req.session.usuario.perfil !== 'ADM') {
-        return res.sendFile(path.join(__dirname, 'views', 'acesso_negado.html'));
-    }
-    next();
+  if (!req.session.usuario || req.session.usuario.perfil !== "ADM") {
+    return res.sendFile(path.join(__dirname, "views", "acesso_negado.html"));
+  }
+  next();
 }
 
 //PAGINA DO LOGIN
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "login.html"));
 });
 
 //PAGINA DO LOGIN
-app.get('/bh_he', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views/BH_HE', 'login_bh_he.html'));
+app.get("/bh_he", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/BH_HE", "login_bh_he.html"));
 });
 
-
-app.get('/power_apps', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'links_pp.html'));
+app.get("/power_apps", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "links_pp.html"));
 });
 
 // 🧭 Rotas
-app.use('/auth', require('./routes/auth'));
+app.use("/auth", require("./routes/auth"));
 
-app.use('/home', verificaLogin, require('./routes/protected'));
+app.use("/home", verificaLogin, require("./routes/protected"));
 
-app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
+app.use("/admin", verificaLogin, verificaADM, require("./routes/admin"));
 
+app.use("/auth_bh_he", require("./routes/auth_bh_he"));
 
-app.use('/auth_bh_he', require('./routes/auth_bh_he'));
+app.use("/home_bh_he", verificaLogin, require("./routes/protected_bh_he"));
 
-app.use('/home_bh_he', verificaLogin, require('./routes/protected_bh_he'));
-
-
-app.get('/sigitm', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'base.html'));
+app.get("/sigitm", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "base.html"));
 });
 // Rota para consultar dados do OracleDB
-app.get('/oracle-data', async (req, res) => {
-    try {
-        const connection = await db.getOracleConnection();
-        const result = await connection.execute(`
+app.get("/oracle-data", async (req, res) => {
+  try {
+    const connection = await db.getOracleConnection();
+    const result = await connection.execute(`
             SELECT 
                 CAST(TQI_CODIGO as int) as TQI_CODIGO,
                    CAST(TQI_RAIZ as int) as TQI_RAIZ,                   
@@ -113,17 +124,16 @@ app.get('/oracle-data', async (req, res) => {
                    AND EXTRACT(MONTH FROM TQI_DATA_CRIACAO) IN(1,2,3,4,5)
                    AND EXTRACT(YEAR FROM sigitm_1_2.tbl_ti.tqi_data_criacao) = 2025
         `);
-        res.json(result.rows);
-        await connection.close();
-    } catch (err) {
-        console.error('Erro ao consultar dados do OracleDB:', err);
-        res.status(500).send('Erro ao consultar dados do OracleDB');
-    }
+    res.json(result.rows);
+    await connection.close();
+  } catch (err) {
+    console.error("Erro ao consultar dados do OracleDB:", err);
+    res.status(500).send("Erro ao consultar dados do OracleDB");
+  }
 });
 
-
 // 🚀 Inicialização do servidor
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🔥 SGQ rodando em http://10.59.112.107:3000`);
-    console.log(`📦 Versão SGQ: v${version}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🔥 SGQ rodando em http://10.59.112.107:3000`);
+  console.log(`📦 ${chalk.blue(`Versão SGQ:`)} v${version}`);
 });

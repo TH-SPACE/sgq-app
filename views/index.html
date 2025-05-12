@@ -37,10 +37,10 @@
                         <a class="nav-link" href="/home/ba_b2b">Instalações B2B <span
                                 class=" sr-only">(atual)</span></a>
                     </li>
-                    <li class="nav-item active">
+                    <li class="nav-item active" id="posBd" style=" display: none;">
                         <a class="nav-link" href="/home/pos_bd_b2b">Pós BD B2B</a>
                     </li>
-                    <li class=" nav-item active">
+                    <li class=" nav-item active" id="relatorios" style=" display: none;">
                         <a class="nav-link" href="/relatorios">Relatórios</a>
                     </li>
                     <li class="nav-item dropdown active">
@@ -84,6 +84,7 @@
     <div class="container-fluid mt-1">
         <div class="alert alert-primary font-weight-bold" role="alert">
             Bem-vindo(a)!
+            <h4 id="acesso"></h4>
         </div>
     </div>
 
@@ -105,12 +106,28 @@
             .then(data => {
                 const nomeUsuario = data.nome;
                 const perfilUsuario = data.perfil;
+                const acessos = data.acessos;
+
+                document.getElementById('acesso').innerText = acessos.split(',')[0]
+
                 document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
+
                 if (perfilUsuario === 'ADM') {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
-                } if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
+                }
+
+                if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
                     document.getElementById('painelUpload').style.display = 'inline-block'
                 }
+                // Liberar POS BD se tiver permissão
+                if (acessos.includes('posbd')) {
+                    document.getElementById('posBd').style.display = 'inline-block';
+                }
+                if (acessos.includes('relatorios')) {
+                    document.getAnimations('relatorios').style.display = 'inline-block';
+                }
+
+
             });
     </script>
 

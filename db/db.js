@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
 const oracledb = require('oracledb');
+const chalk = require('chalk');
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ pool.getConnection((err, connection) => {
     if (err) {
         console.error('Erro ao conectar ao banco de dados MySQL:', err);
     } else {
-        console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
+        console.log(chalk.bgWhite('Conexão com o banco de dados MariaDB estabelecida com sucesso!'));
         connection.release(); // Libera a conexão de volta para o pool
     }
 });
@@ -30,7 +31,7 @@ async function initializeOracle() {
         });
         console.log('Conexão com o banco de dados Oracle estabelecida com sucesso!');
     } catch (err) {
-        console.error('Erro ao conectar ao banco de dados Oracle:', err);
+        console.error(chalk.red('Erro ao conectar ao banco de dados Oracle, pois não está na Intranet ou erro de login e senha.'));
     }
 }
 
