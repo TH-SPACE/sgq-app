@@ -87,7 +87,7 @@ router.post('/login', async (req, res) => {
             perfil: user.perfil
         };
 
-        res.redirect('/home');
+        res.redirect('/home_bh_he');
 
     } catch (err) {
         console.error("Erro de autenticação:", err.message || err);

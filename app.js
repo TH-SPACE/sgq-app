@@ -69,6 +69,12 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
+//PAGINA DO LOGIN
+app.get('/bh_he', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views/BH_HE', 'login_bh_he.html'));
+});
+
+
 app.get('/power_apps', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'links_pp.html'));
 });
@@ -79,6 +85,11 @@ app.use('/auth', require('./routes/auth'));
 app.use('/home', verificaLogin, require('./routes/protected'));
 
 app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
+
+
+app.use('/auth_bh_he', require('./routes/auth_bh_he'));
+
+app.use('/home_bh_he', verificaLogin, require('./routes/protected_bh_he'));
 
 app.get('/sigitm', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'base.html'));
