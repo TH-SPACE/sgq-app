@@ -182,36 +182,6 @@ const listarOrdensPos = async (req, res) => {
     }
 };
 
-const downloadOrdensPos2 = async (req, res) => {
-    const { inicio, fim } = req.query;
-
-    let sql = 'SELECT * FROM pos_bd_b2b WHERE 1=1';
-    const params = [];
-
-    if (inicio) {
-        sql += ' AND STR_TO_DATE(data_abertura, "%Y-%m-%d %H:%i:%s") >= STR_TO_DATE(?, "%Y-%m-%d")';
-        params.push(inicio);
-    }
-
-    if (fim) {
-        sql += ' AND STR_TO_DATE(data_abertura, "%Y-%m-%d %H:%i:%s") <= STR_TO_DATE(?, "%Y-%m-%d")';
-        params.push(fim);
-    }
-
-    try {
-        const [rows] = await db.mysqlPool.query(sql, params);
-        const parser = new Parser({ delimiter: '|' }); // ou '\t' para TAB, ',' para vírgula
-        const csv = parser.parse(rows);
-
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=base_pos.csv');
-        res.send(csv);
-    } catch (err) {
-        console.error('Erro ao gerar CSV:', err);
-        res.status(500).send('Erro ao gerar CSV');
-    }
-};
-
 const downloadOrdensPos = async (req, res) => {
     try {
         const { inicio, fim } = req.query;

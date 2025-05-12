@@ -54,7 +54,6 @@ router.post('/login', async (req, res) => {
                     [email, nome.toUpperCase(), 'USER', 'AGUARDANDO']
                 );
 
-
                 if (result.insertId) {
                     const [newUserRows] = await db.mysqlPool.query('SELECT * FROM users_sgq WHERE id = ?', [result.insertId]);
                     user = newUserRows[0];
