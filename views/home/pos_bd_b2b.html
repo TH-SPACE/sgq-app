@@ -55,14 +55,11 @@
 
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/home/ba_b2b">Instalações B2B <span
-                                class=" sr-only">(atual)</span></a>
-                    </li>
-                    <li class="nav-item active">
+
+                    <li class="nav-item active" id="posBd" style=" display: none;">
                         <a class="nav-link" href="/home/pos_bd_b2b">Pós BD B2B</a>
                     </li>
-                    <li class=" nav-item active">
+                    <li class=" nav-item active" id="relatorios" style=" display: none;">
                         <a class="nav-link" href="/relatorios">Relatórios</a>
                     </li>
                     <li class="nav-item dropdown active">
@@ -86,12 +83,16 @@
                         <span id="nomeUsuario">Usuário</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
+                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
+                            <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
+                        </a>
                         <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
-                            <i class="fas fa-cogs text-warning mr-2"></i>Painel ADM
+                            <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
                         </a>
                         <a class="dropdown-item" href="/auth/logout">
-                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>Sair
+                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
                         </a>
+
                     </div>
                 </div>
             </div>
@@ -209,10 +210,26 @@
             .then(data => {
                 const nomeUsuario = data.nome;
                 const perfilUsuario = data.perfil;
+                const acessos = data.acessos;
+
                 document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
+
                 if (perfilUsuario === 'ADM') {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
                 }
+
+                if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
+                    document.getElementById('painelUpload').style.display = 'inline-block'
+                }
+                // Liberar POS BD se tiver permissão
+                if (acessos.includes('posbd')) {
+                    document.getElementById('posBd').style.display = 'inline-block';
+                }
+                if (acessos.includes('relatorios')) {
+                    document.getElementById('relatorios').style.display = 'inline-block';
+                } console.log('Acessos do usuário:', acessos);
+
+
             });
     </script>
 

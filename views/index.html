@@ -33,10 +33,7 @@
 
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/home/ba_b2b">Instalações B2B <span
-                                class=" sr-only">(atual)</span></a>
-                    </li>
+
                     <li class="nav-item active" id="posBd" style=" display: none;">
                         <a class="nav-link" href="/home/pos_bd_b2b">Pós BD B2B</a>
                     </li>
@@ -108,8 +105,6 @@
                 const perfilUsuario = data.perfil;
                 const acessos = data.acessos;
 
-                document.getElementById('acesso').innerText = acessos.split(',')[0]
-
                 document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
 
                 if (perfilUsuario === 'ADM') {
@@ -124,8 +119,8 @@
                     document.getElementById('posBd').style.display = 'inline-block';
                 }
                 if (acessos.includes('relatorios')) {
-                    document.getAnimations('relatorios').style.display = 'inline-block';
-                }
+                    document.getElementById('relatorios').style.display = 'inline-block';
+                } console.log('Acessos do usuário:', acessos);
 
 
             });
