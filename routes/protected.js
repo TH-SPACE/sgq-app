@@ -32,6 +32,8 @@ router.get("/listar_ordens_pos", uploadPosbd.listarOrdensPos);
 
 router.get("/download_csv_pos", uploadPosbd.downloadOrdensPos);
 
+router.post("/tratar_ordem_pos", uploadPosbd.tratarOrdemPos);
+
 router.get("/upload_bases", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/home/upload_bases.html"));
 });

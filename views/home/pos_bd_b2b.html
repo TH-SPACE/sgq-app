@@ -38,6 +38,12 @@
         white-space: nowrap;
         border-radius: 8px;
     }
+
+    #statusApp {
+        height: 38px;
+        padding: 6px 12px;
+        font-size: 14px;
+    }
 </style>
 
 <body style="overflow: hidden;">
@@ -109,7 +115,47 @@
         </div>
     </div>
 
-    <div class="container-fluid mt-2">
+    <div id="detalheOrdem" class="container-fluid mt-2" style="display: none;">
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="border shadow p-3 bg-white rounded" id="infoCliente"></div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="border shadow p-3 bg-white rounded">
+                    <input type="hidden" id="idHidden">
+                    <input type="hidden" id="tratadoPor">
+                    <h5><i class="fa-solid fa-headset"></i> Informar Pós Contato:</h5>
+                    <div class="form-group">
+                        <label>Status App</label>
+                        <select id="statusApp" class="form-control">
+                            <option value="OK">OK</option>
+                            <option value="NOK">NOK</option>
+                            <option value="SEM CONTATO">SEM CONTATO</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="campoPreventiva" style="display:none;">
+                        <label>Preventiva</label>
+                        <input type="text" id="preventivaInput" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Observação</label>
+                        <textarea id="observacaoInput" class="form-control"></textarea>
+                    </div>
+                    <button class="btn btn-secondary" onclick="voltarParaFila()">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </button>
+                    <button class="btn btn-success" onclick="salvarTratativa()">Salvar</button>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid mt-2" id="filaPrincipal" style="display: inline-block;">
         <div class="row">
 
             <!-- Lado esquerdo: Filtros -->
@@ -212,6 +258,8 @@
                 const perfilUsuario = data.perfil;
                 const acessos = data.acessos;
 
+                document.getElementById('tratadoPor').value = nomeUsuario
+
                 document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
 
                 if (perfilUsuario === 'ADM') {
@@ -291,7 +339,8 @@
                 // 📄 Renderiza os cards da página atual
                 pagina.forEach(ordem => {
                     const a = document.createElement('a');
-                    a.href = `/ordem/${ordem.bd}`;
+                    a.href = `#${ordem.bd}#${ordem.cliente}`;
+                    a.onclick = () => exibirDetalheOrdem(ordem);
                     a.className = 'text-decoration-none text-dark';
                     a.innerHTML = `
                     <div class="card mb-2 mr-2 clickable-card"  style="height: 80px;">
@@ -327,6 +376,96 @@
                 container.innerHTML = '<p class="text-danger">Erro ao carregar ordens.</p>';
             }
         }
+
+        function exibirDetalheOrdem(ordem) {
+            // Esconde a fila e mostra a tela de detalhe
+            document.getElementById('idHidden').value = ordem.id;
+            document.getElementById('filaPrincipal').style.display = 'none';
+            document.getElementById('detalheOrdem').style.display = 'block';
+
+            // Preenche o HTML com as infos
+            document.getElementById('infoCliente').innerHTML = `
+    <h5 class="text-primary">Cliente</h5>
+    <p><strong>${ordem.cliente}</strong></p>
+    <p><strong>ID:</strong> ${ordem.id}</p>
+    <p><strong>BD:</strong> ${ordem.bd}</p>
+    <p><strong>Vantive:</strong> ${ordem.id_vantive}</p>
+    <p><strong>Procedência:</strong> ${ordem.procedencia}</p>
+    <p><strong>Abertura:</strong> ${ordem.data_abertura}</p>
+    <p><strong>Encerramento:</strong> ${ordem.data_encerramento}</p>
+    <p><strong>Reclamação:</strong> ${ordem.reclamacao}</p>
+    <p><strong>LP 13:</strong> ${ordem.lp_13}</p>
+    <p><strong>Cidade:</strong> ${ordem.cidade}</p>
+    <p><strong>Cluster:</strong> ${ordem.cluster}</p>
+    <p><strong>Endereço:</strong> ${ordem.endereco}</p>
+  `;
+        }
+
+        document.getElementById('statusApp').addEventListener('change', function () {
+            if (this.value === 'NOK') {
+                document.getElementById('campoPreventiva').style.display = 'block'
+            } else {
+                document.getElementById('campoPreventiva').style.display = 'none'
+            }
+        });
+
+        function voltarParaFila() {
+            document.getElementById('detalheOrdem').style.display = 'none';
+            document.getElementById('filaPrincipal').style.display = 'block';
+            document.getElementById('statusApp').value = 'SEM TRATATIVA';
+            document.getElementById('preventivaInput').value = '';
+            document.getElementById('observacaoInput').value = '';
+            document.getElementById('idHidden').value = '';
+        }
+
+        function salvarTratativa() {
+            const id = document.getElementById('idHidden').value;
+            const statusApp = document.getElementById('statusApp').value;
+            const preventiva = document.getElementById('preventivaInput').value;
+            const observacao = document.getElementById('observacaoInput').value;
+            const tratadoPor = document.getElementById('tratadoPor').value;
+
+            // Validação obrigatória dos campos
+            if (!statusApp) {
+                alert('Por favor, selecione um status.');
+                return;
+            }
+
+            if (!observacao) {
+                alert('Por favor, preencha a observação.');
+                return;
+            }
+
+            // Se for NOK, preventiva também é obrigatória
+            if (statusApp === 'NOK' && !preventiva) {
+                alert('Para status NOK, é obrigatório informar a preventiva.');
+                return;
+            }
+
+
+            fetch('/home/tratar_ordem_pos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, status_app: statusApp, preventiva, observacao, tratado_por: tratadoPor })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        alert('Ordem tratada com sucesso!');
+                        voltarParaFila();
+                        renderOrdens();
+                    } else {
+                        alert('Erro ao tratar ordem.');
+                    }
+                })
+                .catch(err => {
+                    console.error('Erro ao tratar:', err);
+                    alert('Erro ao tratar ordem.');
+                });
+        }
+
 
         // 📚 Função que monta os botões de navegação da paginação
         function renderPaginacao(totalPaginas) {
