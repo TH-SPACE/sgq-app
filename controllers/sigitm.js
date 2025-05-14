@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../db/db'); // Ajuste o caminho conforme necessário
-const XLSX = require('xlsx');
+const ExcelJS = require('exceljs');
 
 const router = express.Router();
 
@@ -28,19 +28,24 @@ router.get('/oracle-data', async (req, res) => {
         `, [startDate, endDate]);
 
         // Cria uma nova planilha
-        const data = result.rows.map(row => ({
-            TQI_CODIGO: row.TQI_CODIGO,
-            TQI_RAIZ: row.TQI_RAIZ,
-            ORIGEM: row.ORIGEM,
-            DIAGNOSTICO: row.TQI_DIAGNOSTICO,
-            UF: row.UF,
-            ESTADO: row.ESTADO,
-            CIDADE: row.CIDADE
-        }));
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Dados Oracle');
 
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Dados Oracle');
+        // Adiciona cabeçalhos
+        worksheet.columns = [
+            { header: 'TQI_CODIGO', key: 'TQI_CODIGO', width: 15 },
+            { header: 'TQI_RAIZ', key: 'TQI_RAIZ', width: 15 },
+            { header: 'ORIGEM', key: 'ORIGEM', width: 15 },
+            { header: 'DIAGNOSTICO', key: 'TQI_DIAGNOSTICO', width: 30 },
+            { header: 'UF', key: 'UF', width: 10 },
+            { header: 'ESTADO', key: 'ESTADO', width: 20 },
+            { header: 'CIDADE', key: 'CIDADE', width: 20 }
+        ];
+
+        // Adiciona linhas
+        result.rows.forEach(row => {
+            worksheet.addRow(row);
+        });
 
         // Define o nome do arquivo
         const fileName = 'dados_oracle.xlsx';
@@ -50,8 +55,8 @@ router.get('/oracle-data', async (req, res) => {
         res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
 
         // Grava o arquivo no response
-        const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-        res.send(buffer);
+        await workbook.xlsx.write(res);
+        res.end();
 
         await connection.close();
     } catch (err) {
