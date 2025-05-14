@@ -97,20 +97,22 @@ app.use("/auth", require("./routes/auth"));
 
 app.use("/home", verificaLogin, require("./routes/protected"));
 
-app.use("/admin", verificaLogin, verificaADM, require("./routes/admin"));
+app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
 
 app.use("/auth_bh_he", require("./routes/auth_bh_he"));
 
-app.use("/home_bh_he", verificaLogin, require("./routes/protected_bh_he"));
+app.use('/home_bh_he', verificaLogin, require('./routes/protected_bh_he'));
+
+app.use('/sigitm', require('./controllers/sigitm'));    
 
 app.get("/sigitm", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "base.html"));
 });
 // Rota para consultar dados do OracleDB
-app.get("/oracle-data", async (req, res) => {
-  try {
-    const connection = await db.getOracleConnection();
-    const result = await connection.execute(`
+app.get('/oracle-data', async (req, res) => {
+    try {
+        const connection = await db.getOracleConnection();
+        const result = await connection.execute(`
             SELECT 
                 CAST(TQI_CODIGO as int) as TQI_CODIGO,
                    CAST(TQI_RAIZ as int) as TQI_RAIZ,                   
@@ -124,13 +126,14 @@ app.get("/oracle-data", async (req, res) => {
                    AND EXTRACT(MONTH FROM TQI_DATA_CRIACAO) IN(1,2,3,4,5)
                    AND EXTRACT(YEAR FROM sigitm_1_2.tbl_ti.tqi_data_criacao) = 2025
         `);
-    res.json(result.rows);
-    await connection.close();
-  } catch (err) {
-    console.error("Erro ao consultar dados do OracleDB:", err);
-    res.status(500).send("Erro ao consultar dados do OracleDB");
-  }
+        res.json(result.rows);
+        await connection.close();
+    } catch (err) {
+        console.error('Erro ao consultar dados do OracleDB:', err);
+        res.status(500).send('Erro ao consultar dados do OracleDB');
+    }
 });
+
 
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
