@@ -4,27 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Dados Oracle</title>
+    <title>Exportar Dados</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
 
 <body>
-    <h1>Download Dados Oracle</h1>
-    <label for="startDate">Data de Início:</label>
-    <input type="date" id="startDate" name="startDate">
-    <label for="endDate">Data de Fim:</label>
-    <input type="date" id="endDate" name="endDate">
-    <button onclick="downloadExcel()">Baixar Dados</button>
+    <h1>Exportar Dados</h1>
+    <form id="exportForm">
+        <label for="startDate">Data de Início:</label>
+        <input type="date" id="startDate" name="startDate" required>
+        <br>
+        <label for="endDate">Data de Fim:</label>
+        <input type="date" id="endDate" name="endDate" required>
+        <br>
+        <button type="submit">Exportar</button>
+    </form>
 
     <script>
-        function downloadExcel() {
+        document.getElementById('exportForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Aguarde...',
+                text: 'Processando requisição',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
-            if (!startDate || !endDate) {
-                alert('Por favor, selecione as datas de início e fim.');
-                return;
-            }
-            window.location.href = `/sigitm/oracle-data?startDate=${startDate}&endDate=${endDate}`;
-        }
+
+            fetch(`/sigitm/oracle-data?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'dados.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    Swal.close();
+                })
+                .catch(error => {
+                    console.error('Erro ao exportar dados:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Erro ao exportar dados. Tente novamente mais tarde.'
+                    });
+                });
+        });
     </script>
 </body>
 

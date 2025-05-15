@@ -1,17 +1,11 @@
 const express = require('express');
-const db = require('../db/db'); // Ajuste o caminho conforme necessário
-const ExcelJS = require('exceljs');
-
 const router = express.Router();
+const db = require('../db/db');
+const XLSX = require('xlsx');
 
 router.get('/oracle-data', async (req, res) => {
-    const { startDate, endDate } = req.query;
-
-    if (!startDate || !endDate) {
-        return res.status(400).send('Datas de início e fim são obrigatórias.');
-    }
-
     try {
+        const { startDate, endDate } = req.query;
         const connection = await db.getOracleConnection();
         const result = await connection.execute(`
             SELECT 
@@ -27,36 +21,30 @@ router.get('/oracle-data', async (req, res) => {
                 AND TQI_DATA_CRIACAO BETWEEN TO_DATE(:startDate, 'YYYY-MM-DD') AND TO_DATE(:endDate, 'YYYY-MM-DD')
         `, [startDate, endDate]);
 
-        // Cria uma nova planilha
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Dados Oracle');
+        const data = result.rows;
 
-        // Adiciona cabeçalhos
-        worksheet.columns = [
-            { header: 'TQI_CODIGO', key: 'TQI_CODIGO', width: 15 },
-            { header: 'TQI_RAIZ', key: 'TQI_RAIZ', width: 15 },
-            { header: 'ORIGEM', key: 'ORIGEM', width: 15 },
-            { header: 'DIAGNOSTICO', key: 'TQI_DIAGNOSTICO', width: 30 },
-            { header: 'UF', key: 'UF', width: 10 },
-            { header: 'ESTADO', key: 'ESTADO', width: 20 },
-            { header: 'CIDADE', key: 'CIDADE', width: 20 }
+        // Definindo os cabeçalhos manualmente
+        const headers = [
+            "TQI_CODIGO",
+            "TQI_RAIZ",
+            "ORIGEM",
+            "TQI_DIAGNOSTICO",
+            "UF",
+            "ESTADO",
+            "CIDADE"
         ];
 
-        // Adiciona linhas
-        result.rows.forEach(row => {
-            worksheet.addRow(row);
-        });
+        // Adicionando os cabeçalhos aos dados
+        const dataWithHeaders = [headers, ...data];
 
-        // Define o nome do arquivo
-        const fileName = 'dados_oracle.xlsx';
+        const worksheet = XLSX.utils.aoa_to_sheet(dataWithHeaders);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Dados');
+        const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
 
-        // Define o cabeçalho para download do arquivo
+        res.setHeader('Content-Disposition', 'attachment; filename="dados.xlsx"');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-
-        // Grava o arquivo no response
-        await workbook.xlsx.write(res);
-        res.end();
+        res.send(buffer);
 
         await connection.close();
     } catch (err) {
