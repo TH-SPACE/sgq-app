@@ -10,6 +10,8 @@ const morgan = require("morgan");
 const chalk = require("chalk");
 const { version } = require("./package.json");
 
+const batimentoB2B = require('./controllers/batimento_b2b');
+
 // ⚙️ Inicializações
 dotenv.config(); // Carrega variáveis de ambiente
 const app = express();
@@ -108,6 +110,10 @@ app.use('/sigitm', require('./controllers/sigitm'));
 app.get("/sigitm", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "base.html"));
 });
+
+// Rota para buscar a tabela
+app.get('/buscar-tabela', batimentoB2B.buscarTabela);
+
 
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
