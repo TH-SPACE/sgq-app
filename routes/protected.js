@@ -4,6 +4,8 @@ const path = require("path");
 
 const uploadPosbd = require("../controllers/uploadPosbd");
 
+const vidaSigitm = require("../controllers/sigitm");
+
 router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/index.html"));
 });
@@ -17,6 +19,14 @@ router.get("/usuario", (req, res) => {
     acessos: req.session.usuario.acessos,
   });
 });
+
+//ACESSA O SITE PARA DOWNLOAD DA VIDA DO SIGITM
+router.get("/sigitm", (req, res) => {
+  res.sendFile(path.join(__dirname, "../views/base.html"));
+});
+
+// Usando as rotas do sigitm
+router.use(vidaSigitm);
 
 // Rota protegida que renderiza a tela BA B2B
 router.get("/ba_b2b", (req, res) => {
@@ -44,5 +54,7 @@ router.post(
   uploadPosbd.upload.single("arquivo"),
   uploadPosbd.processarUpload
 );
+
+
 
 module.exports = router;

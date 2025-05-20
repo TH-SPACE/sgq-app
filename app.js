@@ -105,12 +105,6 @@ app.use("/auth_bh_he", require("./routes/auth_bh_he"));
 
 app.use('/home_bh_he', verificaLogin, require('./routes/protected_bh_he'));
 
-app.use('/sigitm', require('./controllers/sigitm'));
-
-app.get("/sigitm", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "base.html"));
-});
-
 // Rota para buscar a tabela
 app.get('/buscar-tabela', batimentoB2B.buscarTabela);
 
