@@ -4,8 +4,6 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const dotenv = require("dotenv");
-const db = require("./db/db");
-
 const morgan = require("morgan");
 const chalk = require("chalk");
 const { version } = require("./package.json");
@@ -85,11 +83,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
 
-//PAGINA DO LOGIN
-app.get("/bh_he", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/BH_HE", "login_bh_he.html"));
-});
-
 app.get("/power_apps", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "links_pp.html"));
 });
@@ -101,16 +94,11 @@ app.use("/home", verificaLogin, require("./routes/protected"));
 
 app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
 
-app.use("/auth_bh_he", require("./routes/auth_bh_he"));
-
-app.use('/home_bh_he', verificaLogin, require('./routes/protected_bh_he'));
-
 // Rota para buscar a tabela
 app.get('/buscar-tabela', batimentoB2B.buscarTabela);
 
-
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🔥 SGQ rodando em http://10.59.112.107:3000`);
-  console.log(`📦 ${chalk.blue(`Versão SGQ:`)} v${version}`);
+  console.log(`🔥 TCore rodando em http://10.59.112.107:3000`);
+  console.log(`📦 ${chalk.blue(`Versão TCore:`)} v${version}`);
 });
