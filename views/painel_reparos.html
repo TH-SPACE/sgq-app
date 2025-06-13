@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Adicionado para melhor responsividade -->
+    <title>Painel de Reparos</title>
+    <!-- Link corrigido para o CSS do Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link corrigido para o script do Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-light p-4">
+
+    <div class="container">
+        <h2 class="mb-4">Painel de Reparos</h2>
+
+        <!-- Upload Excel -->
+        <form id="uploadForm" enctype="multipart/form-data" class="mb-4">
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <input type="file" name="excelFile" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">Enviar Base</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Filtros -->
+        <div class="row g-2 mb-4">
+            <div class="col-md-3">
+                <select id="clusterFilter" class="form-select">
+                    <option value="">Todos os Clusters</option>
+                    <option value="Goiania">Goiania</option>
+                    <option value="Brasilia">Brasilia</option>
+                    <option value="Cuiaba">Cuiaba</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="armarioFilter" class="form-select">
+                    <option value="">Todos os Armários</option>
+                    <option value="GOGNA_G1M02">GOGNA_G1M02</option>
+                    <option value="GOGNA_G1M08">GOGNA_G1M08</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar...">
+            </div>
+            <div class="col-md-3">
+                <button id="openForm" class="btn btn-success w-100">Registrar Causa</button>
+            </div>
+        </div>
+
+        <!-- Gráfico -->
+        <canvas id="graficoReparos" height="100"></canvas>
+
+        <!-- Modal Formulário -->
+        <div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form id="causaForm" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cadastrar Causa da Massiva</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Campos principais -->
+                        <input type="text" class="form-control mb-2" name="numero_ta" placeholder="Número TA" required>
+                        <input type="date" class="form-control mb-2" name="data" required>
+                        <select name="armario" class="form-select mb-2">
+                            <option value="GOGNA_G1M02">GOGNA_G1M02</option>
+                            <option value="GOGNA_G1M08">GOGNA_G1M08</option>
+                        </select>
+                        <select name="cluster" class="form-select mb-2">
+                            <option value="Goiania">Goiania</option>
+                            <option value="Brasilia">Brasilia</option>
+                            <option value="Cuiaba">Cuiaba</option>
+                        </select>
+                        <select name="causa_massiva" class="form-select mb-2">
+                            <option>Interrupção de energia</option>
+                            <option>Vandalismo</option>
+                            <option>Alagamento</option>
+                        </select>
+                        <input type="number" class="form-control mb-2" name="qtd_clientes_afetados"
+                            placeholder="Qtd Clientes Afetados">
+                        <select name="aliada" class="form-select mb-2">
+                            <option>VIVO</option>
+                            <option>OI</option>
+                            <option>CLARO</option>
+                        </select>
+                        <select name="tipo_falha" class="form-select mb-2">
+                            <option>Fibra cortada</option>
+                            <option>Sem energia</option>
+                            <option>Conector queimado</option>
+                        </select>
+                        <textarea name="observacao" class="form-control mb-2" placeholder="Observações..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Link corrigido para o script do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gráfico fictício com tooltip de causa
+        const ctx = document.getElementById('graficoReparos').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['01/06', '02/06', '03/06', '04/06', '05/06', '06/06'],
+                datasets: [{
+                    label: 'Qtd de Reparos',
+                    data: [12, 19, 7, 2, 9, 10],
+                    backgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function (context) {
+                                const causas = ['Corte de Fibra', ('Falta Energia', 'Carga Alta'), 'Desconhecida', 'teste']; // Exemplo de causas
+                                // Você precisará carregar as causas reais dos seus dados
+                                return 'Causa: ' + causas[context.dataIndex];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Abrir Modal
+        document.getElementById('openForm').addEventListener('click', () => {
+            // Cria uma nova instância do modal e a exibe
+            const modal = new bootstrap.Modal(document.getElementById('modalForm'));
+            modal.show();
+        });
+
+        // Submissão do formulário de causa
+        document.getElementById('causaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            // Exemplo de como obter os dados do formulário
+            // const data = Object.fromEntries(formData.entries());
+            // console.log('Dados do formulário:', data);
+
+            // Simulação de envio para o backend
+            try {
+                const res = await fetch('/api/causa', { // Substitua '/api/causa' pela sua URL de backend
+                    method: 'POST',
+                    body: formData // Ou JSON.stringify(data) se seu backend espera JSON
+                    // Se enviar JSON, adicione headers: {'Content-Type': 'application/json'}
+                });
+
+                if (res.ok) {
+                    alert('Causa registrada com sucesso!');
+                    form.reset();
+                    // Oculta o modal após sucesso
+                    bootstrap.Modal.getInstance(document.getElementById('modalForm')).hide();
+                    // Opcional: Atualizar o gráfico ou a lista de causas após o registro
+                } else {
+                    // Tratar erros do backend
+                    const errorText = await res.text(); // Ou res.json() se o backend retornar JSON de erro
+                    alert('Erro ao registrar: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                alert('Erro na comunicação com o servidor.');
+            }
+        });
+
+        // Upload Excel
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            // Simulação de envio para o backend
+            try {
+                const res = await fetch('/api/upload', { // Substitua '/api/upload' pela sua URL de backend
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Base enviada com sucesso!');
+                    // Opcional: Recarregar dados e atualizar o gráfico após o upload
+                } else {
+                    // Tratar erros do backend
+                    const errorText = await res.text(); // Ou res.json()
+                    alert('Erro no upload: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                alert('Erro na comunicação com o servidor.');
+            }
+        });
+
+        // Lógica para filtros e busca (precisa ser implementada no backend e/ou frontend)
+        document.getElementById('clusterFilter').addEventListener('change', (e) => {
+            console.log('Filtro Cluster:', e.target.value);
+            // Implementar lógica de filtragem
+        });
+
+        document.getElementById('armarioFilter').addEventListener('change', (e) => {
+            console.log('Filtro Armário:', e.target.value);
+            // Implementar lógica de filtragem
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            console.log('Busca:', e.target.value);
+            // Implementar lógica de busca
+        });
+
+    </script>
+</body>
+
+</html>

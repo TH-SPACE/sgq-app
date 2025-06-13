@@ -83,8 +83,8 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
 
-app.get("/power_apps", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "links_pp.html"));
+app.get("/painel_reparos", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "painel_reparos.html"));
 });
 
 // 🧭 Rotas
