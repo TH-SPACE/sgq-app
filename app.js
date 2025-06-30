@@ -99,6 +99,6 @@ app.get('/buscar-tabela', batimentoB2B.buscarTabela);
 
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🔥 TCore rodando em http://10.59.112.107:3000`);
-  console.log(`📦 ${chalk.blue(`Versão TCoreaaa:`)} v${version}`);
+  console.log(`🔥 THANOS rodando em http://10.59.112.107:3000`);
+  console.log(`📦 ${chalk.blue(`Versão THANOS:`)} v${version}`);
 });
