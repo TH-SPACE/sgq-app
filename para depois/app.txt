@@ -1,8 +1,0 @@
-//PAGINA DO LOGIN
-app.get("/bh_he", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/BH_HE", "login_bh_he.html"));
-});
-
-app.use("/auth_bh_he", require("./para depois/auth_bh_he"));
-
-app.use('/home_bh_he', verificaLogin, require('./para depois/protected_bh_he'));
