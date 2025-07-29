@@ -40,6 +40,9 @@
                     <li class=" nav-item active" id="relatorios" style=" display: none;">
                         <a class="nav-link" href="/relatorios">Relatórios</a>
                     </li>
+                    <li class=" nav-item active" id="relatorios">
+                        <a class="nav-link" href="/home/sigitm">VIDA SIGITM</a>
+                    </li>
                     <li class="nav-item dropdown active">
                         <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Qualidade B2B</a>
@@ -81,6 +84,7 @@
     <div class="container-fluid mt-1">
         <div class="alert alert-primary font-weight-bold" role="alert">
             Bem-vindo(a)!
+            <span id="nomeUsuario1">Usuário</span>
             <h4 id="acesso"></h4>
         </div>
     </div>
@@ -90,8 +94,7 @@
         <div class="media bg-info text-white p-3 rounded shadow-sm">
             <img class="mr-3" src="/img/th.jpg" alt="Ícone Métricas" style="width: 60px;">
             <div class="media-body">
-                <h5 class="mt-0">Uma suíte completa que oferece um conjunto robusto de ferramentas e aplicações para
-                    atender a todas as suas necessidades empresariais.</h5>
+                <h5 class="mt-0">Sitema online.</h5>
                 Selecione as opções no Menu acima.
             </div>
         </div>
@@ -107,6 +110,8 @@
                 const acessos = data.acessos;
 
                 document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
+
+                document.getElementById('nomeUsuario1').innerText = nomeUsuario.split(' ')[0]
 
                 if (perfilUsuario === 'ADM') {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
