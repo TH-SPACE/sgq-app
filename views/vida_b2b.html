@@ -103,7 +103,7 @@
                                     <input type="date" class="form-control" id="startDate" name="startDate" required>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="endDate">Data de Fim:</label>
+                                    <label for="endDate">Data do Fim:</label>
                                     <input type="date" class="form-control" id="endDate" name="endDate" required>
                                 </div>
                             </div>
@@ -129,6 +129,23 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+
+            // Definir a data de início como o primeiro dia do mês atual
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+            startDateInput.value = firstDayOfMonth;
+
+            // Definir a data de fim como a data de hoje
+            const todayStr = today.toISOString().split('T')[0];
+            endDateInput.value = todayStr;
+
+            // Definir a data máxima do campo de data de fim como a data de hoje
+            endDateInput.setAttribute('max', todayStr);
+        });
+
         document.getElementById('exportForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
