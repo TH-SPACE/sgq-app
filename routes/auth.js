@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
       if (rows.length === 0) {
         const [result] = await db.mysqlPool.query(
           "INSERT INTO users_sgq (email, nome, perfil, status, ultimo_login) VALUES (?, ?, ?, ?, NOW())",
-          [email, nome.toUpperCase(), "USER", "AGUARDANDO"]
+          [email, nome.toUpperCase(), "USER", "ATIVO"]
         );
 
         if (result.insertId) {

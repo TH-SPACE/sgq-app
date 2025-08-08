@@ -6,6 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>ThanOS - Centro de Soluções</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            /* Organiza os elementos em coluna */
+            min-height: 100vh;
+            /* O corpo ocupa a altura total da janela */
+            margin: 0;
+            /* Remove margens padrão do body */
+        }
+
+        main {
+            flex: 1;
+            /* O elemento main ocupa todo o espaço restante */
+            padding: 1px;
+            /* Espaçamento interno */
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            /* Cor de fundo do footer */
+            padding: 1rem;
+            /* Espaçamento interno */
+            text-align: center;
+            /* Centraliza o texto */
+            position: relative;
+            /* Define a posição do footer */
+            bottom: 0;
+            /* Anexa o footer ao fundo */
+        }
+    </style>
     <link rel="icon" type="image/png" href="/img/b2b.png">
 
     <!-- Bootstrap CSS -->
@@ -19,115 +50,120 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/home">
-                <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
-                <span>ThanOS</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <main>
+        <!-- Navbar -->
+        <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="/home">
+                    <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
+                    <span>ThanOS</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav mr-auto">
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav mr-auto">
 
-                    <li class="nav-item active" id="posBd" style=" display: none;">
-                        <a class="nav-link" href="/home/pos_bd_b2b">Pós BD B2B</a>
-                    </li>
-                    <li class=" nav-item active" id="relatorios" style=" display: none;">
-                        <a class="nav-link" href="/relatorios">Relatórios</a>
-                    </li>
-                    <li class=" nav-item active" id="relatorios">
-                        <a class="nav-link" href="/home/sigitm">VIDA SIGITM</a>
-                    </li>
-                    <li class="nav-item dropdown active">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Qualidade B2B</a>
-                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
-                            <a class="dropdown-item" href="/config/perfil">Preventiva de Clientes</a>
-                            <a class="dropdown-item" href="/config/equipe">Preventiva em ARD/ERB</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/config/sistema">Informe Idenvido</a>
+                        <li class="nav-item active" id="posBd" style=" display: none;">
+                            <a class="nav-link" href="/home/pos_bd_b2b">Pós BD B2B</a>
+                        </li>
+                        <li class=" nav-item active" id="relatorios" style=" display: none;">
+                            <a class="nav-link" href="/relatorios">Relatórios</a>
+                        </li>
+                        <li class=" nav-item active" id="relatorios">
+                            <a class="nav-link" href="/home/sigitm">VIDA SIGITM</a>
+                        </li>
+                        <li class="nav-item dropdown active">
+                            <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Qualidade B2B</a>
+                            <div class="dropdown-menu" aria-labelledby="menuDropdown">
+                                <a class="dropdown-item" href="/config/perfil">Preventiva de Clientes</a>
+                                <a class="dropdown-item" href="/config/equipe">Preventiva em ARD/ERB</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/config/sistema">Informe Idenvido</a>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- Usuário -->
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
+                            id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="fas fa-user-circle fa-lg mr-2"></i>
+                            <span id="nomeUsuario">Usuário</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
+                            <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display:
+                                none;">
+                                <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
+                            </a>
+                            <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
+                                <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
+                            </a>
+                            <a class="dropdown-item" href="/auth/logout">
+                                <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
+                            </a>
+
                         </div>
-                    </li>
-                </ul>
-
-                <!-- Usuário -->
-                <div class="dropdown">
-                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
-                        id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="fas fa-user-circle fa-lg mr-2"></i>
-                        <span id="nomeUsuario">Usuário</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
-                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
-                            <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
-                        </a>
-                        <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
-                            <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
-                        </a>
-                        <a class="dropdown-item" href="/auth/logout">
-                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
-                        </a>
-
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Alerta -->
-    <div class="container-fluid mt-1">
-        <div class="alert alert-primary font-weight-bold" role="alert">
-            Bem-vindo(a)!
-            <h4 id="acesso"></h4>
+        <!-- Alerta -->
+        <div class="container-fluid mt-1">
+            <div class="alert alert-primary font-weight-bold" role="alert">
+                Bem-vindo(a)!
+                <h4 id="acesso"></h4>
+            </div>
         </div>
-    </div>
 
-    <div class="container-fluid mt-3">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h1 class="h3">Exportar Dados</h1>
-                    </div>
-                    <div class="card-body" style="background-color: rgb(248, 240, 255);">
-                        <form id="exportForm">
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="startDate">Data de Início:</label>
-                                    <input type="date" class="form-control" id="startDate" name="startDate" required>
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h1 class="h3">BASE VIDA SIGITM B2B - CW</h1>
+                        </div>
+                        <div class="card-body" style="background-color: rgb(248, 240, 255);">
+                            <form id="exportForm">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="startDate">Data de Início:</label>
+                                        <input type="date" class="form-control" id="startDate" name="startDate"
+                                            required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="endDate">Data do Fim:</label>
+                                        <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                    </div>
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="endDate">Data do Fim:</label>
-                                    <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                <div class="form-group">
+                                    <label for="gprNome">Filtrar por GPR_NOME:</label>
+                                    <select class="form-control" id="gprNome" name="gprNome">
+                                        <option value="">TODOS</option>
+                                        <option value="rede_externa">REDE EXTERNA</option>
+                                        <option value="cidade">CIDADE</option>
+                                        <option value="centralizado">CENTRALIZADO</option>
+                                        <option value="triagem">TRIAGEM</option>
+                                        <option value="tel_pl">TEL PLANTA INTERNA</option>
+                                        <option value="outros">OUTROS</option>
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="gprNome">Filtrar por GPR_NOME:</label>
-                                <select class="form-control" id="gprNome" name="gprNome">
-                                    <option value="">TODOS</option>
-                                    <option value="rede_externa">REDE EXTERNA</option>
-                                    <option value="cidade">CIDADE</option>
-                                    <option value="centralizado">CENTRALIZADO</option>
-                                    <option value="triagem">TRIAGEM</option>
-                                    <option value="tel_pl">TEL PLANTA INTERNA</option>
-                                    <option value="outros">OUTROS</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Exportar</button>
-                        </form>
+                                <button type="submit" class="btn btn-primary">Exportar</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+
             </div>
-
         </div>
-    </div>
 
+
+    </main>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const startDateInput = document.getElementById('startDate');
@@ -220,6 +256,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
     <script src="/js/sweetalert2.all.min.js"></script>
+
+    <footer>
+        <div class="card-footer text-muted">
+            <p>Criado por Thiago Alves Nunes</p>
+        </div>
+    </footer>
 
 </body>
 
