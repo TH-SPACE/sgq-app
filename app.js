@@ -9,6 +9,7 @@ const chalk = require("chalk");
 const { version } = require("./package.json");
 
 const batimentoB2B = require('./controllers/batimento_b2b');
+const vidaSigitm = require('./controllers/sigitm'); // Importando o controlador vidaSigitm
 
 // ⚙️ Inicializações
 dotenv.config(); // Carrega variáveis de ambiente
@@ -86,6 +87,12 @@ app.get("/", (req, res) => {
 app.get("/painel_reparos", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "painel_reparos.html"));
 });
+
+// 🧭 Rotas públicas para vida do SIGITM
+app.get("/sigitm", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/vida_b2b.html"));
+});
+app.use(vidaSigitm);  // Usando as rotas do sigitm
 
 // 🧭 Rotas
 app.use("/auth", require("./routes/auth"));

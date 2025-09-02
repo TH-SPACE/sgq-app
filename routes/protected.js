@@ -37,12 +37,7 @@ router.get("/usuario", (req, res) => {
   });
 });
 
-//ACESSA O SITE PARA DOWNLOAD DA VIDA DO SIGITM
-router.get("/sigitm", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/vida_b2b.html"));
-});
-// Usando as rotas do sigitm
-router.use(vidaSigitm);
+
 
 // Protegendo a rota /pos_bd_b2b
 router.get("/pos_bd_b2b", verificaAcesso('posbd'), (req, res) => {
