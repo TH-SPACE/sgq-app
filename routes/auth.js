@@ -22,24 +22,24 @@ router.post("/login", async (req, res) => {
     // 1. Se for admin local, ignora AD
     if (email === LOCAL_ADMIN_EMAIL && senha === LOCAL_ADMIN_SENHA) {
       const [rows] = await db.mysqlPool.query(
-        "SELECT * FROM users_sgq WHERE email = ?",
+        "SELECT * FROM users_thanos WHERE email = ?",
         [email]
       );
 
       if (rows.length === 0) {
         const [result] = await db.mysqlPool.query(
-          "INSERT INTO users_sgq (email, nome, perfil, ultimo_login) VALUES (?, ?, ?, NOW())",
+          "INSERT INTO users_thanos (email, nome, perfil, ultimo_login) VALUES (?, ?, ?, NOW())",
           [email, "ADMIN LOCAL", "ADM"]
         );
         const [newUserRows] = await db.mysqlPool.query(
-          "SELECT * FROM users_sgq WHERE id = ?",
+          "SELECT * FROM users_thanos WHERE id = ?",
           [result.insertId]
         );
         user = newUserRows[0];
       } else {
         user = rows[0];
         await db.mysqlPool.query(
-          "UPDATE users_sgq SET ultimo_login = NOW() WHERE id = ?",
+          "UPDATE users_thanos SET ultimo_login = NOW() WHERE id = ?",
           [user.id]
         );
       }
@@ -55,19 +55,19 @@ router.post("/login", async (req, res) => {
 
       // 3. Verificar/atualizar usuário no banco
       const [rows] = await db.mysqlPool.query(
-        "SELECT * FROM users_sgq WHERE email = ?",
+        "SELECT * FROM users_thanos WHERE email = ?",
         [email]
       );
 
       if (rows.length === 0) {
         const [result] = await db.mysqlPool.query(
-          "INSERT INTO users_sgq (email, nome, perfil, status, ultimo_login) VALUES (?, ?, ?, ?, NOW())",
+          "INSERT INTO users_thanos (email, nome, perfil, status, ultimo_login) VALUES (?, ?, ?, ?, NOW())",
           [email, nome.toUpperCase(), "USER", "ATIVO"]
         );
 
         if (result.insertId) {
           const [newUserRows] = await db.mysqlPool.query(
-            "SELECT * FROM users_sgq WHERE id = ?",
+            "SELECT * FROM users_thanos WHERE id = ?",
             [result.insertId]
           );
           user = newUserRows[0];
@@ -79,7 +79,7 @@ router.post("/login", async (req, res) => {
 
         if (user.status === "ATIVO") {
           await db.mysqlPool.query(
-            "UPDATE users_sgq SET ultimo_login = NOW() WHERE id = ?",
+            "UPDATE users_thanos SET ultimo_login = NOW() WHERE id = ?",
             [user.id]
           );
         } else {

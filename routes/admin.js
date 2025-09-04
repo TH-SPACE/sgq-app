@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 // 🔍 Lista todos os usuários (API)
 router.get('/usuarios', async (req, res) => {
     try {
-        const [rows] = await db.mysqlPool.query('SELECT id, nome, email, perfil, status FROM users_sgq');
+        const [rows] = await db.mysqlPool.query('SELECT id, nome, email, perfil, status FROM users_thanos');
         res.json(rows);
     } catch (err) {
         console.error(err);
@@ -29,7 +29,7 @@ router.post('/editar/:id', async (req, res) => {
         let params = [];
 
         // 🔐 Se não foi preenchida, mantém a senha antiga
-        query = 'UPDATE users_sgq SET nome=?, perfil=?, status=? WHERE id=?';
+        query = 'UPDATE users_thanos SET nome=?, perfil=?, status=? WHERE id=?';
         params = [nome, perfil, status, id];
 
 
@@ -46,7 +46,7 @@ router.post('/editar/:id', async (req, res) => {
 router.post('/excluir/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await db.mysqlPool.query('DELETE FROM users_sgq WHERE id = ?', [id]);
+        await db.mysqlPool.query('DELETE FROM users_thanos WHERE id = ?', [id]);
         res.redirect('/admin/painel');
     } catch (err) {
         console.error(err);
@@ -58,10 +58,10 @@ router.post('/excluir/:id', async (req, res) => {
 router.post('/aprovar/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await db.mysqlPool.query('UPDATE users_sgq SET status = "ATIVO" WHERE id = ?', [id]);
+        await db.mysqlPool.query('UPDATE users_thanos SET status = "ATIVO" WHERE id = ?', [id]);
 
         // Busca nome e e-mail do usuário aprovado
-        const [rows] = await db.mysqlPool.query('SELECT nome, email FROM users_sgq WHERE id = ?', [id]);
+        const [rows] = await db.mysqlPool.query('SELECT nome, email FROM users_thanos WHERE id = ?', [id]);
         if (rows.length === 0) {
             return res.status(404).send('Usuário não encontrado.');
         }
@@ -77,7 +77,7 @@ router.post('/aprovar/:id', async (req, res) => {
 router.post('/desativar/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await db.mysqlPool.query('UPDATE users_sgq SET status = "INATIVO" WHERE id = ?', [id]);
+        await db.mysqlPool.query('UPDATE users_thanos SET status = "INATIVO" WHERE id = ?', [id]);
         res.sendStatus(200);
     } catch (err) {
         console.error(err);
