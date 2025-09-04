@@ -198,7 +198,7 @@
             const endDate = document.getElementById('endDate').value;
             const gprNome = document.getElementById('gprNome').value;
 
-            fetch(`/home/oracle-data?startDate=${startDate}&endDate=${endDate}&gprNome=${encodeURIComponent(gprNome)}`)
+            fetch(`/oracle-data?startDate=${startDate}&endDate=${endDate}&gprNome=${encodeURIComponent(gprNome)}`)
                 .then(response => response.blob())
                 .then(blob => {
                     const url = window.URL.createObjectURL(blob);

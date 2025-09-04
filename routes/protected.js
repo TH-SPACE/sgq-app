@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require("path");
 
 const uploadPosbd = require("../controllers/uploadPosbd");
-const vidaSigitm = require("../controllers/sigitm");
+
 
 // Middleware para verificar acesso específico
 function verificaAcesso(tipoAcessoRequerido) {
