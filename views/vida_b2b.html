@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>ThanOS - Centro de Soluções</title>
+    <title>ThanOS - Vida Sigitm</title>
     <style>
         body {
             display: flex;
@@ -37,10 +37,10 @@
             /* Anexa o footer ao fundo */
         }
     </style>
-    <link rel="icon" type="image/png" href="/img/b2b.png">
+    <link rel="icon" type="image/png" href="/img/MANOPLA.gif">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel=" stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -215,6 +215,28 @@
         document.getElementById('exportForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const gprNome = document.getElementById('gprNome').value;
+
+            // Verifica se a diferença entre as datas é maior que 31 dias
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 31) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Intervalo inválido',
+                    text: 'O intervalo entre as datas não pode ser maior que 31 dias.'
+                });
+
+                return; //interrompe a execução do código
+            }
+
             Swal.fire({
                 title: 'Aguarde...',
                 text: 'Processando requisição',
@@ -223,10 +245,6 @@
                     Swal.showLoading();
                 }
             });
-
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const gprNome = document.getElementById('gprNome').value;
 
             fetch(`/home/oracle-data?startDate=${startDate}&endDate=${endDate}&gprNome=${encodeURIComponent(gprNome)}`)
                 .then(response => response.blob())
