@@ -4,6 +4,9 @@ const path = require("path");
 
 const uploadPosbd = require("../controllers/uploadPosbd");
 
+const vidaSigitm = require("../controllers/sigitm");
+
+
 
 // Middleware para verificar acesso específico
 function verificaAcesso(tipoAcessoRequerido) {
@@ -36,6 +39,13 @@ router.get("/usuario", (req, res) => {
     acessos: req.session.usuario.acessos,
   });
 });
+
+// ✅ Rota protegida para vida_b2b.html
+router.get("/sigitm", (req, res) => {
+  res.sendFile(path.join(__dirname, "../views/vida_b2b.html"));
+});
+// ✅ Usando o controlador sigitm
+router.use(vidaSigitm);
 
 
 

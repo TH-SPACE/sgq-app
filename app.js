@@ -4,18 +4,15 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const dotenv = require("dotenv");
-const morgan = require("morgan");
-const chalk = require("chalk");
 const { version } = require("./package.json");
 
 const batimentoB2B = require('./controllers/batimento_b2b');
-const vidaSigitm = require('./controllers/sigitm'); // Importando o controlador vidaSigitm
 
 // ⚙️ Inicializações
-dotenv.config(); // Carrega variáveis de ambiente
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.set("trust proxy", true); // Confiança em proxies reversos (ex: nginx)
+app.set("trust proxy", true);
 
 // 📁 Arquivos estáticos públicos
 app.use(express.static(path.join(__dirname, "public")));
@@ -29,38 +26,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "segredo123",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }, // Usar true com HTTPS
-  })
-);
-
-// 📊 Morgan com log colorido + IP + usuário
-app.use(
-  morgan((tokens, req, res) => {
-    const user = req.session?.usuario?.email || "visitante";
-    const status = tokens.status(req, res);
-    const method = tokens.method(req, res);
-    const url = tokens.url(req, res);
-    const responseTime = tokens["response-time"](req, res);
-    const ip =
-      req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-      req.socket.remoteAddress;
-
-    const colorStatus =
-      status >= 500
-        ? chalk.red
-        : status >= 400
-          ? chalk.yellow
-          : status >= 300
-            ? chalk.cyan
-            : status >= 200
-              ? chalk.green
-              : chalk.white;
-
-    return `${chalk.blue(`[${user}]`)} ${chalk.magenta(
-      `[${ip}]`
-    )} ${chalk.yellow(`[${method}]`)} ${url} ${colorStatus(
-      status
-    )} - ${responseTime} ms`;
+    cookie: { secure: false },
   })
 );
 
@@ -79,7 +45,7 @@ function verificaADM(req, res, next) {
   next();
 }
 
-//PAGINA DO LOGIN
+// 🧭 Rotas públicas
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
@@ -88,17 +54,9 @@ app.get("/painel_reparos", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "painel_reparos.html"));
 });
 
-// 🧭 Rotas públicas para vida do SIGITM
-app.get("/sigitm", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/vida_b2b.html"));
-});
-app.use(vidaSigitm);  // Usando as rotas do sigitm
-
-// 🧭 Rotas
+// 🧭 Rotas protegidas
 app.use("/auth", require("./routes/auth"));
-
 app.use("/home", verificaLogin, require("./routes/protected"));
-
 app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
 
 // Rota para buscar a tabela
@@ -106,6 +64,6 @@ app.get('/buscar-tabela', batimentoB2B.buscarTabela);
 
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🔥 THANOS rodando em http://10.59.112.107:3000`);
-  console.log(`📦 ${chalk.blue(`Versão THANOS:`)} v${version}`);
+  console.log(`🔥 THANOS rodando em http://10.59.112.107:${PORT}`);
+  console.log(`📦 Versão THANOS: v${version}`);
 });
