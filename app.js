@@ -30,6 +30,25 @@ app.use(
   })
 );
 
+// ✅ Middleware de log personalizado
+app.use((req, res, next) => {
+  const start = Date.now();
+
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+      req.socket.remoteAddress;
+
+    const user = req.session?.usuario?.email || "visitante";
+
+    console.log(`[${user}] [${ip}] [${req.method}] ${req.originalUrl} ${res.statusCode} - ${duration} ms`);
+  });
+
+  next();
+});
+
+
 // 🔐 Middlewares de autenticação
 function verificaLogin(req, res, next) {
   if (!req.session.usuario) {
