@@ -10,7 +10,7 @@ router.get("/", verificaLogin, (req, res) => {
 });
 
 router.get("/enviar", verificaLogin, planejamentoHE.telaEnvio);
-router.post("/enviar", verificaLogin, planejamentoHE.enviarSolicitacao);
+router.post("/enviar-multiplo", verificaLogin, planejamentoHE.enviarSolicitacoesMultiplo);
 
 router.get("/envios", verificaLogin, planejamentoHE.listarEnvios);
 router.post("/editar", verificaLogin, planejamentoHE.editarEnvio);
