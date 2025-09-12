@@ -52,21 +52,20 @@ router.get("/api/colaboradores", async (req, res) => {
 
 router.get("/api/cargo", async (req, res) => {
     const nome = req.query.nome;
-
     try {
         const [rows] = await db.mysqlPool.query(
-            "SELECT CARGO FROM COLABORADORES_CW WHERE NOME = ? LIMIT 1",
+            "SELECT CARGO, MATRICULA FROM COLABORADORES_CW WHERE NOME = ? LIMIT 1",
             [nome]
         );
 
         if (rows.length > 0) {
-            res.json({ cargo: rows[0].CARGO });
+            res.json({ cargo: rows[0].CARGO, matricula: rows[0].MATRICULA });
         } else {
             res.status(404).json({ error: "Colaborador não encontrado" });
         }
     } catch (error) {
-        console.error("Erro ao buscar cargo:", error);
-        res.status(500).json({ error: "Erro ao buscar cargo" });
+        console.error("Erro ao buscar cargo/matrícula:", error);
+        res.status(500).json({ error: "Erro ao buscar dados" });
     }
 });
 

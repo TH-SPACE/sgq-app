@@ -14,36 +14,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <link rel="stylesheet" href="/css/menu.css" />
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .btn {
-            display: block;
-            margin: 15px auto;
-            padding: 15px 30px;
-            background-color: #6a1b9a;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 300px;
-        }
-
-        .btn:hover {
-            background-color: #4a148c;
-        }
-
-        .logo {
-            margin-top: 50px;
-            font-weight: bold;
-            color: #555;
-        }
-    </style>
 </head>
 
 <body>
@@ -137,15 +107,70 @@
         </div>
     </nav>
 
+    <div class="container mt-5 pt-5">
+        <h1 class="mb-4">Planejamento HE - CW</h1>
+        <div class="row">
+            <!-- Card Enviar -->
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-paper-plane fa-2x text-primary mb-3"></i>
+                        <h5 class="card-title">Enviar Planejamento</h5>
+                        <p class="card-text">Solicite horas extras para seus colaboradores</p>
+                        <a href="/planejamento-he/enviar" class="btn btn-primary btn-block">Acessar</a>
+                    </div>
+                </div>
+            </div>
 
-    <h1 class="container-fluid mt-5 pt-5">PLANEJAMENTO HE - CW</h1>
+            <!-- Card Envios -->
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-list fa-2x text-success mb-3"></i>
+                        <h5 class="card-title">Meus Envios</h5>
+                        <p class="card-text">Veja as solicitações já enviadas</p>
+                        <a href="/planejamento-he/envios" class="btn btn-success btn-block">Acessar</a>
+                    </div>
+                </div>
+            </div>
 
-    <button class="btn" onclick="location.href='/planejamento-he/enviar'">ENVIAR PLANEJAMENTO</button>
-    <button class="btn" onclick="location.href='/planejamento-he/envios'">ENVIOS</button>
-    <button class="btn" onclick="location.href='/planejamento-he/dash'">DASH</button>
-    <button class="btn" onclick="location.href='/planejamento-he/aprovacao'">FILA DE APROVAÇÃO</button>
+            <!-- Card Dash -->
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-chart-pie fa-2x text-info mb-3"></i>
+                        <h5 class="card-title">Dashboard</h5>
+                        <p class="card-text">Estatísticas gerais do planejamento</p>
+                        <a href="/planejamento-he/dash" class="btn btn-info btn-block">Acessar</a>
+                    </div>
+                </div>
+            </div>
 
-    <div class="logo">Qualidade - CW</div>
+            <!-- Card Aprovação -->
+            <div class="col-md-3" id="cardAprovacao" style="display:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-check-double fa-2x text-warning mb-3"></i>
+                        <h5 class="card-title">Fila de Aprovação</h5>
+                        <p class="card-text">Diretores aprovam ou recusam solicitações</p>
+                        <a href="/planejamento-he/aprovacao" class="btn btn-warning btn-block">Acessar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar card de aprovação só para ADM/Diretor
+        fetch('/home/usuario')
+            .then(res => res.json())
+            .then(data => {
+                if (data.perfil === 'ADM') {
+                    document.getElementById('cardAprovacao').style.display = 'block';
+                }
+            });
+    </script>
+
     <!-- JS Usuário -->
     <script>
         fetch('/home/usuario')

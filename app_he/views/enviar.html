@@ -4,222 +4,229 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulário Planejamento HE</title>
+    <title>Enviar Planejamento HE</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
-            font-family: Arial, sans-serif;
-            padding: 30px;
-            background-color: #f9f9f9;
+            background-color: #f8f9fa;
         }
 
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .card {
+            border-radius: 12px;
         }
 
-        .form-group label {
-            font-weight: bold;
-        }
-
-        .btn-roxo {
+        .btn-primary {
             background-color: #6a1b9a;
-            color: white;
+            border: none;
         }
 
-        .btn-roxo:hover {
+        .btn-primary:hover {
             background-color: #4a148c;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 38px;
+            padding: 5px 8px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h3 class="text-center mb-4">Formulário de Planejamento de Horas Extras</h3>
-        <form id="formPlanejamento" method="POST" action="/planejamento-he/enviar">
-            <div class="form-group">
-                <label for="gerente">Gerente:</label>
-                <select id="gerente" name="gerente" class="form-control select2" required>
-                    <option value="">Selecione</option>
-                </select>
-            </div>
 
-            <div class="form-group">
-                <label for="mes">Mês:</label>
-                <select id="mes" name="mes" class="form-control" required>
-                    <option value="Janeiro">Janeiro</option>
-                    <option value="Fevereiro">Fevereiro</option>
-                    <option value="Março">Março</option>
-                    <option value="Abril">Abril</option>
-                    <option value="Maio">Maio</option>
-                    <option value="Junho">Junho</option>
-                    <option value="Julho">Julho</option>
-                    <option value="Agosto">Agosto</option>
-                    <option value="Setembro">Setembro</option>
-                    <option value="Outubro">Outubro</option>
-                    <option value="Novembro">Novembro</option>
-                    <option value="Dezembro">Dezembro</option>
-                </select>
-            </div>
+    <div class="container mt-5 pt-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="text-center mb-4">
+                    <i class="fa-solid fa-paper-plane text-primary"></i>
+                    Enviar Planejamento de Horas Extras
+                </h3>
 
-            <div class="form-group">
-                <label for="valorSimulacao">Valor Simulação:</label>
-                <input type="text" id="valorSimulacao" name="valorSimulacao" class="form-control" readonly />
-            </div>
+                <!-- Seleção fixa -->
+                <div class="form-row mb-3">
+                    <div class="col-md-6">
+                        <label for="gerente">Gerente</label>
+                        <select id="gerente" class="form-control" required>
+                            <option value="">Selecione</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mes">Mês</label>
+                        <select id="mes" class="form-control" required>
+                            <option value="Janeiro">Janeiro</option>
+                            <option value="Fevereiro">Fevereiro</option>
+                            <option value="Março">Março</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Maio">Maio</option>
+                            <option value="Junho">Junho</option>
+                            <option value="Julho">Julho</option>
+                            <option value="Agosto">Agosto</option>
+                            <option value="Setembro">Setembro</option>
+                            <option value="Outubro">Outubro</option>
+                            <option value="Novembro">Novembro</option>
+                            <option value="Dezembro">Dezembro</option>
+                        </select>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="colaborador">Colaborador:</label>
-                <select id="colaborador" name="colaborador" class="form-control select2" required>
-                    <option value="">Selecione</option>
-                </select>
-            </div>
+                <!-- Tabela dinâmica -->
+                <table class="table table-bordered" id="tabelaColaboradores">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Colaborador</th>
+                            <th>Matrícula</th>
+                            <th>Cargo</th>
+                            <th>Tipo HE</th>
+                            <th>Horas</th>
+                            <th>Justificativa</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
 
-            <div class="form-group">
-                <label for="cargo">Cargo:</label>
-                <input type="text" id="cargo" name="cargo" class="form-control" readonly />
-            </div>
+                <button type="button" id="addLinha" class="btn btn-secondary mb-3">
+                    + Adicionar Colaborador
+                </button>
 
-            <div class="form-group">
-                <label for="horas">Volume de Horas:</label>
-                <input type="number" id="horas" name="horas" class="form-control" min="0" required />
+                <div class="text-center">
+                    <button type="button" id="btnEnviar" class="btn btn-primary px-4">Enviar</button>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="justificativa">Justificativa:</label>
-                <select id="justificativa" name="justificativa" class="form-control" required>
-                    <option value="">Selecione</option>
-                    <option value="Atendimento fora do horário">Atendimento fora do horário</option>
-                    <option value="Demanda emergencial">Demanda emergencial</option>
-                    <option value="Cobertura de ausência">Cobertura de ausência</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="tipoHE">Tipo HE:</label>
-                <select id="tipoHE" name="tipoHE" class="form-control" required>
-                    <option value="50%">50%</option>
-                    <option value="100%">100%</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="aprovacao">Aprovação:</label>
-                <input type="text" id="aprovacao" name="aprovacao" class="form-control" value="PENDENTE APROVAÇÃO"
-                    readonly />
-            </div>
-
-            <div class="form-group">
-                <label for="enviadoPor">Enviado por:</label>
-                <input type="text" id="enviadoPor" name="enviadoPor" class="form-control" readonly />
-            </div>
-
-            <div class="text-center">
-                <button type="submit" class="btn btn-roxo">ENVIAR</button>
-                <button type="reset" class="btn btn-secondary ml-2">LIMPAR</button>
-            </div>
-        </form>
+        </div>
     </div>
 
-    <script>
-        fetch('/home/usuario')
-            .then(res => res.json())
-            .then(data => {
-                const nomeUsuario = data.email;
-                const perfilUsuario = data.perfil;
-                const acessos = data.acessos;
 
-                document.getElementById('enviadoPor').value = nomeUsuario
-                console.log(nomeUsuario)
-            });
-    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Selecionar o mês atual
-            const selectMes = document.getElementById('mes');
-            const mesAtual = new Date().getMonth();
-            selectMes.selectedIndex = mesAtual;
+        // Preencher mês atual
+        const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        document.getElementById('mes').value = meses[new Date().getMonth()];
 
-            const gerenteSelect = document.getElementById('gerente');
-            const colaboradorSelect = document.getElementById('colaborador');
-            const cargoInput = document.getElementById('cargo');
-
-            //entes(sem Select2)
-            fetch('/planejamento-he/api/gerentes')
-                .then(response => response.json())
-                .then(data => {
-                    const gerentesOrdenados = data.gerentes.sort();
-                    gerentesOrdenados.forEach(nome => {
-                        const option = document.createElement('option');
-                        option.value = nome;
-                        option.textContent = nome;
-                        gerenteSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar gerentes:', error);
+        // Buscar gerentes
+        fetch('/planejamento-he/api/gerentes')
+            .then(res => res.json())
+            .then(data => {
+                const select = document.getElementById('gerente');
+                data.gerentes.forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g;
+                    opt.textContent = g;
+                    select.appendChild(opt);
                 });
-
-            // Carregar colaboradores com Select2
-            gerenteSelect.addEventListener('change', function () {
-                const gerenteSelecionado = gerenteSelect.value;
-                colaboradorSelect.innerHTML = '<option value="">Selecione</option>';
-                cargoInput.value = '';
-
-                if (gerenteSelecionado) {
-                    fetch(`/planejamento-he/api/colaboradores?gerente=${encodeURIComponent(gerenteSelecionado)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            data.colaboradores.forEach(nome => {
-                                const option = document.createElement('option');
-                                option.value = nome;
-                                option.textContent = nome;
-                                colaboradorSelect.appendChild(option);
-                            });
-
-                            // Inicializa Select2 no campo de colaborador
-                            $(colaboradorSelect).select2({
-                                placeholder: "Selecione um colaborador",
-                                allowClear: true
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Erro ao carregar colaboradores:', error);
-                        });
-                }
             });
 
+        // Função para adicionar uma nova linha na tabela de colaboradores
+        function addLinhaTabela() {
+            // Seleciona o corpo da tabela onde a nova linha será inserida
+            const tbody = document.querySelector("#tabelaColaboradores tbody");
+            // Cria um novo elemento <tr> (linha da tabela)
+            const tr = document.createElement("tr");
 
-            $(document.getElementById('colaborador')).on('select2:select', function (e) {
-                const nomeSelecionado = e.params.data.id;
+            // Define o conteúdo HTML da linha, com campos para colaborador, matrícula, cargo, tipo de HE, horas, justificativa e botão de remover
+            tr.innerHTML = `
+          <td><select class="form-control colaborador">
+            <option value="">Selecione</option></select></td>
+          <td><input type="text" class="form-control matricula" readonly></td>
+          <td><input type="text" class="form-control cargo" readonly></td>
+          <td>
+            <select class="form-control tipoHE">
+              <option value="50%">50%</option>
+              <option value="100%">100%</option>
+            </select>
+          </td>
+          <td><input type="number" class="form-control horas" min="1" step="0.5"></td>
+          <td>
+            <select class="form-control justificativa">
+              <option value="">Selecione</option>
+              <option value="Atendimento fora do horário">Atendimento fora do horário</option>
+              <option value="Demanda emergencial">Demanda emergencial</option>
+              <option value="Cobertura de ausência">Cobertura de ausência</option>
+            </select>
+          </td>
+          <td><button type="button" class="btn btn-danger btn-sm remover">X</button></td>
+        `;
+            // Adiciona a nova linha ao corpo da tabela
+            tbody.appendChild(tr);
 
-                console.log("Colaborador selecionado via Select2:", nomeSelecionado);
-
-                if (nomeSelecionado) {
-                    fetch(`/planejamento-he/api/cargo?nome=${encodeURIComponent(nomeSelecionado)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log("Cargo recebido:", data);
-                            document.getElementById('cargo').value = data.cargo || '';
-                        })
-                        .catch(error => {
-                            console.error('Erro ao buscar cargo:', error);
-                            document.getElementById('cargo').value = '';
+            //Se houver um gerente selecionado, busca os colaboradores associados a ele
+            const gerente = document.getElementById("gerente").value;
+            if (gerente) {
+                fetch(`/planejamento-he/api/colaboradores?gerente=${encodeURIComponent(gerente)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        // Seleciona o campo <select> de colaborador dentro da nova linha
+                        const selectColab = tr.querySelector(".colaborador");
+                        // Limpa e insere a opção padrão "Selecione"
+                        selectColab.innerHTML = '<option value="">Selecione</option>';
+                        // Preenche o <select> com os nomes dos colaboradores retornados pela API
+                        data.colaboradores.forEach(c => {
+                            const opt = document.createElement("option");
+                            opt.value = c;
+                            opt.textContent = c;
+                            selectColab.appendChild(opt);
                         });
-                } else {
-                    document.getElementById('cargo').value = '';
-                }
+
+                        // Ativa o plugin Select2 no campo de colaborador para melhorar a usabilidade
+                        $(selectColab).select2({ allowClear: true, width: '100%', placeholder: "Buscar colaborador" });
+
+                        // Adiciona o evento de seleção do Select2
+                        // Quando um colaborador é selecionado, busca seu cargo e matrícula
+                        $(selectColab).on("select2:select", function (e) {
+                            const nome = e.params.data.id;
+                            fetch(`/planejamento-he/api/cargo?nome=${encodeURIComponent(nome)}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    // Preenche os campos de cargo e matrícula com os dados retornados
+                                    tr.querySelector(".cargo").value = data.cargo || "";
+                                    tr.querySelector(".matricula").value = data.matricula || "";
+                                });
+                        });
+
+                    });
+            }
+            // Adiciona funcionalidade ao botão "X" para remover a linha da tabela
+            tr.querySelector(".remover").addEventListener("click", () => tr.remove());
+        }
+
+        // Botão para adicionar nova linha
+        document.getElementById("addLinha").addEventListener("click", addLinhaTabela);
+
+        // Enviar dados
+        document.getElementById("btnEnviar").addEventListener("click", () => {
+            const gerente = document.getElementById("gerente").value;
+            const mes = document.getElementById("mes").value;
+
+            const dados = [];
+            document.querySelectorAll("#tabelaColaboradores tbody tr").forEach(tr => {
+                dados.push({
+                    gerente,
+                    mes,
+                    colaborador: tr.querySelector(".colaborador").value,
+                    matricula: tr.querySelector(".matricula").value,
+                    cargo: tr.querySelector(".cargo").value,
+                    tipoHE: tr.querySelector(".tipoHE").value,
+                    horas: tr.querySelector(".horas").value,
+                    justificativa: tr.querySelector(".justificativa").value
+                });
             });
 
+            fetch("/planejamento-he/enviar-multiplo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dados)
+            })
+                .then(res => res.json())
+                .then(resp => {
+                    alert(resp.mensagem);
+                    if (resp.sucesso) window.location.href = "/planejamento-he/envios";
+                });
         });
     </script>
 
-</body>
 
 </html>

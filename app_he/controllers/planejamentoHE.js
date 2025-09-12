@@ -1,12 +1,33 @@
 const path = require("path");
+const db = require("../../db/db");
+const { error } = require("console");
 
+//Tela envio de HE
 exports.telaEnvio = (req, res) => {
     res.sendFile(path.join(__dirname, "../views/enviar.html"));
 };
 
-exports.enviarSolicitacao = (req, res) => {
+//Enviar solicitação de HE
+exports.enviarSolicitacao = async (req, res) => {
     // Lógica para salvar a solicitação
-    res.json({ sucesso: true, mensagem: "Solicitação enviada com sucesso!" });
+    try {
+        const { gerente, colaborador, cargo, matricula, mes, horas, justificativa, tipoHE } = req.body;
+        const enviadoPor = req.session.usuario?.email || 'desconhecido';
+
+        if (!gerente || !colaborador || !cargo || !matricula || !mes || !horas || !justificativa || !tipoHE) {
+            return res.status(400).json({ sucesso: false, mensagem: "Preencha todos os campos obrigatórios!" });
+        }
+        const [result] = await db.mysqlPool.query(
+            `INSERT INTO PLANEJAMENTO_HE
+            (GERENTE, COLABORADOR, CARGO, MATRICULA, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?,'PENDENTE',?)`,
+            [gerente, colaborador, cargo, matricula, mes, horas, justificativa, tipoHE, enviadoPor]
+        );
+        res.json({ sucesso: true, mensagem: "Solicitação enviada com sucesso!", id: result.insertId });
+    } catch (erro) {
+        console.error("Erro ao enviar solicitação: ", error);
+        res.status(500).json({ sucesso: false, mensagem: "Erro interno ao enviar solicitação." });
+    }
 };
 
 exports.listarEnvios = (req, res) => {
