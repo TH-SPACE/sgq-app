@@ -49,20 +49,7 @@ app.use((req, res, next) => {
 });
 
 
-// 🔐 Middlewares de autenticação
-function verificaLogin(req, res, next) {
-  if (!req.session.usuario) {
-    return res.redirect("/");
-  }
-  next();
-}
-
-function verificaADM(req, res, next) {
-  if (!req.session.usuario || req.session.usuario.perfil !== "ADM") {
-    return res.sendFile(path.join(__dirname, "views", "acesso_negado.html"));
-  }
-  next();
-}
+const { verificaLogin, verificaADM } = require("./middlewares/autenticacao");
 
 // 🧭 Rotas públicas
 app.get("/", (req, res) => {
@@ -77,6 +64,7 @@ app.get("/painel_reparos", (req, res) => {
 app.use("/auth", require("./routes/auth"));
 app.use("/home", verificaLogin, require("./routes/protected"));
 app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
+app.use("/planejamento-he", verificaLogin, require("./app_he/routes/planejamentoHE"));
 
 // Rota para buscar a tabela
 app.get('/buscar-tabela', batimentoB2B.buscarTabela);

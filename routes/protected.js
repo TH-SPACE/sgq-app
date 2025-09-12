@@ -41,7 +41,7 @@ router.get("/usuario", (req, res) => {
 });
 
 // ✅ Rota protegida para vida_b2b.html
-router.get("/sigitm", (req, res) => {
+router.get("/sigitm", verificaAcesso('vidaSigitm'), (req, res) => {
   res.sendFile(path.join(__dirname, "../views/vida_b2b.html"));
 });
 // ✅ Usando o controlador sigitm

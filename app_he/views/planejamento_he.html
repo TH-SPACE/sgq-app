@@ -1,21 +1,49 @@
-<!doctype html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>ThanOS - Conjunto de ferramentas e soluções</title>
-    <link rel="icon" type="image/png" href="/img/MANOPLA.gif">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>PLANEJAMENTO HE - CW</title>
+    <link rel="icon" type="image/png" href="/img/MANOPLA.gif" />
 
     <!-- Bootstrap CSS -->
-    <link rel=" stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <link rel="stylesheet" href="/css/menu.css">
+    <link rel="stylesheet" href="/css/menu.css" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .btn {
+            display: block;
+            margin: 15px auto;
+            padding: 15px 30px;
+            background-color: #6a1b9a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 300px;
+        }
+
+        .btn:hover {
+            background-color: #4a148c;
+        }
+
+        .logo {
+            margin-top: 50px;
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
 </head>
 
 <body>
@@ -109,26 +137,15 @@
         </div>
     </nav>
 
-    <!-- Alerta -->
-    <div class="container-fluid mt-1">
-        <div class="alert alert-primary font-weight-bold" role="alert">
-            Bem-vindo(a)!
-            <span id="nomeUsuario1">Usuário</span>
-            <h4 id="acesso"></h4>
-        </div>
-    </div>
 
-    <!-- Banner de apresentação -->
-    <div class="container-fluid mb-4">
-        <div class="media bg-info text-white p-3 rounded shadow-sm">
-            <img class="mr-3" src="/img/th.jpg" alt="Ícone Métricas" style="width: 60px;">
-            <div class="media-body">
-                <h5 class="mt-0">Sitema online.</h5>
-                Selecione as opções no Menu acima.
-            </div>
-        </div>
-    </div>
+    <h1 class="container-fluid mt-5 pt-5">PLANEJAMENTO HE - CW</h1>
 
+    <button class="btn" onclick="location.href='/planejamento-he/enviar'">ENVIAR PLANEJAMENTO</button>
+    <button class="btn" onclick="location.href='/planejamento-he/envios'">ENVIOS</button>
+    <button class="btn" onclick="location.href='/planejamento-he/dash'">DASH</button>
+    <button class="btn" onclick="location.href='/planejamento-he/aprovacao'">FILA DE APROVAÇÃO</button>
+
+    <div class="logo">Qualidade - CW</div>
     <!-- JS Usuário -->
     <script>
         fetch('/home/usuario')
@@ -140,7 +157,7 @@
 
                 document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
 
-                document.getElementById('nomeUsuario1').innerText = nomeUsuario.split(' ')[0]
+
 
                 if (perfilUsuario === 'ADM') {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
