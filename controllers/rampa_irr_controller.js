@@ -64,30 +64,62 @@ function processRawData(data) {
         const rampa_irr = [];
         const irr_acumulado_percent = [];
 
+        const today = new Date();
+        const currentMonthStr = today.toLocaleDateString('pt-BR', { year: '2-digit', month: 'short' }).replace('. de','');
+
         sortedMonths.forEach(month => {
             const monthData = locationData.filter(d => d._month === month);
-
-            // --- LÓGICA DE CÁLCULO ---
-            
-            // 1. REPAROS: Contando valores não vazios em 'R30 TRATATIVAS'
-            const reparosCount = monthData.filter(d => d['R30 TRATATIVAS'] != null && d['R30 TRATATIVAS'] !== '').length;
-            
-            // 2. IRR REAL: Contando ocorrências de "R30 Tratativas"
-            const irrRealValue = monthData.filter(d => d['R30 TRATATIVAS'] === 'R30 Tratativas').length;
-
-            // 3. RAMPA IRR: Meta fixa de 32%
             const rampaIrrValue = 32; // Meta de 32%
 
-            // 4. % IRR ACUMULADO: (IRR REAL / REPAROS) * 100
-            let irrAcumuladoValue = 0;
-            if (reparosCount > 0) {
-                irrAcumuladoValue = (irrRealValue / reparosCount) * 100;
-            }
+            // Verifica se o mês do loop é o mês atual para aplicar a lógica de projeção
+            if (month === currentMonthStr) {
+                // --- LÓGICA DE PROJEÇÃO PARA O MÊS ATUAL ---
+                const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+                const daysPassed = today.getDate();
+                const daysRemaining = daysInMonth - daysPassed > 0 ? daysInMonth - daysPassed : 0;
 
-            reparos.push(reparosCount);
-            irr_real.push(irrRealValue);
-            rampa_irr.push(rampaIrrValue + '%');
-            irr_acumulado_percent.push(irrAcumuladoValue.toFixed(2) + '%');
+                // Filtra dados do mês atual até o dia de hoje
+                const monthDataUntilToday = monthData.filter(d => new Date(d.ABERTURA).getDate() <= daysPassed);
+
+                // Calcula valores acumulados até hoje
+                const reparosUntilToday = monthDataUntilToday.filter(d => d['R30 TRATATIVAS'] != null && d['R30 TRATATIVAS'] !== '').length;
+                const irrRealUntilToday = monthDataUntilToday.filter(d => d['R30 TRATATIVAS'] === 'R30 Tratativas').length;
+
+                // Calcula médias diárias (evita divisão por zero se daysPassed for 0)
+                const avgDailyReparos = daysPassed > 0 ? reparosUntilToday / daysPassed : 0;
+                const avgDailyIrr = daysPassed > 0 ? irrRealUntilToday / daysPassed : 0;
+
+                // Projeta os totais para o final do mês
+                const projectedReparos = reparosUntilToday + (avgDailyReparos * daysRemaining);
+                const projectedIrr = irrRealUntilToday + (avgDailyIrr * daysRemaining);
+
+                // Calcula a porcentagem projetada
+                let projectedIrrPercent = 0;
+                if (projectedReparos > 0) {
+                    projectedIrrPercent = (projectedIrr / projectedReparos) * 100;
+                }
+                
+                // Adiciona os valores projetados aos arrays
+                reparos.push(Math.round(projectedReparos));
+                irr_real.push(Math.round(projectedIrr));
+                rampa_irr.push(rampaIrrValue + '%');
+                irr_acumulado_percent.push(projectedIrrPercent.toFixed(2) + '%');
+
+            } else {
+                // --- LÓGICA NORMAL PARA MESES PASSADOS ---
+                const reparosCount = monthData.filter(d => d['R30 TRATATIVAS'] != null && d['R30 TRATATIVAS'] !== '').length;
+                const irrRealValue = monthData.filter(d => d['R30 TRATATIVAS'] === 'R30 Tratativas').length;
+
+                let irrAcumuladoValue = 0;
+                if (reparosCount > 0) {
+                    irrAcumuladoValue = (irrRealValue / reparosCount) * 100;
+                }
+
+                reparos.push(reparosCount);
+                irr_real.push(irrRealValue);
+                rampa_irr.push(rampaIrrValue + '%');
+                irr_acumulado_percent.push(irrAcumuladoValue.toFixed(2) + '%');
+            }
         });
 
         return {
