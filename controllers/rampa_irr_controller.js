@@ -22,7 +22,16 @@ function processUpload(req, res) {
             if (!row.CLUSTER2 || !row.ABERTURA) return;
 
             const location = row.CLUSTER2.trim();
-            const date = new Date(row.ABERTURA).toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            let dateObj;
+            if (typeof row.ABERTURA === 'string' && row.ABERTURA.includes('-')) {
+                const parts = row.ABERTURA.split('-');
+                // Assumes dd-mm-yyyy
+                dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+            } else {
+                // Assumes it's a Date object or a format JS Date constructor can handle
+                dateObj = new Date(row.ABERTURA);
+            }
+            const date = dateObj.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
             locations.add(location);
             dates.add(date);
