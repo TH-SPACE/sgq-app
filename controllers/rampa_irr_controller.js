@@ -61,41 +61,16 @@ function processDailyData(data) {
     for (const [name, locationData] of locationsMap.entries()) {
         let cumulativeReparos = 0;
         let cumulativeIrrReal = 0;
-        let fixedFutureRampaTarget = 0;
-        let rampaTotal = 0;
 
         const dailyReparos = [];
         const dailyIrrReal = [];
-        const dailyRampaIrr = [];
         const dailyIrrAcumulado = [];
 
         for (let i = 1; i <= daysInMonth; i++) {
-            const dayData = locationData.filter(d => new Date(d.ABERTURA).getDate() === i);
-            const reparosDoDia = dayData.filter(d => d['R30 TRATATIVAS'] != null && d['R30 TRATATIVAS'] !== '').length;
-            const irrRealDoDia = dayData.filter(d => d['R30 TRATATIVAS'] === 'R30 Tratativas').length;
-
             if (i <= lastDayWithData) {
-                const daysPassed = i;
-                const daysRemaining = daysInMonth - i;
-                const reparosAteEsteDia = cumulativeReparos + reparosDoDia;
-                const avgDailyReparos = daysPassed > 0 ? reparosAteEsteDia / daysPassed : 0;
-                const projectedTotalReparos = reparosAteEsteDia + (avgDailyReparos * daysRemaining);
-                const maxTotalIrrReal = projectedTotalReparos * 0.32;
-                const remainingIrrBudget = maxTotalIrrReal - cumulativeIrrReal;
-                const daysToDistribute = daysInMonth - (daysPassed - 1);
-                
-                let dailyRampaTarget = 0;
-                if (remainingIrrBudget > 0 && daysToDistribute > 0) {
-                    dailyRampaTarget = Math.floor(remainingIrrBudget / daysToDistribute);
-                }
-                dailyRampaTarget = dailyRampaTarget < 0 ? 0 : dailyRampaTarget;
-                dailyRampaIrr.push(dailyRampaTarget);
-
-                if (i === lastDayWithData) {
-                    fixedFutureRampaTarget = dailyRampaTarget;
-                    const finalRemainingBudget = maxTotalIrrReal - (cumulativeIrrReal + irrRealDoDia);
-                    rampaTotal = Math.floor(finalRemainingBudget < 0 ? 0 : finalRemainingBudget);
-                }
+                const dayData = locationData.filter(d => new Date(d.ABERTURA).getDate() === i);
+                const reparosDoDia = dayData.filter(d => d['R30 TRATATIVAS'] != null && d['R30 TRATATIVAS'] !== '').length;
+                const irrRealDoDia = dayData.filter(d => d['R30 TRATATIVAS'] === 'R30 Tratativas').length;
 
                 dailyReparos.push(reparosDoDia);
                 dailyIrrReal.push(irrRealDoDia);
@@ -110,7 +85,6 @@ function processDailyData(data) {
                 dailyIrrAcumulado.push(irrAcumuladoPercent.toFixed(1) + '%');
 
             } else {
-                dailyRampaIrr.push(fixedFutureRampaTarget);
                 dailyReparos.push('-');
                 dailyIrrReal.push('-');
                 dailyIrrAcumulado.push('-');
@@ -124,13 +98,11 @@ function processDailyData(data) {
             metrics: {
                 'REPAROS': dailyReparos,
                 'IRR REAL': dailyIrrReal,
-                'RAMPA IRR': dailyRampaIrr,
                 '% IRR ACUMULADO': dailyIrrAcumulado,
             },
             totals: {
                 'REPAROS': cumulativeReparos,
                 'IRR REAL': cumulativeIrrReal,
-                'RAMPA IRR': rampaTotal,
                 '% IRR ACUMULADO': totalIrrAcumulado,
             }
         });
