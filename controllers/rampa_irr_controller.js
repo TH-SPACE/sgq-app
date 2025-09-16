@@ -30,6 +30,15 @@ function processDailyData(data) {
         return date.getFullYear() === currentYear && date.getMonth() === currentMonth;
     });
 
+    // Encontrar o último dia com dados no arquivo
+    let lastDayWithData = 0;
+    currentMonthData.forEach(row => {
+        const day = new Date(row.ABERTURA).getDate();
+        if (day > lastDayWithData) {
+            lastDayWithData = day;
+        }
+    });
+
     // 2. Gerar cabeçalhos dos dias do mês
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const dayHeaders = [];
@@ -70,18 +79,24 @@ function processDailyData(data) {
             const reparosDoDia = dayData.filter(d => d['R30 TRATATIVAS'] != null && d['R30 TRATATIVAS'] !== '').length;
             const irrRealDoDia = dayData.filter(d => d['R30 TRATATIVAS'] === 'R30 Tratativas').length;
 
-            cumulativeReparos += reparosDoDia;
-            cumulativeIrrReal += irrRealDoDia;
-
             dailyReparos.push(reparosDoDia);
             dailyIrrReal.push(irrRealDoDia);
             dailyRampaIrr.push('32%'); // Meta fixa
 
-            let irrAcumuladoPercent = 0;
-            if (cumulativeReparos > 0) {
-                irrAcumuladoPercent = (cumulativeIrrReal / cumulativeReparos) * 100;
+            // A lógica de acumulado só é aplicada até o último dia com dados
+            if (i <= lastDayWithData) {
+                cumulativeReparos += reparosDoDia;
+                cumulativeIrrReal += irrRealDoDia;
+                
+                let irrAcumuladoPercent = 0;
+                if (cumulativeReparos > 0) {
+                    irrAcumuladoPercent = (cumulativeIrrReal / cumulativeReparos) * 100;
+                }
+                dailyIrrAcumulado.push(irrAcumuladoPercent.toFixed(1) + '%');
+            } else {
+                // Para dias futuros, não mostra o acumulado
+                dailyIrrAcumulado.push('-');
             }
-            dailyIrrAcumulado.push(irrAcumuladoPercent.toFixed(1) + '%');
         }
 
         const totalIrrAcumulado = (cumulativeReparos > 0) ? ((cumulativeIrrReal / cumulativeReparos) * 100).toFixed(1) + '%' : '0.0%';
