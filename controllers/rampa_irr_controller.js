@@ -93,7 +93,8 @@ function processDailyData(data) {
 
                 if (i === lastDayWithData) {
                     fixedFutureRampaTarget = dailyRampaTarget;
-                    rampaTotal = Math.floor(remainingIrrBudget < 0 ? 0 : remainingIrrBudget);
+                    const finalRemainingBudget = maxTotalIrrReal - (cumulativeIrrReal + irrRealDoDia);
+                    rampaTotal = Math.floor(finalRemainingBudget < 0 ? 0 : finalRemainingBudget);
                 }
 
                 dailyReparos.push(reparosDoDia);
