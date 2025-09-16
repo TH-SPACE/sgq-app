@@ -18,6 +18,9 @@ app.set("trust proxy", true);
 app.use(express.static(path.join(__dirname, "public")));
 // Serve a pasta json como um diretório estático
 app.use('/json', express.static(path.join(__dirname, 'app_he', 'json')));
+//serve a pasta public dentro de app_he
+app.use('/public', express.static(path.join(__dirname, 'app_he', 'public')));
+
 
 // 📦 Middlewares globais
 app.use(bodyParser.urlencoded({ extended: false }));
