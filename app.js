@@ -5,14 +5,20 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const dotenv = require("dotenv");
 const { version } = require("./package.json");
+const multer = require("multer"); // Adicionado
 
 const batimentoB2B = require('./controllers/batimento_b2b');
+const rampaIrrController = require('./controllers/rampa_irr_controller'); // Adicionado
 
 // ⚙️ Inicializações
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.set("trust proxy", true);
+
+// Configuração do Multer
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // 📁 Arquivos estáticos públicos
 app.use(express.static(path.join(__dirname, "public")));
@@ -64,6 +70,14 @@ app.get("/", (req, res) => {
 app.get("/painel_reparos", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "painel_reparos.html"));
 });
+
+// --- Novas Rotas Rampa IRR ---
+app.get("/rampa-irr", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "rampa_irr.html"));
+});
+
+app.post("/rampa-irr/upload", upload.single('excelFile'), rampaIrrController.processUpload);
+// --- Fim das Novas Rotas ---
 
 // 🧭 Rotas protegidas
 app.use("/auth", require("./routes/auth"));
