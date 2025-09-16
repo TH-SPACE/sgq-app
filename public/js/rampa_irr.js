@@ -51,8 +51,14 @@ function renderDashboard(data) {
     // Corpo da Tabela
     table += '<tbody>';
     for (const location of data.locations) {
-        table += `<tr><td rowspan="5"><strong>${location.name}</strong></td></tr>`;
-        table += createRow('REPAROS', location.reparos);
+        // Linha 1: REPAROS (com o nome da localidade)
+        table += '<tr>';
+        table += `<td rowspan="4" style="vertical-align: middle;"><strong>${location.name}</strong></td>`;
+        table += '<td>REPAROS</td>';
+        location.reparos.forEach(val => { table += `<td>${val}</td>`; });
+        table += '</tr>';
+
+        // Linhas seguintes (sem o nome da localidade)
         table += createRow('IRR REAL', location.irr_real);
         table += createRow('RAMPA IRR', location.rampa_irr);
         table += createRow('% IRR ACUMULADO', location.irr_acumulado_percent);
