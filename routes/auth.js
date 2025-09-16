@@ -51,8 +51,7 @@ router.post("/login", async (req, res) => {
           if (!auth) return reject(new Error("Usuário ou senha inválidos."));
           resolve(auth);
         });
-      });
-
+      }); 
       // 3. Verificar/atualizar usuário no banco
       const [rows] = await db.mysqlPool.query(
         "SELECT * FROM users_thanos WHERE email = ?",

@@ -1,0 +1,32 @@
+export default class ActiveDiretoryController {
+    public async index({ response }) {
+        const ActiveDirectory = require("activedirectory")
+        var config = {
+            url: 'ldap://redecorp.br',
+            baseDN: 'dc=redecorp,dc=com'
+        }
+        var ad = new ActiveDirectory(config);
+ 
+ 
+        var username = 'redecorp\\g0047861';
+        var password = '';
+ 
+        ad.authenticate(username, password, function (err, auth) {
+            if (err) {
+                console.log('ERROR: ' + JSON.stringify(err));
+                return;
+            }
+ 
+            if (auth) {
+                console.log('Authenticated!');
+            }
+            else {
+                console.log('Authentication failed!');
+            }
+        });
+ 
+ 
+        return response.send('kdjsj')
+    }
+}
+ 

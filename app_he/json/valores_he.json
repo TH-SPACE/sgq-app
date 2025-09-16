@@ -1,0 +1,158 @@
+{
+    "ANALISTA CONSTRUCAO REDES PL": {
+        "50%": 57.52,
+        "100%": 67.86
+    },
+    "ANALISTA SERVICO CLIENTE JR": {
+        "50%": 44.52,
+        "100%": 52.53
+    },
+    "ANALISTA SERVICO CLIENTE PL": {
+        "50%": 60.97,
+        "100%": 71.94
+    },
+    "ANALISTA SERVICO CLIENTE SR": {
+        "50%": 71.08,
+        "100%": 83.86
+    },
+    "ANALISTA SUPORTE OPERACAO JR": {
+        "50%": 30.04,
+        "100%": 35.45
+    },
+    "ASSISTENTE ADMINISTRATIVO": {
+        "50%": 24.23,
+        "100%": 28.59
+    },
+    "ASSISTENTE TECNICO": {
+        "50%": 19.92,
+        "100%": 23.50
+    },
+    "ATENDENTE CONTROLE TECNICO": {
+        "50%": 18.45,
+        "100%": 21.77
+    },
+    "AUXILIAR LA": {
+        "50%": 14.40,
+        "100%": 16.99
+    },
+    "CONSULTOR CONSTRUCAO REDES": {
+        "50%": 92.78,
+        "100%": 109.47
+    },
+    "COORDENADOR CONSTRUCAO REDES": {
+        "50%": 90.37,
+        "100%": 106.62
+    },
+    "COORDENADOR CONTROLE AGENDAMENTO": {
+        "50%": 103.08,
+        "100%": 121.63
+    },
+    "COORDENADOR SERVICO AO CLIENTE": {
+        "50%": 97.67,
+        "100%": 115.24
+    },
+    "ENGENHEIRO TELECOM PL": {
+        "50%": 103.13,
+        "100%": 121.69
+    },
+    "ENGENHEIRO TELECOM SR": {
+        "50%": 140.80,
+        "100%": 166.13
+    },
+    "Instalador AT": {
+        "50%": 14.41,
+        "100%": 17.01
+    },
+    "INSTALADOR LA": {
+        "50%": 14.57,
+        "100%": 17.19
+    },
+    "INSTALADOR LA PL": {
+        "50%": 15.66,
+        "100%": 18.47
+    },
+    "TECNICO SERVICO AO CLIENTE": {
+        "50%": 18.37,
+        "100%": 21.68
+    },
+    "SUPERVISOR AGENDAMENTO": {
+        "50%": 31.07,
+        "100%": 36.66
+    },
+    "SUPERVISOR BACK OFFICE": {
+        "50%": 31.27,
+        "100%": 36.89
+    },
+    "SUPERVISOR CONTROLE AGENDAMENTO": {
+        "50%": 26.05,
+        "100%": 30.74
+    },
+    "ANALISTA TÉCNICO SERVIÇO AO CLIENTE": {
+        "50%": 56.05,
+        "100%": 66.14
+    },
+    "SUPERVISOR SERVICOS AO CLIENTE": {
+        "50%": 32.72,
+        "100%": 38.61
+    },
+    "SUPERVISOR TELECOM": {
+        "50%": 70.95,
+        "100%": 83.71
+    },
+    "TECNICO ADSL": {
+        "50%": 20.37,
+        "100%": 24.04
+    },
+    "TECNICO CONSTRUCAO REDES JR": {
+        "50%": 23.18,
+        "100%": 27.35
+    },
+    "TECNICO CONSTRUCAO REDES SR": {
+        "50%": 58.20,
+        "100%": 68.67
+    },
+    "TECNICO SERVICOS B2B": {
+        "50%": 56.41,
+        "100%": 66.55
+    },
+    "TECNICO TELECOM CORPORATIVO JR": {
+        "50%": 25.99,
+        "100%": 30.67
+    },
+    "TECNICO TELECOM CORPORATIVO PL": {
+        "50%": 32.27,
+        "100%": 38.07
+    },
+    "TECNICO TELECOM CORPORATIVO SR": {
+        "50%": 40.58,
+        "100%": 47.88
+    },
+    "TECNICO TELECOM I": {
+        "50%": 27.41,
+        "100%": 32.34
+    },
+    "TECNICO TELECOM II": {
+        "50%": 30.31,
+        "100%": 35.76
+    },
+    "TECNICO TELECOM III": {
+        "50%": 54.27,
+        "100%": 64.03
+    },
+    "TECNICO TELECOM JR": {
+        "50%": 22.66,
+        "100%": 26.74
+    },
+    "TECNICO TELECOM PL": {
+        "50%": 40.32,
+        "100%": 47.57
+    },
+    "TECNICO TELECOM SR": {
+        "50%": 87.79,
+        "100%": 103.59
+    },
+    "FISCAL QUALIDADE DE REDE": {
+        "50%": 32.72,
+        "100%": 38.61
+    }
+}

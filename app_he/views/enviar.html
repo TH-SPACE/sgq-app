@@ -43,29 +43,31 @@
                 </h3>
 
                 <!-- Seleção fixa -->
-                <div class="form-row mb-4">
-                    <div class="col-md-6">
-                        <label for="gerente">Gerente</label>
-                        <select id="gerente" class="form-control" required>
-                            <option value="">Selecione</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="mes">Mês</label>
-                        <select id="mes" class="form-control" required>
-                            <option value="Janeiro">Janeiro</option>
-                            <option value="Fevereiro">Fevereiro</option>
-                            <option value="Março">Março</option>
-                            <option value="Abril">Abril</option>
-                            <option value="Maio">Maio</option>
-                            <option value="Junho">Junho</option>
-                            <option value="Julho">Julho</option>
-                            <option value="Agosto">Agosto</option>
-                            <option value="Setembro">Setembro</option>
-                            <option value="Outubro">Outubro</option>
-                            <option value="Novembro">Novembro</option>
-                            <option value="Dezembro">Dezembro</option>
-                        </select>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-row mb-4">
+                            <div class="col-md-6"> <label for="gerente">Gerente</label>
+                                <select id="gerente" class="form-control" required>
+                                    <option value="">Selecione</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6"> <label for="mes">Mês</label>
+                                <select id="mes" class="form-control" required>
+                                    <option value="Janeiro">Janeiro</option>
+                                    <option value="Fevereiro">Fevereiro</option>
+                                    <option value="Março">Março</option>
+                                    <option value="Abril">Abril</option>
+                                    <option value="Maio">Maio</option>
+                                    <option value="Junho">Junho</option>
+                                    <option value="Julho">Julho</option>
+                                    <option value="Agosto">Agosto</option>
+                                    <option value="Setembro">Setembro</option>
+                                    <option value="Outubro">Outubro</option>
+                                    <option value="Novembro">Novembro</option>
+                                    <option value="Dezembro">Dezembro</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -75,6 +77,12 @@
                 <button type="button" id="addLinha" class="btn btn-secondary mb-3">
                     + Adicionar Colaborador
                 </button>
+
+                <div class="text-right mb-3">
+                    <h4 class="font-weight-bold">
+                        Custo Total Estimado: <span id="valorTotalHoras">R$ 0,00</span>
+                    </h4>
+                </div>
 
                 <div class="text-center">
                     <button type="button" id="btnEnviar" class="btn btn-primary px-4">Enviar</button>
@@ -87,23 +95,56 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        // Preencher mês atual
-        const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        document.getElementById('mes').value = meses[new Date().getMonth()];
+        let valoresPorCargo = {};
+        //Função para calcular e exibir o custo total estimado
+        function calcularCustoTotal() {
+            let custoTotal = 0;
+            const linhas = document.querySelectorAll("#linhasColaboradores .form-row");
 
-        // Buscar gerentes
-        fetch('/planejamento-he/api/gerentes')
-            .then(res => res.json())
-            .then(data => {
-                const select = document.getElementById('gerente');
-                data.gerentes.forEach(g => {
-                    const opt = document.createElement('option');
-                    opt.value = g;
-                    opt.textContent = g;
-                    select.appendChild(opt);
-                });
+            linhas.forEach(row => {
+                const cargo = row.querySelector(".cargo").value;
+                const tipoHE = row.querySelector(".tipoHE").value;
+                const horas = parseFloat(row.querySelector(".horas").value) || 0;
+
+                // Verifica se os dados existem no JSON carregado
+                if (valoresPorCargo[cargo] && valoresPorCargo[cargo][tipoHE] && horas > 0) {
+                    const valorHora = valoresPorCargo[cargo][tipoHE];
+                    custoTotal += valorHora * horas;
+                }
             });
 
+            // Formata como moeda brasileira e exibe na tela
+            const spanValorTotal = document.getElementById("valorTotalHoras");
+            spanValorTotal.textContent = custoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+        // --- Início do seu código existente ---
+        $(document).ready(function () {
+            // Carrega os valores dos cargos do arquivo JSON assim que a página estiver pronta
+            fetch('/json/valores_he.json')
+                .then(response => response.json())
+                .then(data => {
+                    valoresPorCargo = data;
+                    console.log("Valores de HE por cargo carregados!", valoresPorCargo);
+                })
+                .catch(error => console.error('Erro ao carregar o arquivo de valores de HE:', error));
+
+            // Preencher mês atual
+            const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            document.getElementById('mes').value = meses[new Date().getMonth()];
+
+            // Buscar gerentes
+            fetch('/planejamento-he/api/gerentes')
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('gerente');
+                    data.gerentes.forEach(g => {
+                        const opt = document.createElement('option');
+                        opt.value = g;
+                        opt.textContent = g;
+                        select.appendChild(opt);
+                    });
+                });
+        });
         // Adicionar linha (Bootstrap grid)
         function addLinhaBootstrap() {
             const container = document.getElementById("linhasColaboradores");
@@ -178,10 +219,23 @@
             }
 
             // Botão remover
-            row.querySelector(".remover").addEventListener("click", () => row.remove());
+            row.querySelector(".remover").addEventListener("click", () => {
+                row.remove();
+                calcularCustoTotal(); // Recalcula ao remover
+            });
+
+            calcularCustoTotal();
         }
 
         document.getElementById("addLinha").addEventListener("click", addLinhaBootstrap);
+
+        // Adicione um listener de eventos ao container das linhas
+        // Isso garante que o cálculo seja refeito ao mudar horas ou tipo de HE
+        document.getElementById("linhasColaboradores").addEventListener('change', function (event) {
+            if (event.target.classList.contains('horas') || event.target.classList.contains('tipoHE')) {
+                calcularCustoTotal();
+            }
+        });
 
         // Enviar dados com validação
         document.getElementById("btnEnviar").addEventListener("click", () => {
