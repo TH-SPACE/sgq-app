@@ -80,45 +80,38 @@ function processDailyData(data) {
             const irrRealDoDia = dayData.filter(d => d['R30 TRATATIVAS'] === 'R30 Tratativas').length;
 
             // --- Início da Lógica RAMPA IRR (Passos 1-4) ---
-            
-            // Passo 1: Projeção de Reparos (recalculado a cada dia)
             const daysPassed = i;
             const daysRemaining = daysInMonth - i;
             const reparosAteEsteDia = cumulativeReparos + reparosDoDia;
             const avgDailyReparos = daysPassed > 0 ? reparosAteEsteDia / daysPassed : 0;
             const projectedTotalReparos = reparosAteEsteDia + (avgDailyReparos * daysRemaining);
-
-            // Passo 2: Meta de Reincidentes
             const maxTotalIrrReal = projectedTotalReparos * 0.32;
-
-            // Passo 3: Saldo de Reincidentes
-            // Usa o `cumulativeIrrReal` do dia anterior
             const remainingIrrBudget = maxTotalIrrReal - cumulativeIrrReal;
-            
-            // Passo 4: Meta Diária
             const daysToDistribute = daysInMonth - (daysPassed - 1);
+
             let dailyRampaTarget = 0;
             if (remainingIrrBudget > 0 && daysToDistribute > 0) {
                 dailyRampaTarget = Math.floor(remainingIrrBudget / daysToDistribute);
             }
             
-            if (i <= lastDayWithData) {
-                dailyRampaIrr.push(dailyRampaTarget < 0 ? 0 : dailyRampaTarget);
-            } else {
-                dailyRampaIrr.push('-');
-            }
+            // A Rampa IRR é projetada para o mês inteiro
+            dailyRampaIrr.push(dailyRampaTarget < 0 ? 0 : dailyRampaTarget);
             // --- Fim da Lógica RAMPA IRR ---
 
-
-            // Adiciona os valores do dia
-            dailyReparos.push(reparosDoDia);
-            dailyIrrReal.push(irrRealDoDia);
+            // Adiciona os valores do dia (somente até o último dia com dados)
+            if (i <= lastDayWithData) {
+                dailyReparos.push(reparosDoDia);
+                dailyIrrReal.push(irrRealDoDia);
+            } else {
+                dailyReparos.push('-');
+                dailyIrrReal.push('-');
+            }
             
             // Atualiza os acumulados para a próxima iteração
             cumulativeReparos += reparosDoDia;
             cumulativeIrrReal += irrRealDoDia;
 
-            // Calcula o % IRR ACUMULADO
+            // Calcula o % IRR ACUMULADO (somente até o último dia com dados)
             if (i <= lastDayWithData) {
                 let irrAcumuladoPercent = 0;
                 if (cumulativeReparos > 0) {
