@@ -1,4 +1,4 @@
-document.getElementById('upload-form').addEventListener('submit', async function(event) {
+document.getElementById('upload-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const fileInput = document.getElementById('excel-file');
@@ -53,8 +53,8 @@ function renderDashboard(data) {
 
     cardHeader.textContent = `RAMPA REINCIDENTES - ${data.monthName.toUpperCase()}`;
 
-    let table = '<table class="table table-bordered table-striped table-hover text-center" style="font-size: 0.8rem;">';
-    
+    let table = '<table class="table table-bordered table-striped table-hover text-center" style="font-size: 9px">';
+
     // Cabeçalho da Tabela
     table += '<thead class="thead-dark" style="background-color: #4B0082; color: white;"><tr>';
     data.dayHeaders.forEach((h, index) => {
@@ -91,7 +91,7 @@ function renderDashboard(data) {
         });
     });
     table += '</tbody>';
-    
+
     table += '</table>';
 
     wrapper.innerHTML = table;
