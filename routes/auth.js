@@ -2,24 +2,20 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const db = require("../db/db");
-const ad = require("../ad/ad");
-
+const ad = require("../ad/ad"); // usa activedirectory2
 const dotenv = require("dotenv");
 
 dotenv.config();
 
-// Defina o admin fixo
 const LOCAL_ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const LOCAL_ADMIN_SENHA = process.env.ADMIN_SENHA;
 
-// 🔐 LOGIN
 router.post("/login", async (req, res) => {
   const { email, senha } = req.body;
-  let nome = email.split(".")[0];
   let user;
 
   try {
-    // 1. Se for admin local, ignora AD
+    // 1. Admin local
     if (email === LOCAL_ADMIN_EMAIL && senha === LOCAL_ADMIN_SENHA) {
       const [rows] = await db.mysqlPool.query(
         "SELECT * FROM users_thanos WHERE email = ?",
@@ -44,15 +40,62 @@ router.post("/login", async (req, res) => {
         );
       }
     } else {
-      // 2. Autenticar no Active Directory
+      // 2. Autenticar no AD com a senha do usuário
       await new Promise((resolve, reject) => {
         ad.authenticate(email, senha, (err, auth) => {
-          if (err) return reject(err);
-          if (!auth) return reject(new Error("Usuário ou senha inválidos."));
+          if (err || !auth) return reject(new Error("Usuário ou senha inválidos."));
           resolve(auth);
         });
-      }); 
-      // 3. Verificar/atualizar usuário no banco
+      });
+
+      // 3. Buscar nome completo do usuário no AD
+
+      const userInfo = await new Promise((resolve, reject) => {
+        ad.findUser(email, (err, user) => {
+          if (err || !user) return reject(new Error("Usuário não encontrado no AD."));
+          console.log("✅ Usuário encontrado:");
+          console.log("Nome completo:", user.displayName);
+          console.log("Email:", user.mail);
+          console.log("Login:", user.sAMAccountName);
+          console.log("UPN:", user.userPrincipalName);
+          console.log("Cargo:", user.title);
+          console.log("Departamento:", user.department);
+          console.log("Empresa:", user.company);
+          console.log("Telefone fixo:", user.telephoneNumber);
+          console.log("Celular:", user.mobile);
+          console.log("Localização física:", user.physicalDeliveryOfficeName);
+          console.log("Gerente (DN):", user.manager);
+          console.log("Subordinados:", user.directReports);
+          console.log("DN completo:", user.distinguishedName);
+          console.log("Classe do objeto:", user.objectClass);
+          console.log("Categoria do objeto:", user.objectCategory);
+          console.log("Controle de conta:", user.userAccountControl);
+          console.log("Data de criação da conta:", user.whenCreated);
+          console.log("Aniversário (se disponível):", user.extensionAttribute1 || user.birthDate);
+          if (user.manager) {
+            ad.findUser(user.manager, (err, gerente) => {
+              if (err || !gerente) {
+                console.log("❌ Não foi possível buscar o gerente.");
+              } else {
+                console.log("👤 Gerente direto:");
+                console.log("Nome completo:", gerente.displayName);
+                console.log("Email:", gerente.mail);
+                console.log("Login:", gerente.sAMAccountName);
+                console.log("Cargo:", gerente.title);
+                console.log("Departamento:", gerente.department);
+                console.log("Data de criação da conta:", gerente.whenCreated);
+                console.log("Aniversário (se disponível):", gerente.extensionAttribute1 || gerente.birthDate);
+              }
+            });
+          }
+
+          resolve(user);
+        });
+      });
+
+      const nome = userInfo.displayName || email.split(".")[0].toUpperCase();
+
+      // 4. Verificar/criar usuário no banco
       const [rows] = await db.mysqlPool.query(
         "SELECT * FROM users_thanos WHERE email = ?",
         [email]
@@ -73,7 +116,6 @@ router.post("/login", async (req, res) => {
           return res.redirect("/?erro=2");
         }
       } else {
-        //VERIFICA SE O USUÁRIO ESTÁ ATIVO NO BANCO DE DADOS
         user = rows[0];
 
         if (user.status === "ATIVO") {
@@ -88,16 +130,14 @@ router.post("/login", async (req, res) => {
       }
     }
 
-    // 4. Proteção: checar se user foi realmente preenchido
+    // 5. Proteção
     if (!user) {
       console.error("Erro: usuário não encontrado nem criado!");
       return res.redirect("/?erro=email_nao_encontrado");
     }
 
-    //Carregar acessos (separados por vírgula) e transformar em array
     const acessos = user.acessos ? user.acessos.split(",") : [];
 
-    //Criar sessão
     req.session.usuario = {
       id: user.id,
       nome: user.nome,
@@ -113,7 +153,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// 🔓 LOGOUT
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) console.error("Erro ao destruir sessão:", err);
