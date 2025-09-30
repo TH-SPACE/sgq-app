@@ -11,7 +11,7 @@ const LOCAL_ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const LOCAL_ADMIN_SENHA = process.env.ADMIN_SENHA;
 
 router.post("/login", async (req, res) => {
-  const { email, senha } = req.body;
+  const { email, senha, redirect = "/home" } = req.body; // ← recebe redirect
   let user;
 
   try {
@@ -59,32 +59,30 @@ router.post("/login", async (req, res) => {
           console.log("Login:", user.sAMAccountName);
           console.log("UPN:", user.userPrincipalName);
           console.log("Cargo:", user.title);
-          console.log("Departamento:", user.department);
-          console.log("Empresa:", user.company);
-          console.log("Telefone fixo:", user.telephoneNumber);
-          console.log("Celular:", user.mobile);
-          console.log("Localização física:", user.physicalDeliveryOfficeName);
-          console.log("Gerente (DN):", user.manager);
-          console.log("Subordinados:", user.directReports);
-          console.log("DN completo:", user.distinguishedName);
-          console.log("Classe do objeto:", user.objectClass);
-          console.log("Categoria do objeto:", user.objectCategory);
-          console.log("Controle de conta:", user.userAccountControl);
-          console.log("Data de criação da conta:", user.whenCreated);
-          console.log("Aniversário (se disponível):", user.extensionAttribute1 || user.birthDate);
+          // console.log("Gerente (DN):", user.manager);
+          // console.log("Departamento:", user.department);
+          // console.log("Empresa:", user.company);
+          // console.log("Telefone fixo:", user.telephoneNumber);
+          // console.log("Celular:", user.mobile);
+          // console.log("Localização física:", user.physicalDeliveryOfficeName);          
+          // console.log("Subordinados:", user.directReports);
+          // console.log("DN completo:", user.distinguishedName);
+          // console.log("Classe do objeto:", user.objectClass);
+          // console.log("Categoria do objeto:", user.objectCategory);
+          // console.log("Controle de conta:", user.userAccountControl);
+          // console.log("Data de criação da conta:", user.whenCreated);
           if (user.manager) {
             ad.findUser(user.manager, (err, gerente) => {
               if (err || !gerente) {
                 console.log("❌ Não foi possível buscar o gerente.");
               } else {
-                console.log("👤 Gerente direto:");
+                console.log("👤 Gestor direto:");
                 console.log("Nome completo:", gerente.displayName);
                 console.log("Email:", gerente.mail);
                 console.log("Login:", gerente.sAMAccountName);
                 console.log("Cargo:", gerente.title);
-                console.log("Departamento:", gerente.department);
-                console.log("Data de criação da conta:", gerente.whenCreated);
-                console.log("Aniversário (se disponível):", gerente.extensionAttribute1 || gerente.birthDate);
+                // console.log("Departamento:", gerente.department);
+                // console.log("Data de criação da conta:", gerente.whenCreated);
               }
             });
           }
@@ -146,7 +144,19 @@ router.post("/login", async (req, res) => {
       acessos: acessos,
     };
 
-    res.redirect("/home");
+    // Redirecionamento inteligente
+    const redirectUrl = req.body.redirect || "/home";
+
+    function isValidRedirect(url) {
+      return typeof url === 'string' &&
+        url.startsWith('/') &&
+        !url.startsWith('//') &&
+        !url.includes('://');
+    }
+
+    const safeRedirect = isValidRedirect(redirectUrl) ? redirectUrl : "/home";
+    res.redirect(safeRedirect);
+
   } catch (err) {
     console.error("Erro de autenticação:", err.message || err);
     return res.redirect("/?erro=1");

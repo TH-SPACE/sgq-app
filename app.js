@@ -62,10 +62,15 @@ app.use((req, res, next) => {
 
 const { verificaLogin, verificaADM } = require("./middlewares/autenticacao");
 
-// 🧭 Rotas públicas
+// Serve a tela de login tanto em / quanto em /login
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
+
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "login.html"));
+});
+
 
 app.get("/painel_reparos", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "painel_reparos.html"));
@@ -83,7 +88,9 @@ app.post("/rampa-irr/upload", upload.single('excelFile'), rampaIrrController.pro
 app.use("/auth", require("./routes/auth"));
 app.use("/home", verificaLogin, require("./routes/protected"));
 app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
-app.use("/planejamento-he", verificaLogin, require("./app_he/routes/planejamentoHE"));
+
+//rota com novo login
+app.use("/planejamento-he", require("./app_he/routes/planejamentoHE"));
 
 // Rota para buscar a tabela
 app.get('/buscar-tabela', batimentoB2B.buscarTabela);
