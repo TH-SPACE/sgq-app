@@ -47,7 +47,6 @@ router.post("/login", async (req, res) => {
           resolve(auth);
         });
       });
-
       // 3. Buscar nome completo do usuário no AD
 
       const userInfo = await new Promise((resolve, reject) => {

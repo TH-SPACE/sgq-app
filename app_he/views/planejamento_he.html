@@ -2,212 +2,448 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>PLANEJAMENTO HE - CW</title>
-    <link rel="icon" type="image/png" href="/img/MANOPLA.gif" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planejamento de Horas Extras</title>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap 4.6.2 (compatível com seu enviar.js) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <link rel="stylesheet" href="/css/menu.css" />
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #6a1b9a;
+            --primary-light: #e1bee7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra Superior Fixa */
+        .navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Corpo Principal */
+        .main-content {
+            display: flex;
+            flex: 1;
+            margin-top: 56px;
+            /* Altura da barra superior */
+            overflow: hidden;
+        }
+
+        /* Menu Lateral */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .profile-role {
+            background-color: #42a5f5;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem;
+            font-weight: bold;
+            color: #ccc;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .menu-item {
+            padding: 0.75rem 1.5rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left-color: white;
+            font-weight: bold;
+        }
+
+        /* Conteúdo Principal */
+        .content {
+            flex: 1;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .is-invalid {
+            border-color: red !important;
+            background-color: #ffe6e6;
+        }
+
+        .erro-msg {
+            color: red;
+            font-size: 0.85em;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+            padding: 5px 8px !important;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .sidebar-header {
+                padding: 1rem;
+                flex-shrink: 0;
+            }
+
+            .menu-title {
+                display: none;
+            }
+
+            .menu-item {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/home">
-                <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
-                <span>ThanOS</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav mr-auto">
-
-                    <li class="nav-item active" id="posBd" style=" display: none;">
-                        <a class="nav-link" href="/home/pos_bd_b2b">PÓS BD B2B</a>
-                    </li>
-                    <li class=" nav-item active" id="vida_sigitm" style=" display: none;">
-                        <a class="nav-link" href="/home/sigitm">VIDA SIGITM</a>
-                    </li>
-                    <li class="nav-item dropdown active">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">LINKS B2B</a>
-                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
-
-                            <a class="dropdown-item" href="https://brtdtlts0002fu.redecorp.br/gps/dashboard_b2b/index"
-                                target="_blank" rel="noopener noreferrer">GPS EMPRESARIAL</a>
-
-                            <a class="dropdown-item"
-                                href="https://app.powerbi.com/groups/me/reports/3138e4a6-bc78-4424-9ce6-c67b6a55644d/ReportSectionb445b0614e5c0e30a351?experience=power-bi&clientSideAuth=0"
-                                target="_blank" rel="noopener noreferrer">IRR/IRT B2B</a>
-
-                            <a class="dropdown-item"
-                                href="https://app.powerbi.com/groups/me/reports/8448e95d-70a3-4dcd-8b5f-74cf7de5c377/ReportSection1d11583f2f338d57ce8e?experience=power-bi"
-                                target="_blank" rel="noopener noreferrer">ABERTOS E ENCERRADOS / VUST</a>
-
-                            <a class="dropdown-item"
-                                href="https://app.powerbi.com/groups/me/reports/77ce5d9e-0de8-4a24-992c-5905c57c1e3b/ReportSection?experience=power-bi">PLANTA
-                                B2B</a>
-                            <div class="dropdown-divider"></div>
-
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown active">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">POWER APPS B2B</a>
-                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
-                            <a class="dropdown-item"
-                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/4a6e89fa-81bd-43f3-82b7-5799ed6f108f?hidenavbar=true"
-                                target="_blank" rel="noopener noreferrer">QUALIDADE B2B</a>
-
-                            <a class="dropdown-item"
-                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/ba24c9cb-d58a-431c-88bf-30719d3f054f?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609437&source=portal"
-                                target="_blank" rel="noopener noreferrer">IRR B2B</a>
-
-                            <a class="dropdown-item"
-                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/a28a8168-8d3b-44fd-8d97-30772b7b8263?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609435&source=portal">B2B
-                                VUST</a>
-                            <div class="dropdown-divider"></div>
-
-                        </div>
-                    </li>
-                </ul>
-
-                <!-- Usuário -->
-                <div class="dropdown">
-                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
-                        id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="fas fa-user-circle fa-lg mr-2"></i>
-                        <span id="nomeUsuario">Usuário</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
-                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
-                            <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
-                        </a>
-                        <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
-                            <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
-                        </a>
-                        <a class="dropdown-item" href="/auth/logout">
-                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
-                        </a>
-
-                    </div>
-                </div>
-            </div>
+    <!-- Barra Superior Fixa -->
+    <div class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-calendar-check"></i>
+            Planejamento Horas Extras
         </div>
-    </nav>
-
-    <div class="container mt-5 pt-5">
-        <h1 class="mb-4">Planejamento HE - CW</h1>
-        <div class="row">
-            <!-- Card Enviar -->
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fa-solid fa-paper-plane fa-2x text-primary mb-3"></i>
-                        <h5 class="card-title">Enviar Planejamento</h5>
-                        <p class="card-text">Solicite horas extras para seus colaboradores</p>
-                        <a href="/planejamento-he/enviar" class="btn btn-primary btn-block">Acessar</a>
-                    </div>
-                </div>
+        <div class="user-menu">
+            <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">Thiago Alves Nunes</span>
+                <i class="fas fa-chevron-down"></i>
             </div>
-
-            <!-- Card Envios -->
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fa-solid fa-list fa-2x text-success mb-3"></i>
-                        <h5 class="card-title">Meus Envios</h5>
-                        <p class="card-text">Veja as solicitações já enviadas</p>
-                        <a href="/planejamento-he/envios" class="btn btn-success btn-block">Acessar</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card Dash -->
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fa-solid fa-chart-pie fa-2x text-info mb-3"></i>
-                        <h5 class="card-title">Dashboard</h5>
-                        <p class="card-text">Estatísticas gerais do planejamento</p>
-                        <a href="/planejamento-he/dash" class="btn btn-info btn-block">Acessar</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card Aprovação -->
-            <div class="col-md-3" id="cardAprovacao" style="display:none;">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fa-solid fa-check-double fa-2x text-warning mb-3"></i>
-                        <h5 class="card-title">Fila de Aprovação</h5>
-                        <p class="card-text">Diretores aprovam ou recusam solicitações</p>
-                        <a href="/planejamento-he/aprovacao" class="btn btn-warning btn-block">Acessar</a>
-                    </div>
-                </div>
+            <div class="dropdown-menu">
+                <a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Sair</a>
             </div>
         </div>
     </div>
 
+    <!-- Corpo Principal -->
+    <div class="main-content">
+        <!-- Menu Lateral -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-profile">
+                    <div class="profile-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-name" id="sidebarUserName">...</div>
+                    <div class="profile-role">USUÁRIO</div>
+                </div>
+            </div>
+
+            <div class="menu-title">MENU PRINCIPAL</div>
+
+            <a href="#" class="menu-item active" data-page="novaSolicitacao">
+                <i class="fas fa-plus"></i>
+                Nova Solicitação
+            </a>
+
+            <a href="#" class="menu-item" data-page="minhasSolicitacoes">
+                <i class="fas fa-list"></i>
+                Minhas Solicitações
+            </a>
+
+            <a href="#" class="menu-item" data-page="solicitacoesEquipe">
+                <i class="fas fa-users"></i>
+                Solicitações da Equipe
+            </a>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="content">
+            <!-- Tela: Nova Solicitação -->
+            <div id="novaSolicitacao" class="card">
+                <h3 class="text-center mb-4">
+                    <i class="fa-solid fa-paper-plane text-primary"></i>
+                    Enviar Planejamento de Horas Extras
+                </h3>
+
+                <!-- Seleção fixa -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-row mb-4">
+                            <div class="col-md-6">
+                                <label for="gerente">Gerente</label>
+                                <select id="gerente" class="form-control" required>
+                                    <option value="">Selecione</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mes">Mês</label>
+                                <select id="mes" class="form-control" required>
+                                    <option value="Janeiro">Janeiro</option>
+                                    <option value="Fevereiro">Fevereiro</option>
+                                    <option value="Março">Março</option>
+                                    <option value="Abril">Abril</option>
+                                    <option value="Maio">Maio</option>
+                                    <option value="Junho">Junho</option>
+                                    <option value="Julho">Julho</option>
+                                    <option value="Agosto">Agosto</option>
+                                    <option value="Setembro">Setembro</option>
+                                    <option value="Outubro">Outubro</option>
+                                    <option value="Novembro">Novembro</option>
+                                    <option value="Dezembro">Dezembro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Linhas de colaboradores -->
+                <div id="linhasColaboradores"></div>
+
+                <button type="button" id="addLinha" class="btn btn-secondary mb-3">
+                    + Adicionar Colaborador
+                </button>
+
+                <div class="text-right mb-3">
+                    <h4 class="font-weight-bold">
+                        Custo Total Estimado: <span id="valorTotalHoras">R$ 0,00</span>
+                    </h4>
+                </div>
+
+                <div class="text-center">
+                    <button type="button" id="btnEnviar" class="btn btn-primary px-4">Enviar</button>
+                </div>
+            </div>
+
+            <!-- Outras telas (ocultas) -->
+            <div id="minhasSolicitacoes" class="card" style="display: none;">
+                <h2 class="card-title"><i class="fas fa-list"></i> Minhas Solicitações</h2>
+                <p>Carregando...</p>
+            </div>
+            <div id="solicitacoesEquipe" class="card" style="display: none;">
+                <h2 class="card-title"><i class="fas fa-users"></i> Solicitações da Equipe</h2>
+                <p>Carregando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Seu enviar.js -->
+    <script src="/public/js/enviar.js"></script>
+
+    <!-- Script de navegação e logout -->
+    <!-- Script de navegação, logout e dados do usuário -->
     <script>
-        // Mostrar card de aprovação só para ADM/Diretor
-        fetch('/home/usuario')
-            .then(res => res.json())
-            .then(data => {
-                if (data.perfil === 'ADM') {
-                    document.getElementById('cardAprovacao').style.display = 'block';
-                }
+        // Função para carregar dados do usuário
+        function carregarDadosUsuario() {
+            fetch('/home/usuario')
+                .then(res => {
+                    if (!res.ok) throw new Error('Não autenticado');
+                    return res.json();
+                })
+                .then(data => {
+                    const nomeCompleto = data.nome || 'Usuário';
+                    const perfil = data.perfil || 'USER';
+
+                    // Exibe apenas o primeiro nome na barra superior
+                    const primeiroNome = nomeCompleto.split(' ')[0];
+                    document.getElementById('userName').textContent = primeiroNome;
+
+                    // Exibe nome completo no menu lateral
+                    document.getElementById('sidebarUserName').textContent = nomeCompleto;
+
+                    // Dentro do .then(data => { ... })
+                    const perfilBadge = document.querySelector('.profile-role');
+                    if (perfilBadge) {
+                        perfilBadge.textContent = perfil;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar dados do usuário:', error);
+                    // Opcional: redirecionar para login se não autenticado
+                    // window.location.href = '/login';
+                });
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.display = 'none';
             });
-    </script>
+            document.getElementById(pageId).style.display = 'block';
 
-    <!-- JS Usuário -->
-    <script>
-        fetch('/home/usuario')
-            .then(res => res.json())
-            .then(data => {
-                const nomeUsuario = data.nome;
-                const perfilUsuario = data.perfil;
-                const acessos = data.acessos;
-
-                document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
-
-
-
-                if (perfilUsuario === 'ADM') {
-                    document.getElementById('painelAdmBtn').style.display = 'inline-block';
-                }
-
-                if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
-                    document.getElementById('painelUpload').style.display = 'inline-block'
-                }
-                // Liberar POS BD se tiver permissão
-                if (acessos.includes('posbd')) {
-                    document.getElementById('posBd').style.display = 'inline-block';
-                }
-                if (acessos.includes('vidaSigitm')) {
-                    document.getElementById('vida_sigitm').style.display = 'inline-block';
-                } console.log('Acessos do usuário:', acessos);
-
-
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
             });
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+        }
+
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage(item.getAttribute('data-page'));
+            });
+        });
+
+        document.getElementById('logoutLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Tem certeza que deseja sair?')) {
+                window.location.href = '/auth/logout';
+            }
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDadosUsuario();
+            showPage('novaSolicitacao');
+        });
+
+
+        // Mostrar tela inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('novaSolicitacao');
+        });
     </script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
-
 </body>
 
 </html>
