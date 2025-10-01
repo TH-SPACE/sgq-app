@@ -35,7 +35,7 @@ router.use(vidaSigitm);
 
 // Protegendo a rota /pos_bd_b2b
 router.get("/pos_bd_b2b", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/home/pos_bd_b2b.html"));
+  res.sendFile(path.join(__dirname, "../views/pos_bd_b2b.html"));
 });
 
 // ⬇️ Aqui está sua rota de listagem agora conectada corretamente:
@@ -46,7 +46,7 @@ router.get("/download_csv_pos", uploadPosbd.downloadOrdensPos);
 router.post("/tratar_ordem_pos", uploadPosbd.tratarOrdemPos);
 
 router.get("/upload_bases", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/home/upload_bases.html"));
+  res.sendFile(path.join(__dirname, "../views/upload_bases.html"));
 });
 
 // ✅ Rota POST de upload Excel

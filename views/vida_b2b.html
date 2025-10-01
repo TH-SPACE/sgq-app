@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>ThanOS - Vida Sigitm</title>
+    <title>ThanOS - Vida B2B</title>
     <style>
         body {
             display: flex;
@@ -51,97 +51,97 @@
 
 <body>
     <main>
-        <!-- Navbar -->
-        <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="/home">
-                    <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
-                    <span>ThanOS</span>
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
-                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+    <!-- Navbar -->
+    <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/home">
+                <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
+                <span>ThanOS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav mr-auto">
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active" id="vida_sigitm" style="display: none;">
+                        <a class="nav-link" href="/home/sigitm">Vida B2B</a>
+                    </li>
+                    <li class="nav-item active" id="planejamentoHE" style="display: none;">
+                        <a class="nav-link" href="/planejamento-he">PLANEJAMENTO HE</a>
+                    </li>
+                    <li class="nav-item active" id="posBd" style="display: none;">
+                        <a class="nav-link" href="/home/pos_bd_b2b">PÓS BD B2B</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">LINKS B2B</a>
+                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
 
-                        <li class="nav-item active" id="posBd" style=" display: none;">
-                            <a class="nav-link" href="/home/pos_bd_b2b">PÓS BD B2B</a>
-                        </li>
-                        <li class=" nav-item active" id="relatorios">
-                            <a class="nav-link" href="/home/sigitm">VIDA SIGITM</a>
-                        </li>
-                        <li class="nav-item dropdown active">
-                            <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">LINKS B2B</a>
-                            <div class="dropdown-menu" aria-labelledby="menuDropdown">
+                            <a class="dropdown-item" href="https://brtdtlts0002fu.redecorp.br/gps/dashboard_b2b/index"
+                                target="_blank" rel="noopener noreferrer">GPS EMPRESARIAL</a>
 
-                                <a class="dropdown-item"
-                                    href="https://brtdtlts0002fu.redecorp.br/gps/dashboard_b2b/index" target="_blank"
-                                    rel="noopener noreferrer">GPS EMPRESARIAL</a>
+                            <a class="dropdown-item"
+                                href="https://app.powerbi.com/groups/me/reports/3138e4a6-bc78-4424-9ce6-c67b6a55644d/ReportSectionb445b0614e5c0e30a351?experience=power-bi&clientSideAuth=0"
+                                target="_blank" rel="noopener noreferrer">IRR/IRT B2B</a>
 
-                                <a class="dropdown-item"
-                                    href="https://app.powerbi.com/groups/me/reports/3138e4a6-bc78-4424-9ce6-c67b6a55644d/ReportSectionb445b0614e5c0e30a351?experience=power-bi&clientSideAuth=0"
-                                    target="_blank" rel="noopener noreferrer">IRR/IRT B2B</a>
+                            <a class="dropdown-item"
+                                href="https://app.powerbi.com/groups/me/reports/8448e95d-70a3-4dcd-8b5f-74cf7de5c377/ReportSection1d11583f2f338d57ce8e?experience=power-bi"
+                                target="_blank" rel="noopener noreferrer">ABERTOS E ENCERRADOS / VUST</a>
 
-                                <a class="dropdown-item"
-                                    href="https://app.powerbi.com/groups/me/reports/8448e95d-70a3-4dcd-8b5f-74cf7de5c377/ReportSection1d11583f2f338d57ce8e?experience=power-bi"
-                                    target="_blank" rel="noopener noreferrer">ABERTOS E ENCERRADOS / VUST</a>
-
-                                <a class="dropdown-item"
-                                    href="https://app.powerbi.com/groups/me/reports/77ce5d9e-0de8-4a24-992c-5905c57c1e3b/ReportSection?experience=power-bi">PLANTA
-                                    B2B</a>
-                                <div class="dropdown-divider"></div>
-
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown active">
-                            <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">POWER APPS B2B</a>
-                            <div class="dropdown-menu" aria-labelledby="menuDropdown">
-                                <a class="dropdown-item"
-                                    href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/4a6e89fa-81bd-43f3-82b7-5799ed6f108f?hidenavbar=true"
-                                    target="_blank" rel="noopener noreferrer">QUALIDADE B2B</a>
-
-                                <a class="dropdown-item"
-                                    href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/ba24c9cb-d58a-431c-88bf-30719d3f054f?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609437&source=portal"
-                                    target="_blank" rel="noopener noreferrer">IRR B2B</a>
-
-                                <a class="dropdown-item"
-                                    href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/a28a8168-8d3b-44fd-8d97-30772b7b8263?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609435&source=portal">B2B
-                                    VUST</a>
-                                <div class="dropdown-divider"></div>
-
-                            </div>
-                        </li>
-                    </ul>
-
-                    <!-- Usuário -->
-                    <div class="dropdown">
-                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
-                            id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false">
-                            <i class="fas fa-user-circle fa-lg mr-2"></i>
-                            <span id="nomeUsuario">Usuário</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
-                            <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display:
-                                none;">
-                                <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
-                            </a>
-                            <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
-                                <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
-                            </a>
-                            <a class="dropdown-item" href="/auth/logout">
-                                <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
-                            </a>
+                            <a class="dropdown-item"
+                                href="https://app.powerbi.com/groups/me/reports/77ce5d9e-0de8-4a24-992c-5905c57c1e3b/ReportSection?experience=power-bi">PLANTA
+                                B2B</a>
+                            <div class="dropdown-divider"></div>
 
                         </div>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">POWER APPS B2B</a>
+                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
+                            <a class="dropdown-item"
+                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/4a6e89fa-81bd-43f3-82b7-5799ed6f108f?hidenavbar=true"
+                                target="_blank" rel="noopener noreferrer">QUALIDADE B2B</a>
+
+                            <a class="dropdown-item"
+                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/ba24c9cb-d58a-431c-88bf-30719d3f054f?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609437&source=portal"
+                                target="_blank" rel="noopener noreferrer">IRR B2B</a>
+
+                            <a class="dropdown-item"
+                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/a28a8168-8d3b-44fd-8d97-30772b7b8263?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609435&source=portal">B2B
+                                VUST</a>
+                            <div class="dropdown-divider"></div>
+
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Usuário -->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
+                        id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i class="fas fa-user-circle fa-lg mr-2"></i>
+                        <span id="nomeUsuario">Usuário</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
+                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
+                            <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
+                        </a>
+                        <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
+                            <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
+                        </a>
+                        <a class="dropdown-item" href="/auth/logout">
+                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
+                        </a>
+
                     </div>
                 </div>
             </div>
-        </nav>
+        </div>
+    </nav>
 
         <!-- Alerta -->
         <div class="container-fluid mt-1">
@@ -156,7 +156,7 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header bg-primary text-white">
-                            <h1 class="h3">BASE VIDA SIGITM B2B - CW</h1>
+                            <h1 class="h3">BASE Vida B2B - CW</h1>
                         </div>
                         <div class="card-body" style="background-color: rgb(248, 240, 255);">
                             <form id="exportForm">
