@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingDiv = document.getElementById('loading');
 
     form.addEventListener('submit', (event) => {
-        event.preventDefault(); // Impede o envio tradicional do formulário
+        event.preventDefault();
         const searchTerm = buscaInput.value.trim();
 
         if (searchTerm.length === 0) {
@@ -24,10 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error('Falha na requisição ao servidor');
             }
-
             const users = await response.json();
             displayResults(users);
-
         } catch (error) {
             console.error('Erro na busca:', error);
             resultsDiv.innerHTML = '<p class="text-danger">Ocorreu um erro ao buscar os usuários.</p>';
@@ -57,36 +55,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tbody = document.createElement('tbody');
 
-        // Itera sobre as chaves do objeto do usuário para criar as linhas da tabela
-        for (const key in user) {
-            if (Object.prototype.hasOwnProperty.call(user, key)) {
-                const value = user[key];
+        // ====================================================================
+        // AQUI: Defina quais atributos do usuário você quer mostrar.
+        // 'key' é o nome do atributo vindo do Active Directory.
+        // 'label' é como ele aparecerá na tabela.
+        // ====================================================================
+        const atributosDesejados = [
+            { key: 'displayName', label: 'Nome Completo' },
+            { key: 'sAMAccountName', label: 'Matrícula' },
+            { key: 'mail', label: 'Email' },
+            { key: 'userPrincipalName', label: 'UPN' },
+            { key: 'title', label: 'Cargo' },
+            { key: 'department', label: 'Departamento' },
+            { key: 'telephoneNumber', label: 'Telefone' },
+            { key: 'mobile', label: 'Celular' },
+            { key: 'company', label: 'Empresa' },
+            { key: 'description', label: 'Descrição' },
+            { key: 'physicalDeliveryOfficeName', label: 'Localização' }
+        ];
 
-                // Tratamento especial para o objeto do gestor
-                if (key === 'gestorDireto' && typeof value === 'object') {
-                    // Adiciona um cabeçalho para a seção do gestor
-                    const headerRow = document.createElement('tr');
-                    headerRow.innerHTML = '<td colspan="2" class="bg-secondary text-white text-center"><strong>GESTOR DIRETO</strong></td>';
-                    tbody.appendChild(headerRow);
+        // Itera sobre a lista de atributos desejados e os adiciona na tabela
+        atributosDesejados.forEach(attr => {
+            if (user[attr.key]) { // Verifica se o atributo existe no objeto do usuário
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${attr.label}</strong></td>
+                    <td>${user[attr.key]}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
 
-                    // Adiciona as informações do gestor
-                    for (const managerKey in value) {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td><strong>${managerKey}</strong></td>
-                            <td>${value[managerKey]}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    }
-                } else if (typeof value === 'string' || typeof value === 'number') {
-                    // Adiciona outras informações do usuário
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>${key}</strong></td>
-                        <td>${value}</td>
-                    `;
-                    tbody.appendChild(tr);
-                }
+        // Tratamento especial para o objeto do gestor
+        if (user.gestorDireto) {
+            const gestor = user.gestorDireto;
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = '<td colspan="2" class="bg-secondary text-white text-center"><strong>GESTOR DIRETO</strong></td>';
+            tbody.appendChild(headerRow);
+
+            // Adiciona as informações do gestor
+            for (const managerKey in gestor) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${managerKey}</strong></td>
+                    <td>${gestor[managerKey]}</td>
+                `;
+                tbody.appendChild(tr);
             }
         }
 
