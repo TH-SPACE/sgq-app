@@ -90,7 +90,7 @@ app.post("/rampa-irr/upload", upload.single('excelFile'), rampaIrrController.pro
 app.use("/auth", require("./routes/auth"));
 app.use("/home", verificaLogin, require("./routes/protected"));
 app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
-app.use('/consulta-ad', verificaLogin, require('./consulta_ad/consulta_route'));
+app.use('/consulta-ad', require('./consulta_ad/consulta_route'));
 
 // 🎯 Rotas específicas
 app.use("/planejamento-he", require("./app_he/routes/planejamentoHE"));
