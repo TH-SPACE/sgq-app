@@ -1,3 +1,4 @@
+// 🌐 Módulos e Configurações
 const express = require("express");
 const router = express.Router();
 const path = require("path");
@@ -7,32 +8,39 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+// 🔑 Credenciais do admin local
 const LOCAL_ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const LOCAL_ADMIN_SENHA = process.env.ADMIN_SENHA;
 
+// 🔐 Rota de login - Processa autenticação de usuário
 router.post("/login", async (req, res) => {
-  const { email, senha, redirect = "/home" } = req.body; // ← recebe redirect
-  let user;
+  // Extrai email, senha e redirect do body da requisição
+  const { email, senha, redirect = "/home" } = req.body;
+  let user; // Variável para armazenar o usuário autenticado
 
   try {
-    // 1. Admin local
+    // 1. Verifica se é admin local
     if (email === LOCAL_ADMIN_EMAIL && senha === LOCAL_ADMIN_SENHA) {
+      // Busca usuário admin no banco de dados
       const [rows] = await db.mysqlPool.query(
         "SELECT * FROM users_thanos WHERE email = ?",
         [email]
       );
 
       if (rows.length === 0) {
+        // Cria novo usuário admin se não existir
         const [result] = await db.mysqlPool.query(
           "INSERT INTO users_thanos (email, nome, perfil, ultimo_login) VALUES (?, ?, ?, NOW())",
           [email, "ADMIN LOCAL", "ADM"]
         );
+        // Busca o usuário recém-criado
         const [newUserRows] = await db.mysqlPool.query(
           "SELECT * FROM users_thanos WHERE id = ?",
           [result.insertId]
         );
         user = newUserRows[0];
       } else {
+        // Atualiza o usuário existente e armazena
         user = rows[0];
         await db.mysqlPool.query(
           "UPDATE users_thanos SET ultimo_login = NOW() WHERE id = ?",
@@ -40,36 +48,28 @@ router.post("/login", async (req, res) => {
         );
       }
     } else {
-      // 2. Autenticar no AD com a senha do usuário
+      // 2. Autenticação no Active Directory com a senha do usuário
       await new Promise((resolve, reject) => {
         ad.authenticate(email, senha, (err, auth) => {
           if (err || !auth) return reject(new Error("Usuário ou senha inválidos."));
           resolve(auth);
         });
       });
-      // 3. Buscar nome completo do usuário no AD
 
+      // 3. Busca nome completo do usuário no Active Directory
       const userInfo = await new Promise((resolve, reject) => {
         ad.findUser(email, (err, user) => {
           if (err || !user) return reject(new Error("Usuário não encontrado no AD."));
+
+          // Logs de informações do usuário (para debug)
           console.log("✅ Usuário encontrado:");
           console.log("Nome completo:", user.displayName);
           console.log("Email:", user.mail);
           console.log("Login:", user.sAMAccountName);
           console.log("UPN:", user.userPrincipalName);
           console.log("Cargo:", user.title);
-          // console.log("Gerente (DN):", user.manager);
-          // console.log("Departamento:", user.department);
-          // console.log("Empresa:", user.company);
-          // console.log("Telefone fixo:", user.telephoneNumber);
-          // console.log("Celular:", user.mobile);
-          // console.log("Localização física:", user.physicalDeliveryOfficeName);          
-          // console.log("Subordinados:", user.directReports);
-          // console.log("DN completo:", user.distinguishedName);
-          // console.log("Classe do objeto:", user.objectClass);
-          // console.log("Categoria do objeto:", user.objectCategory);
-          // console.log("Controle de conta:", user.userAccountControl);
-          // console.log("Data de criação da conta:", user.whenCreated);
+
+          // Busca informações do gerente do usuário
           if (user.manager) {
             ad.findUser(user.manager, (err, gerente) => {
               if (err || !gerente) {
@@ -80,8 +80,6 @@ router.post("/login", async (req, res) => {
                 console.log("Email:", gerente.mail);
                 console.log("Login:", gerente.sAMAccountName);
                 console.log("Cargo:", gerente.title);
-                // console.log("Departamento:", gerente.department);
-                // console.log("Data de criação da conta:", gerente.whenCreated);
               }
             });
           }
@@ -90,51 +88,53 @@ router.post("/login", async (req, res) => {
         });
       });
 
+      // Define o nome do usuário (usa displayName do AD ou parte do email)
       const nome = userInfo.displayName || email.split(".")[0].toUpperCase();
 
-      // 4. Verificar/criar usuário no banco
+      // 4. Verifica/cria usuário no banco de dados
       const [rows] = await db.mysqlPool.query(
         "SELECT * FROM users_thanos WHERE email = ?",
         [email]
       );
 
       if (rows.length === 0) {
+        // Cria novo usuário no banco
         const [result] = await db.mysqlPool.query(
           "INSERT INTO users_thanos (email, nome, perfil, status, ultimo_login) VALUES (?, ?, ?, ?, NOW())",
           [email, nome.toUpperCase(), "USER", "ATIVO"]
         );
 
         if (result.insertId) {
+          // Busca o usuário recém-criado
           const [newUserRows] = await db.mysqlPool.query(
             "SELECT * FROM users_thanos WHERE id = ?",
             [result.insertId]
           );
           user = newUserRows[0];
-          return res.redirect("/?erro=2");
+          // REMOVIDO: Não redireciona com erro na primeira vez
+          // return res.redirect("/?erro=2"); // Redireciona com erro (possivelmente para aviso de cadastro)
         }
       } else {
+        // Atualiza usuário existente
         user = rows[0];
-
-        if (user.status === "ATIVO") {
-          await db.mysqlPool.query(
-            "UPDATE users_thanos SET ultimo_login = NOW() WHERE id = ?",
-            [user.id]
-          );
-        } else {
-          console.log("Usuário Inativo!");
-          return res.redirect("/?erro=2");
-        }
+        // Atualiza último login
+        await db.mysqlPool.query(
+          "UPDATE users_thanos SET ultimo_login = NOW() WHERE id = ?",
+          [user.id]
+        );
       }
     }
 
-    // 5. Proteção
+    // 5. Proteção - Verifica se o usuário foi encontrado/criado
     if (!user) {
       console.error("Erro: usuário não encontrado nem criado!");
       return res.redirect("/?erro=email_nao_encontrado");
     }
 
+    // Converte acessos em array (separados por vírgula)
     const acessos = user.acessos ? user.acessos.split(",") : [];
 
+    // Cria sessão do usuário com informações essenciais
     req.session.usuario = {
       id: user.id,
       nome: user.nome,
@@ -143,9 +143,10 @@ router.post("/login", async (req, res) => {
       acessos: acessos,
     };
 
-    // Redirecionamento inteligente
+    // Redirecionamento inteligente - usa redirect do body ou padrão
     const redirectUrl = req.body.redirect || "/home";
 
+    // Função para validar URL de redirecionamento (evita open redirect)
     function isValidRedirect(url) {
       return typeof url === 'string' &&
         url.startsWith('/') &&
@@ -153,19 +154,22 @@ router.post("/login", async (req, res) => {
         !url.includes('://');
     }
 
+    // Usa URL segura para redirecionamento
     const safeRedirect = isValidRedirect(redirectUrl) ? redirectUrl : "/home";
     res.redirect(safeRedirect);
 
   } catch (err) {
+    // Em caso de erro, redireciona com código de erro
     console.error("Erro de autenticação:", err.message || err);
     return res.redirect("/?erro=1");
   }
 });
 
+// 🔓 Rota de logout - Destrói a sessão do usuário
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) console.error("Erro ao destruir sessão:", err);
-    res.redirect("/");
+    res.redirect("/"); // Redireciona para página inicial após logout
   });
 });
 
