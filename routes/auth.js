@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const db = require("../db/db");
-const ad = require("../ad/ad"); // usa activedirectory2
+const ad = require("../ad/ad"); // usa activedirectory2 (para admin local)
 const ActiveDirectory = require("activedirectory2"); // Importa o ActiveDirectory para criar instância temporária
 const dotenv = require("dotenv");
 
@@ -22,7 +22,7 @@ router.post("/login", async (req, res) => {
   try {
     // 1. Verifica se é admin local
     if (email === LOCAL_ADMIN_EMAIL && senha === LOCAL_ADMIN_SENHA) {
-      // Busca usuário admin no banco de dados
+      // Busca usuário admin no banco de dados usando o AD padrão
       const [rows] = await db.mysqlPool.query(
         "SELECT * FROM users_thanos WHERE email = ?",
         [email]
@@ -49,9 +49,23 @@ router.post("/login", async (req, res) => {
         );
       }
     } else {
+      // Cria instância do AD com as credenciais do usuário
+      const adUser = new ActiveDirectory({
+        url: process.env.LDAP_URL,
+        baseDN: process.env.LDAP_BASE_DN,
+        username: email, // Usa o email do usuário logado
+        password: senha, // Usa a senha do usuário logado
+        referral: false,
+        attributes: {
+          user: [
+            "displayName", "mail", "title"
+          ]
+        }
+      });
+
       // 2. Autenticação no Active Directory com a senha do usuário
       await new Promise((resolve, reject) => {
-        ad.authenticate(email, senha, (err, auth) => {
+        adUser.authenticate(email, senha, (err, auth) => {
           if (err || !auth) return reject(new Error("Usuário ou senha inválidos."));
           resolve(auth);
         });
@@ -59,71 +73,16 @@ router.post("/login", async (req, res) => {
 
       // 3. Busca nome completo do usuário no Active Directory
       const userInfo = await new Promise((resolve, reject) => {
-        ad.findUser(email, (err, user) => {
+        adUser.findUser(email, (err, user) => {
           if (err || !user) return reject(new Error("Usuário não encontrado no AD."));
-
-          // Logs de informações do usuário (para debug)
-          console.log("✅ Usuário encontrado:");
-          console.log("Nome completo:", user.displayName);
-          console.log("Email:", user.mail);
-          console.log("Login:", user.sAMAccountName);
-          console.log("UPN:", user.userPrincipalName);
-          console.log("Cargo:", user.title);
-
-          // Busca informações do gerente do usuário usando as credenciais do usuário logado
-          if (user.manager) {
-            // Cria uma nova instância do AD com as credenciais do usuário logado
-            const adUser = new ActiveDirectory({
-              url: process.env.LDAP_URL,
-              baseDN: process.env.LDAP_BASE_DN,
-              username: email, // Usa o email do usuário logado
-              password: senha, // Usa a senha do usuário logado
-              referral: false,
-              attributes: {
-                user: [
-                  "givenName", "initials", "sn", "displayName", "description",
-                  "physicalDeliveryOfficeName", "telephoneNumber", "mail", "wWWHomePage",
-                  "streetAddress", "postOfficeBox", "l", "st", "postalCode", "co",
-                  "userPrincipalName", "sAMAccountName", "profilePath", "scriptPath",
-                  "homeDirectory", "homeDrive", "homePhone", "pager", "mobile",
-                  "facsimileTelephoneNumber", "ipPhone", "title", "department",
-                  "company", "manager", "directReports", "distinguishedName",
-                  "objectClass", "objectCategory", "memberOf", "userAccountControl", "whenCreated", "extensionAttribute1", "extensionAttribute2", "birthDate"
-                ]
-              }
-            });
-
-            adUser.findUser(user.manager, (err, gerente) => {
-              if (err || !gerente) {
-                console.log("❌ Não foi possível buscar o gerente com as credenciais do usuário.");
-                // Tenta novamente com as credenciais padrão do sistema
-                ad.findUser(user.manager, (err2, gerente2) => {
-                  if (err2 || !gerente2) {
-                    console.log("❌ Não foi possível buscar o gerente com nenhuma credencial.");
-                  } else {
-                    console.log("👤 Gestor direto (com credenciais padrão):");
-                    console.log("Nome completo:", gerente2.displayName);
-                    console.log("Email:", gerente2.mail);
-                    console.log("Login:", gerente2.sAMAccountName);
-                    console.log("Cargo:", gerente2.title);
-                  }
-                });
-              } else {
-                console.log("👤 Gestor direto (com credenciais do usuário):");
-                console.log("Nome completo:", gerente.displayName);
-                console.log("Email:", gerente.mail);
-                console.log("Login:", gerente.sAMAccountName);
-                console.log("Cargo:", gerente.title);
-              }
-            });
-          }
 
           resolve(user);
         });
       });
 
-      // Define o nome do usuário (usa displayName do AD ou parte do email)
+      // Extrai informações do usuário do AD
       const nome = userInfo.displayName || email.split(".")[0].toUpperCase();
+      const cargo = userInfo.title || null; // Pega o cargo do usuário
 
       // 4. Verifica/cria usuário no banco de dados
       const [rows] = await db.mysqlPool.query(
@@ -132,10 +91,10 @@ router.post("/login", async (req, res) => {
       );
 
       if (rows.length === 0) {
-        // Cria novo usuário no banco
+        // Cria novo usuário no banco com todas as informações
         const [result] = await db.mysqlPool.query(
-          "INSERT INTO users_thanos (email, nome, perfil, status, ultimo_login) VALUES (?, ?, ?, ?, NOW())",
-          [email, nome.toUpperCase(), "USER", "ATIVO"]
+          "INSERT INTO users_thanos (email, nome, perfil, ultimo_login, cargo) VALUES (?, ?, ?, NOW(), ?)",
+          [email, nome.toUpperCase(), "USER", cargo]
         );
 
         if (result.insertId) {
@@ -147,12 +106,11 @@ router.post("/login", async (req, res) => {
           user = newUserRows[0];
         }
       } else {
-        // Atualiza usuário existente
+        // Atualiza usuário existente com informações do AD
         user = rows[0];
-        // Atualiza último login
         await db.mysqlPool.query(
-          "UPDATE users_thanos SET ultimo_login = NOW() WHERE id = ?",
-          [user.id]
+          "UPDATE users_thanos SET ultimo_login = NOW(), cargo = ? WHERE id = ?",
+          [cargo, user.id]
         );
       }
     }
