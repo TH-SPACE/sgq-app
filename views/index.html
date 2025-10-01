@@ -151,13 +151,9 @@
                 if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
                     document.getElementById('painelUpload').style.display = 'inline-block'
                 }
-                // Liberar POS BD se tiver permissão
-                if (acessos.includes('posbd')) {
-                    document.getElementById('posBd').style.display = 'inline-block';
-                }
-                if (acessos.includes('vidaSigitm')) {
-                    document.getElementById('vida_sigitm').style.display = 'inline-block';
-                } console.log('Acessos do usuário:', acessos);
+                document.getElementById('posBd').style.display = 'inline-block';
+                document.getElementById('vida_sigitm').style.display = 'inline-block';
+                 console.log('Acessos do usuário:', acessos);
 
 
             });

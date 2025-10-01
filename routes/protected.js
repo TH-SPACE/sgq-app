@@ -8,23 +8,7 @@ const vidaSigitm = require("../controllers/sigitm");
 
 
 
-// Middleware para verificar acesso específico
-function verificaAcesso(tipoAcessoRequerido) {
-  return (req, res, next) => {
-    const usuario = req.session.usuario;
 
-    if (!usuario) {
-      return res.status(401).json({ erro: 'Usuário não autenticado' });
-    }
-
-    if (!usuario.acessos.includes(tipoAcessoRequerido)) {
-      //return res.status(403).json({ erro: 'Acesso negado' });
-      return res.sendFile(path.join(__dirname, "../views", "acesso_negado.html"));
-    }
-
-    next();
-  };
-}
 
 router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/index.html"));
@@ -41,7 +25,7 @@ router.get("/usuario", (req, res) => {
 });
 
 // ✅ Rota protegida para vida_b2b.html
-router.get("/sigitm", verificaAcesso('vidaSigitm'), (req, res) => {
+router.get("/sigitm", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/vida_b2b.html"));
 });
 // ✅ Usando o controlador sigitm
@@ -50,7 +34,7 @@ router.use(vidaSigitm);
 
 
 // Protegendo a rota /pos_bd_b2b
-router.get("/pos_bd_b2b", verificaAcesso('posbd'), (req, res) => {
+router.get("/pos_bd_b2b", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/home/pos_bd_b2b.html"));
 });
 
