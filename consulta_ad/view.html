@@ -83,6 +83,8 @@
             }
 
             function displayResults(users) {
+                resultsDiv.innerHTML = ""; // Limpa resultados anteriores
+
                 if (users.length === 0) {
                     resultsDiv.innerHTML =
                         '<div class="alert alert-info">Nenhum usuário encontrado com o termo informado.</div>';
@@ -90,6 +92,18 @@
                 }
 
                 const user = users[0];
+
+                // Adiciona a foto do usuário se existir
+                if (user.foto) {
+                    const img = document.createElement('img');
+                    img.src = user.foto;
+                    img.alt = 'Foto do usuário';
+                    img.className = 'img-thumbnail rounded-circle d-block mx-auto mb-3';
+                    img.style.width = '150px';
+                    img.style.height = '150px';
+                    resultsDiv.appendChild(img);
+                }
+
                 const table = document.createElement("table");
                 table.className = "table table-striped table-bordered mt-3";
 

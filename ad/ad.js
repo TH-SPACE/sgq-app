@@ -11,6 +11,7 @@ const config = {
 
     attributes: {
         user: [
+            "thumbnailPhoto",
             "givenName", "initials", "sn", "displayName", "description",
             "physicalDeliveryOfficeName", "telephoneNumber", "mail", "wWWHomePage",
             "streetAddress", "postOfficeBox", "l", "st", "postalCode", "co",

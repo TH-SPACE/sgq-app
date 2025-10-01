@@ -33,6 +33,12 @@ exports.searchUsers = async (req, res) => {
       return res.json([]); // Retorna array vazio se o usuário não for encontrado
     }
 
+    // Converte a foto para Base64 se ela existir
+    if (user.thumbnailPhoto) {
+        user.foto = `data:image/jpeg;base64,${user.thumbnailPhoto.toString('base64')}`;
+        delete user.thumbnailPhoto; // Remove o dado binário original
+    }
+
     // Se o usuário for encontrado, verifica se ele tem um gestor
     if (user.manager) {
       const manager = await findUserPromise(user.manager);
