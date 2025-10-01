@@ -48,7 +48,25 @@ exports.searchUsers = async (req, res) => {
       }
     }
 
-    // Retorna o usuário (com ou sem dados do gestor) dentro de um array
+    // Busca os subordinados diretos
+    if (user.directReports && user.directReports.length > 0) {
+        const reportPromises = user.directReports.map(dn => findUserPromise(dn));
+        const reports = await Promise.all(reportPromises);
+        
+        // Filtra os resultados nulos e mapeia para um formato mais limpo
+        user.subordinados = reports
+            .filter(report => report !== null)
+            .map(report => ({
+                nome: report.displayName,
+                email: report.mail,
+                cargo: report.title
+            }));
+    }
+
+    // Remove a propriedade original para não ser exibida
+    delete user.directReports;
+
+    // Retorna o usuário (com ou sem dados do gestor e subordinados) dentro de um array
     res.json([user]);
   } catch (error) {
     console.error("Erro na busca no AD:", error);
