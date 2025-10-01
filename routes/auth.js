@@ -81,7 +81,6 @@ router.post("/login", async (req, res) => {
               referral: false,
               attributes: {
                 user: [
-                  "thumbnailPhoto",
                   "givenName", "initials", "sn", "displayName", "description",
                   "physicalDeliveryOfficeName", "telephoneNumber", "mail", "wWWHomePage",
                   "streetAddress", "postOfficeBox", "l", "st", "postalCode", "co",
