@@ -8,77 +8,36 @@
     <link rel="icon" type="image/png" href="/img/MANOPLA.gif">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        body {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .main-container {
-            flex: 1;
-            overflow-y: auto;
-            padding-top: 1rem;
-        }
-
-        .footer-link {
-            padding: 1rem 0;
-        }
-
-        @media (max-width: 576px) {
-            .header-title {
-                font-size: 1.25rem;
-            }
-
-            .logo-img {
-                width: 50px;
-                height: 50px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/menu.css">
 </head>
 
 <body class="bg-light">
-    <div class="container-fluid main-container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-6">
-                <!-- Cabeçalho -->
-                <div class="d-flex align-items-center mb-4">
-                    <img src="/img/MANOPLA.gif" class="logo-img mr-3" alt="Logo">
-                    <h3 class="mb-0 header-title">Consulta de Usuários no Active Directory</h3>
-                </div>
-
-                <!-- Formulário -->
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <form id="formBusca">
-                            <div class="form-group">
-                                <label for="buscaUsuario">Buscar por e-mail ou matrícula</label>
-                                <input type="text" class="form-control" id="buscaUsuario"
-                                    placeholder="Digite o e-mail ou a matrícula...">
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Buscar</button>
-                        </form>
-
-                        <!-- Loading -->
-                        <div id="loading" class="text-center mt-3" style="display: none;">
-                            <p class="text-info mb-0"><i class="fas fa-spinner fa-spin mr-2"></i> Buscando...</p>
-                        </div>
-
-                        <!-- Resultados -->
-                        <div id="results" class="mt-4">
-                            <!-- Os resultados da busca aparecerão aqui -->
-                        </div>
+    <div class="container pt-2">
+        <div class="d-flex align-items-center mb-4">
+            <img src="/img/MANOPLA.gif" width="60" height="60" class="mr-3" alt="Logo">
+            <h3 class="mb-0">Consulta de Usuários no Active Directory</h3>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form id="formBusca">
+                    <div class="form-group">
+                        <label for="buscaUsuario">Buscar por e-mail, matrícula ou nome completo</label>
+                        <input type="text" class="form-control" id="buscaUsuario"
+                            placeholder="Digite o termo completo...">
                     </div>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </form>
+                <div id="loading" style="display: none;">
+                    <p class="text-info">Buscando...</p>
+                </div>
+                <div id="results" class="mt-4">
+                    <!-- Os resultados da busca aparecerão aqui -->
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Rodapé fixo na parte inferior -->
-    <div class="container-fluid footer-link text-center bg-white border-top">
-        <a href="/login" class="text-muted">← Voltar para o Login</a>
+        <div class="text-center mt-3">
+            <a href="/login">Voltar para o Login</a>
+        </div>
     </div>
 
     <script>
@@ -94,7 +53,7 @@
 
                 if (searchTerm.length === 0) {
                     resultsDiv.innerHTML =
-                        '<div class="alert alert-warning">Por favor, digite um termo para a busca.</div>';
+                        '<p class="text-warning">Por favor, digite um termo para a busca.</p>';
                     return;
                 }
                 performSearch(searchTerm);
@@ -116,7 +75,7 @@
                 } catch (error) {
                     console.error("Erro na busca:", error);
                     resultsDiv.innerHTML =
-                        '<div class="alert alert-danger">Ocorreu um erro ao buscar os usuários.</div>';
+                        '<p class="text-danger">Ocorreu um erro ao buscar os usuários.</p>';
                 } finally {
                     loadingDiv.style.display = "none";
                 }
@@ -125,22 +84,30 @@
             function displayResults(users) {
                 if (users.length === 0) {
                     resultsDiv.innerHTML =
-                        '<div class="alert alert-info">Nenhum usuário encontrado com o termo informado.</div>';
+                        '<p class="text-muted">Nenhum usuário encontrado com o termo informado.</p>';
                     return;
                 }
 
                 const user = users[0];
-                let tableHTML = `
-          <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-              <thead class="thead-dark">
-                <tr>
-                  <th>Atributo</th>
-                  <th>Valor</th>
-                </tr>
-              </thead>
-              <tbody>`;
+                const table = document.createElement("table");
+                table.className = "table table-striped table-bordered mt-3";
 
+                const thead = document.createElement("thead");
+                thead.innerHTML = `
+                    <tr class="thead-dark">
+                        <th>Atributo</th>
+                        <th>Valor</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
+
+                const tbody = document.createElement("tbody");
+
+                // ====================================================================
+                // AQUI: Defina quais atributos do usuário você quer mostrar.
+                // 'key' é o nome do atributo vindo do Active Directory.
+                // 'label' é como ele aparecerá na tabela.
+                // ====================================================================
                 const atributosDesejados = [
                     { key: "displayName", label: "Nome Completo" },
                     { key: "sAMAccountName", label: "Matrícula" },
@@ -151,41 +118,43 @@
                     { key: "physicalDeliveryOfficeName", label: "Localização" },
                 ];
 
+                // Itera sobre a lista de atributos desejados e os adiciona na tabela
                 atributosDesejados.forEach((attr) => {
                     if (user[attr.key]) {
-                        tableHTML += `
-              <tr>
-                <td><strong>${attr.label}</strong></td>
-                <td>${user[attr.key]}</td>
-              </tr>`;
+                        // Verifica se o atributo existe no objeto do usuário
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td><strong>${attr.label}</strong></td>
+                            <td>${user[attr.key]}</td>
+                        `;
+                        tbody.appendChild(tr);
                     }
                 });
 
+                // Tratamento especial para o objeto do gestor
                 if (user.gestorDireto) {
-                    tableHTML += `
-            <tr class="bg-secondary text-white">
-              <td colspan="2" class="text-center"><strong>GESTOR DIRETO</strong></td>
-            </tr>`;
                     const gestor = user.gestorDireto;
-                    for (const key in gestor) {
-                        tableHTML += `
-              <tr>
-                <td><strong>${key}</strong></td>
-                <td>${gestor[key]}</td>
-              </tr>`;
+                    const headerRow = document.createElement("tr");
+                    headerRow.innerHTML =
+                        '<td colspan="2" class="bg-secondary text-white text-center"><strong>GESTOR DIRETO</strong></td>';
+                    tbody.appendChild(headerRow);
+
+                    // Adiciona as informações do gestor
+                    for (const managerKey in gestor) {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td><strong>${managerKey}</strong></td>
+                            <td>${gestor[managerKey]}</td>
+                        `;
+                        tbody.appendChild(tr);
                     }
                 }
 
-                tableHTML += `
-              </tbody>
-            </table>
-          </div>`;
-
-                resultsDiv.innerHTML = tableHTML;
+                table.appendChild(tbody);
+                resultsDiv.appendChild(table);
             }
         });
     </script>
-
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
