@@ -58,10 +58,13 @@
         <h3 class="mb-4">Consulta de Usuários no Active Directory</h3>
         <div class="card">
             <div class="card-body">
-                <div class="form-group">
-                    <label for="buscaUsuario">Buscar por nome ou email</label>
-                    <input type="text" class="form-control" id="buscaUsuario" placeholder="Digite para buscar...">
-                </div>
+                <form id="formBusca">
+                    <div class="form-group">
+                        <label for="buscaUsuario">Buscar por e-mail, matrícula ou nome completo</label>
+                        <input type="text" class="form-control" id="buscaUsuario" placeholder="Digite o termo completo...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </form>
                 <div id="loading" style="display: none;">
                     <p class="text-info">Buscando...</p>
                 </div>
