@@ -4,6 +4,7 @@ const router = express.Router();
 const path = require("path");
 const db = require("../db/db");
 const ad = require("../ad/ad"); // usa activedirectory2
+const ActiveDirectory = require("activedirectory2"); // Importa o ActiveDirectory para criar instância temporária
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -69,13 +70,47 @@ router.post("/login", async (req, res) => {
           console.log("UPN:", user.userPrincipalName);
           console.log("Cargo:", user.title);
 
-          // Busca informações do gerente do usuário
+          // Busca informações do gerente do usuário usando as credenciais do usuário logado
           if (user.manager) {
-            ad.findUser(user.manager, (err, gerente) => {
+            // Cria uma nova instância do AD com as credenciais do usuário logado
+            const adUser = new ActiveDirectory({
+              url: process.env.LDAP_URL,
+              baseDN: process.env.LDAP_BASE_DN,
+              username: email, // Usa o email do usuário logado
+              password: senha, // Usa a senha do usuário logado
+              referral: false,
+              attributes: {
+                user: [
+                  "thumbnailPhoto",
+                  "givenName", "initials", "sn", "displayName", "description",
+                  "physicalDeliveryOfficeName", "telephoneNumber", "mail", "wWWHomePage",
+                  "streetAddress", "postOfficeBox", "l", "st", "postalCode", "co",
+                  "userPrincipalName", "sAMAccountName", "profilePath", "scriptPath",
+                  "homeDirectory", "homeDrive", "homePhone", "pager", "mobile",
+                  "facsimileTelephoneNumber", "ipPhone", "title", "department",
+                  "company", "manager", "directReports", "distinguishedName",
+                  "objectClass", "objectCategory", "memberOf", "userAccountControl", "whenCreated", "extensionAttribute1", "extensionAttribute2", "birthDate"
+                ]
+              }
+            });
+
+            adUser.findUser(user.manager, (err, gerente) => {
               if (err || !gerente) {
-                console.log("❌ Não foi possível buscar o gerente.");
+                console.log("❌ Não foi possível buscar o gerente com as credenciais do usuário.");
+                // Tenta novamente com as credenciais padrão do sistema
+                ad.findUser(user.manager, (err2, gerente2) => {
+                  if (err2 || !gerente2) {
+                    console.log("❌ Não foi possível buscar o gerente com nenhuma credencial.");
+                  } else {
+                    console.log("👤 Gestor direto (com credenciais padrão):");
+                    console.log("Nome completo:", gerente2.displayName);
+                    console.log("Email:", gerente2.mail);
+                    console.log("Login:", gerente2.sAMAccountName);
+                    console.log("Cargo:", gerente2.title);
+                  }
+                });
               } else {
-                console.log("👤 Gestor direto:");
+                console.log("👤 Gestor direto (com credenciais do usuário):");
                 console.log("Nome completo:", gerente.displayName);
                 console.log("Email:", gerente.mail);
                 console.log("Login:", gerente.sAMAccountName);
@@ -111,8 +146,6 @@ router.post("/login", async (req, res) => {
             [result.insertId]
           );
           user = newUserRows[0];
-          // REMOVIDO: Não redireciona com erro na primeira vez
-          // return res.redirect("/?erro=2"); // Redireciona com erro (possivelmente para aviso de cadastro)
         }
       } else {
         // Atualiza usuário existente
