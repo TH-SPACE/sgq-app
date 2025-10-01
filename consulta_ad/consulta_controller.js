@@ -29,23 +29,8 @@ exports.searchUsers = async (req, res) => {
   try {
     const user = await findUserPromise(term);
 
-    // DEBUG: Log para verificar o objeto bruto do usuário retornado pelo AD
-    console.log("======================================================");
-    console.log("DEBUG: Objeto bruto do usuário recebido do AD:");
-    console.log(user);
-    console.log("======================================================");
-
     if (!user) {
       return res.json([]); // Retorna array vazio se o usuário não for encontrado
-    }
-
-    // Converte a foto para Base64 se ela existir
-    if (user.jpegPhoto) {
-        console.log("DEBUG: Atributo 'jpegPhoto' encontrado. Convertendo para Base64.");
-        user.foto = `data:image/jpeg;base64,${user.jpegPhoto.toString('base64')}`;
-        delete user.jpegPhoto; // Remove o dado binário original
-    } else {
-        console.log("DEBUG: Atributo 'jpegPhoto' NÃO encontrado.");
     }
 
     // Se o usuário for encontrado, verifica se ele tem um gestor

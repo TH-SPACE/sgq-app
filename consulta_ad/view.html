@@ -93,22 +93,16 @@
 
                 const user = users[0];
 
-                // Adiciona a foto do usuário se existir
-                if (user.foto) {
-                    const img = document.createElement('img');
-                    img.src = user.foto;
-                    img.alt = 'Foto do usuário';
-                    img.className = 'img-thumbnail rounded-circle d-block mx-auto mb-3';
-                    img.style.width = '150px';
-                    img.style.height = '150px';
-                    resultsDiv.appendChild(img);
-                }
-
                 const table = document.createElement("table");
                 table.className = "table table-striped table-bordered mt-3";
 
                 const thead = document.createElement("thead");
-                thead.innerHTML = '<td colspan="2" class="bg-secondary text-white text-center"><strong>COLABORADOR</strong></td>';
+                thead.innerHTML = `
+                    <tr class="thead-dark">
+                        <th>Atributo</th>
+                        <th>Valor</th>
+                    </tr>
+                `;
                 table.appendChild(thead);
 
                 const tbody = document.createElement("tbody");
@@ -169,7 +163,7 @@
                     const collapseCell = document.createElement('td');
                     collapseCell.colSpan = 2;
                     collapseCell.style.padding = '0'; // Remove padding for a seamless look
-
+                    
                     let listHtml = '<div class="collapse" id="subordinadosCollapse"><ul class="list-group list-group-flush">';
                     reports.forEach(report => {
                         listHtml += `<li class="list-group-item">${report.nome} (${report.email || 'Sem email'})</li>`;
