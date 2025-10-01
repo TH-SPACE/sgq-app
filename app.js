@@ -43,7 +43,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "segredo123",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false },
+    cookie: { secure: false, maxAge: 3600000 },
   })
 );
 
