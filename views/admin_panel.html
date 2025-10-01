@@ -93,7 +93,7 @@
                         <span id="nomeUsuario">Usuário</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
-                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
+                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases" style=" display: none;">
                             <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
                         </a>
                         <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
@@ -158,15 +158,6 @@
                             placeholder="Buscar por nome ou email">
                     </div>
 
-                    <div class="d-flex align-items-center ml-3">
-                        <label for="filtroStatus" class="mr-2 mb-0">Filtrar por status:</label>
-                        <select id="filtroStatus" class="form-control w-auto">
-                            <option value="TODOS">Todos</option>
-                            <option value="ATIVO">Ativos</option>
-                            <option value="AGUARDANDO">Aguardando</option>
-                        </select>
-                    </div>
-
                     <!-- Botão totalmente à direita -->
                     <button id="btnResetar" class="btn btn-secondary  mx-3">Resetar
                         Filtros</button>
@@ -179,7 +170,7 @@
                             <th>Nome</th>
                             <th>Email</th>
                             <th>Perfil</th>
-                            <th>Status</th>
+                            <th>Cargo</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -210,21 +201,16 @@
                             <input type="text" name="nome" id="editarNome" class="form-control" required>
                         </div>
 
+                        <div class="form-group">
+                            <label>Cargo</label>
+                            <input type="text" name="cargo" id="editarCargo" class="form-control">
+                        </div>
 
                         <div class="form-group">
                             <label>Perfil</label>
                             <select name="perfil" id="editarPerfil" class="form-control">
                                 <option value="USER" selected>USER</option>
                                 <option value="ADM">ADM</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select name="status" id="editarStatus" class="form-control">
-                                <option value="ATIVO">ATIVO</option>
-                                <option value="INATIVO">INATIVO</option>
-                                <option value="AGUARDANDO">AGUARDANDO</option>
                             </select>
                         </div>
                     </div>
@@ -250,47 +236,34 @@
                     const tabela = document.getElementById('tabelaUsuarios'); //pega o elemento do html e adiciona na const tabela
                     tabela.innerHTML = ''; // limpa antes de recarregar remove o tr anterior
 
-                    const filtro = document.getElementById('filtroStatus').value; //campo de filtro de status do usuário
+                    usuarios.forEach(user => { //para cada usuário cria um TR na tabela
+                        const tr = document.createElement('tr');//para cada usuário cria um TR na tabela
 
-                    usuarios
-                        .filter(user => filtro === 'TODOS' || user.status === filtro) // se filtro igual a todos não filtra, se não filtra o user pelo status.
-                        .forEach(user => { //para cada usuário cria um TR na tabela
-                            const tr = document.createElement('tr');//para cada usuário cria um TR na tabela
+                        tr.innerHTML = `
+              <td>${user.id}</td>
+              <td>${user.nome}</td>
+              <td>${user.email}</td>
+              <td>${user.perfil}</td>
+              <td>${user.cargo || ''}</td>
+              <td>                 
 
-                            const statusUsuario = user.status //verifica o status do usuário
+                <button class="btn btn-sm btn-warning mr-1" onclick="abrirModalEditar(${user.id}, '${user.nome}', '${user.perfil}', '${user.cargo || ''}')">Editar</button>
+                <button class="btn btn-sm btn-danger" onclick="alertaExcluir(${user.id}, '${user.nome}')">Excluir</button>
 
-                            if (statusUsuario === 'AGUARDANDO') {
-                                btnStatus = `<button class="btn btn-sm btn-success" onclick="aprovarUsuario(${user.id})">Aprovar</button>`
-                            } else if (statusUsuario === 'INATIVO') {
-                                btnStatus = `<button class="btn btn-sm btn-success" onclick="aprovarUsuario(${user.id})">Aprovar</button>`
-                            } else { btnStatus = `<button class="btn btn-sm btn-secondary" onclick="desativarUsuario(${user.id})">Desativar</button>` }
-
-                            tr.innerHTML = `
-                  <td>${user.id}</td>
-                  <td>${user.nome}</td>
-                  <td>${user.email}</td>
-                  <td>${user.perfil}</td>
-                  <td>${user.status}</td>
-                  <td>                 
-
-                    <button class="btn btn-sm btn-warning mr-1" onclick="abrirModalEditar(${user.id}, '${user.nome}', '${user.perfil}', '${user.status}')">Editar</button>
-                    <button class="btn btn-sm btn-danger" onclick="alertaExcluir(${user.id}, '${user.nome}')">Excluir</button>
-                    ${btnStatus}
-
-                  </td>
-                `;
-                            tabela.appendChild(tr);
-                        });
+              </td>
+            `;
+                        tabela.appendChild(tr);
+                    });
                 })
                 .catch(err => console.error('Erro ao carregar usuários:', err));
         }
 
         // 2. Abrir modal de edição
-        function abrirModalEditar(id, nome, perfil, status) {
+        function abrirModalEditar(id, nome, perfil, cargo) {
             document.getElementById('editarId').value = id;
             document.getElementById('editarNome').value = nome;
             document.getElementById("editarPerfil").value = perfil;
-            document.getElementById('editarStatus').value = status;
+            document.getElementById('editarCargo').value = cargo || '';
             document.getElementById('formEditar').action = `/admin/editar/${id}`;
             $('#modalEditar').modal('show');
         }
@@ -367,79 +340,12 @@
 
         // resetar filtros
         document.getElementById('btnResetar').addEventListener('click', function () {
-
-            document.getElementById('filtroStatus').value = 'TODOS'
             document.getElementById('buscaUsuario').value = ''
             renderUsuarios() //recarrega a lista
-
         })
 
         // 7. Inicialização
         document.addEventListener('DOMContentLoaded', renderUsuarios);
-
-
-        //função para ativar o usuário no banco
-        function aprovarUsuario(id) {
-            //loading
-
-            Swal.fire({
-                title: 'Aguarde...',
-                text: 'Processando requisição',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            fetch(`/admin/aprovar/${id}`, {
-                method: 'POST'
-            })
-                .then(res => {
-                    if (res.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Usuário Ativado!'
-                        });
-                        renderUsuarios(); // recarrega a tabela
-                    } else {
-                        alert("Erro ao aprovar.");
-                    }
-                });
-        }
-
-        //função para desativar o usuário
-        function desativarUsuario(id) {
-
-            //Loading
-            Swal.fire({
-                title: 'Aguarde...',
-                text: 'Processando requisição',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            fetch(`/admin/desativar/${id}`, {
-                method: 'POST'
-            })
-                .then(res => {
-                    if (res.ok) {
-                        renderUsuarios(); // recarrega a tabela
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Usuário Desativado!'
-                        });
-
-                    } else {
-                        alert("Erro ao desativar.");
-                    }
-                });
-        }
-
-        document.getElementById('filtroStatus').addEventListener('change', () => {
-            renderUsuarios();
-        });
     </script>
 
     <script src="/js/sweetalert2.all.min.js"></script>

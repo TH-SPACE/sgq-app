@@ -1,3 +1,4 @@
+// 🌐 Módulos e Configurações
 const express = require('express');
 const router = express.Router();
 const path = require('path');
@@ -11,7 +12,7 @@ router.get('/', (req, res) => {
 // 🔍 Lista todos os usuários (API)
 router.get('/usuarios', async (req, res) => {
     try {
-        const [rows] = await db.mysqlPool.query('SELECT id, nome, email, perfil, status FROM users_thanos');
+        const [rows] = await db.mysqlPool.query('SELECT id, nome, email, perfil, cargo FROM users_thanos');
         res.json(rows);
     } catch (err) {
         console.error(err);
@@ -19,22 +20,18 @@ router.get('/usuarios', async (req, res) => {
     }
 });
 
-/// ✏️ Edita um usuário
+// ✏️ Edita um usuário
 router.post('/editar/:id', async (req, res) => {
-    const { nome, perfil, status } = req.body;
+    const { nome, perfil, status, cargo } = req.body;
     const { id } = req.params;
 
     try {
-        let query = '';
-        let params = [];
-
-        // 🔐 Se não foi preenchida, mantém a senha antiga
-        query = 'UPDATE users_thanos SET nome=?, perfil=?, status=? WHERE id=?';
-        params = [nome, perfil, status, id];
-
-
-        await db.mysqlPool.query(query, params);
-        res.redirect('/admin/painel');
+        // Atualiza informações do usuário
+        await db.mysqlPool.query(
+            'UPDATE users_thanos SET nome=?, perfil=?, cargo=? WHERE id=?',
+            [nome, perfil, status, cargo, id]
+        );
+        res.redirect('/admin'); // Redireciona para a página principal do admin
 
     } catch (err) {
         console.error(err);
@@ -47,43 +44,11 @@ router.post('/excluir/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await db.mysqlPool.query('DELETE FROM users_thanos WHERE id = ?', [id]);
-        res.redirect('/admin/painel');
+        res.redirect('/admin'); // Redireciona para a página principal do admin
     } catch (err) {
         console.error(err);
         res.status(500).send('Erro ao excluir usuário');
     }
 });
-
-// ✅ Aprova usuário (ativa conta)
-router.post('/aprovar/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await db.mysqlPool.query('UPDATE users_thanos SET status = "ATIVO" WHERE id = ?', [id]);
-
-        // Busca nome e e-mail do usuário aprovado
-        const [rows] = await db.mysqlPool.query('SELECT nome, email FROM users_thanos WHERE id = ?', [id]);
-        if (rows.length === 0) {
-            return res.status(404).send('Usuário não encontrado.');
-        }
-
-        res.sendStatus(200);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Erro ao aprovar usuário!');
-    }
-});
-
-// DESATIVAR USUÁRIO
-router.post('/desativar/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await db.mysqlPool.query('UPDATE users_thanos SET status = "INATIVO" WHERE id = ?', [id]);
-        res.sendStatus(200);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Erro ao desativar o usuário!')
-    }
-
-})
 
 module.exports = router;
