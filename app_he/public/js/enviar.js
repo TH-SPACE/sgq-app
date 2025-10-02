@@ -20,34 +20,39 @@ function calcularCustoTotal() {
     spanValorTotal.textContent = custoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// --- Código executado ao carregar a página ---
-document.addEventListener('DOMContentLoaded', function () {
-    // Carrega os valores dos cargos do arquivo JSON assim que a página estiver pronta
-    fetch('/json/valores_he.json')
-        .then(response => response.json())
-        .then(data => {
-            valoresPorCargo = data;
-            console.log("Valores de HE por cargo carregados!", valoresPorCargo);
-        })
-        .catch(error => console.error('Erro ao carregar o arquivo de valores de HE:', error));
+// NOVO: Função centralizada para atualizar a lista de colaboradores de uma linha
+function atualizarColaboradoresParaLinha(row) {
+    const gerente = document.getElementById("gerente").value;
+    const selectColab = row.querySelector(".colaborador");
+    const valorAtual = selectColab.value;
 
-    // Preencher mês atual
-    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    document.getElementById('mes').value = meses[new Date().getMonth()];
+    // Destrói a instância do Select2 para poder limpar as opções
+    $(selectColab).select2('destroy');
+    selectColab.innerHTML = '<option value="">Selecione</option>';
 
-    // Buscar gerentes
-    fetch('/planejamento-he/api/gerentes')
-        .then(res => res.json())
-        .then(data => {
-            const select = document.getElementById('gerente');
-            data.gerentes.forEach(g => {
-                const opt = document.createElement('option');
-                opt.value = g;
-                opt.textContent = g;
-                select.appendChild(opt);
+    if (gerente) {
+        fetch(`/planejamento-he/api/colaboradores?gerente=${encodeURIComponent(gerente)}`)
+            .then(res => res.json())
+            .then(data => {
+                data.colaboradores.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c;
+                    opt.textContent = c;
+                    opt.title = c;
+                    selectColab.appendChild(opt);
+                });
+                // Restaura o valor que estava selecionado, se ainda existir na nova lista
+                selectColab.value = valorAtual;
+            })
+            .finally(() => {
+                // Reinicia o Select2 com o placeholder correto
+                $(selectColab).select2({ width: '100%', placeholder: "Buscar colaborador" });
             });
-        });
-});
+    } else {
+        // Se nenhum gerente estiver selecionado, apenas reinicia o Select2
+        $(selectColab).select2({ width: '100%', placeholder: "Selecione um gerente" });
+    }
+}
 
 // Adicionar linha (Bootstrap grid)
 function addLinhaBootstrap() {
@@ -95,32 +100,20 @@ function addLinhaBootstrap() {
     `;
     container.appendChild(row);
 
-    // Buscar colaboradores do gerente
-    const gerente = document.getElementById("gerente").value;
-    if (gerente) {
-        fetch(`/planejamento-he/api/colaboradores?gerente=${encodeURIComponent(gerente)}`)
+    const selectColab = row.querySelector(".colaborador");
+
+    // Adiciona o listener para buscar cargo/matrícula quando um colaborador é selecionado
+    $(selectColab).on("select2:select", function (e) {
+        fetch(`/planejamento-he/api/cargo?nome=${encodeURIComponent(e.params.data.id)}`)
             .then(res => res.json())
-            .then(data => {
-                const selectColab = row.querySelector(".colaborador");
-                selectColab.innerHTML = '<option value="">Selecione</option>';
-                data.colaboradores.forEach(c => {
-                    const opt = document.createElement("option");
-                    opt.value = c;
-                    opt.textContent = c;
-                    opt.title = c;
-                    selectColab.appendChild(opt);
-                });
-                $(selectColab).select2({ width: '100%', placeholder: "Buscar colaborador" });
-                $(selectColab).on("select2:select", function (e) {
-                    fetch(`/planejamento-he/api/cargo?nome=${encodeURIComponent(e.params.data.id)}`)
-                        .then(res => res.json())
-                        .then(info => {
-                            row.querySelector(".cargo").value = info.cargo || "";
-                            row.querySelector(".matricula").value = info.matricula || "";
-                        });
-                });
+            .then(info => {
+                row.querySelector(".cargo").value = info.cargo || "";
+                row.querySelector(".matricula").value = info.matricula || "";
             });
-    }
+    });
+
+    // ATUALIZADO: Chama a nova função centralizada para popular os colaboradores
+    atualizarColaboradoresParaLinha(row);
 
     // Botão remover
     row.querySelector(".remover").addEventListener("click", () => {
@@ -131,10 +124,42 @@ function addLinhaBootstrap() {
     calcularCustoTotal();
 }
 
-// Eventos
+// --- Código executado ao carregar a página ---
+document.addEventListener('DOMContentLoaded', function () {
+    // Carrega os valores dos cargos do arquivo JSON
+    fetch('/json/valores_he.json')
+        .then(response => response.json())
+        .then(data => {
+            valoresPorCargo = data;
+        })
+        .catch(error => console.error('Erro ao carregar o arquivo de valores de HE:', error));
+
+    // Preenche o mês atual
+    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    document.getElementById('mes').value = meses[new Date().getMonth()];
+
+    // Busca gerentes e preenche o dropdown
+    fetch('/planejamento-he/api/gerentes')
+        .then(res => res.json())
+        .then(data => {
+            const select = document.getElementById('gerente');
+            data.gerentes.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                select.appendChild(opt);
+            });
+        });
+
+    // NOVO: Listener que atualiza todas as linhas de colaborador quando o gerente muda
+    document.getElementById('gerente').addEventListener('change', function() {
+        document.querySelectorAll("#linhasColaboradores .form-row").forEach(atualizarColaboradoresParaLinha);
+    });
+});
+
+// --- Eventos ---
 document.getElementById("addLinha").addEventListener("click", addLinhaBootstrap);
 
-// Recalcular ao mudar horas ou tipo de HE
 document.getElementById("linhasColaboradores").addEventListener('change', function (event) {
     if (event.target.classList.contains('horas') || event.target.classList.contains('tipoHE')) {
         calcularCustoTotal();
