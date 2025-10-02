@@ -539,7 +539,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
             showPage('novaSolicitacao');
-            addLinhaBootstrap(); // Adiciona a primeira linha de colaborador ao carregar a página
+        });
+
+
+        // Mostrar tela inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('novaSolicitacao');
         });
     </script>
 </body>
