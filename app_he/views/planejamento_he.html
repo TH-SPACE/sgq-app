@@ -429,7 +429,7 @@
                     document.getElementById('popoverNome').textContent = data.nome || '';
                     document.getElementById('popoverEmail').textContent = data.email || '';
                     document.getElementById('popoverCargo').textContent = data.cargo || '';
-                    
+
                     const popover = document.getElementById('perfilPopover');
                     const userMenu = document.querySelector('.user-menu');
                     const rect = userMenu.getBoundingClientRect();
@@ -440,9 +440,10 @@
                     popover.style.top = (rect.bottom + 5) + 'px'; // 5px de margem
                     popover.style.right = '1.5rem'; // Alinha com a margem direita da navbar
                     popover.style.left = 'auto'; // Remove qualquer posicionamento 'left' conflitante
-                    
+
                     popover.style.display = 'block';
                 });
+            document.querySelector('.dropdown-menu').style.display = 'none'; // ← fecha dropdown
         });
         // Fechar popover
         document.getElementById('fecharPopover').addEventListener('click', function () {
@@ -526,7 +527,7 @@
 
         document.getElementById('logoutLink').addEventListener('click', (e) => {
             e.preventDefault();
-            fetch('/auth/logout-he', { method: 'POST', credentials: 'same-origin' })
+            fetch('/auth/logout-he', { method: 'GET', credentials: 'same-origin' })
                 .then(() => {
                     window.location.href = '/planejamento-he';
                 })
@@ -541,11 +542,6 @@
             showPage('novaSolicitacao');
         });
 
-
-        // Mostrar tela inicial
-        document.addEventListener('DOMContentLoaded', () => {
-            showPage('novaSolicitacao');
-        });
     </script>
 </body>
 
