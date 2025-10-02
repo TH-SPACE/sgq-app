@@ -113,6 +113,10 @@ router.get("/api/cargo", heAuth.requireHEAuth, async (req, res) => {
   }
 });
 
-router.get("/api/resumo-he", heAuth.requireHEAuth, planejamentoHE.obterResumoHE);
+router.get(
+  "/api/resumo-he",
+  heAuth.requireHEAuth,
+  planejamentoHE.obterResumoHE
+);
 
 module.exports = router;

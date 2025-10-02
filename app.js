@@ -8,8 +8,8 @@ const { version } = require("./package.json");
 const multer = require("multer");
 
 // 📁 Controladores
-const batimentoB2B = require('./controllers/batimento_b2b');
-const rampaIrrController = require('./controllers/rampa_irr_controller');
+const batimentoB2B = require("./controllers/batimento_b2b");
+const rampaIrrController = require("./controllers/rampa_irr_controller");
 
 // 🔐 Middlewares
 const { verificaLogin, verificaADM } = require("./middlewares/autenticacao");
@@ -17,7 +17,7 @@ const { verificaLogin, verificaADM } = require("./middlewares/autenticacao");
 // ⚙️ Inicializações
 dotenv.config();
 const app = express();
-console.log('Aplicação criada por Thiago Alves Nunes');
+console.log("Aplicação criada por Thiago Alves Nunes");
 const PORT = process.env.PORT || 3000;
 
 // Configuração do Multer
@@ -29,11 +29,10 @@ app.set("trust proxy", true);
 
 // 📁 Arquivos estáticos públicos
 app.use(express.static(path.join(__dirname, "public")));
-app.use('/json', express.static(path.join(__dirname, 'app_he', 'json')));
-app.use('/public', express.static(path.join(__dirname, 'app_he', 'public')));
+app.use("/json", express.static(path.join(__dirname, "app_he", "json")));
+app.use("/public", express.static(path.join(__dirname, "app_he", "public")));
 // Serve a pasta consulta_ad como estática para o script.js
-app.use('/consulta_ad', express.static(path.join(__dirname, 'consulta_ad')));
-
+app.use("/consulta_ad", express.static(path.join(__dirname, "consulta_ad")));
 
 // 📦 Middlewares globais
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -54,10 +53,14 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    const ip = req.headers["x-forwarded-for"]?.split(",")[0].trim() || req.socket.remoteAddress;
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+      req.socket.remoteAddress;
     const user = req.session?.usuario?.email || "visitante";
 
-    console.log(`[${user}] [${ip}] [${req.method}] ${req.originalUrl} ${res.statusCode} - ${duration} ms`);
+    console.log(
+      `[${user}] [${ip}] [${req.method}] ${req.originalUrl} ${res.statusCode} - ${duration} ms`
+    );
   });
 
   next();
@@ -77,21 +80,25 @@ app.get("/painel_reparos", (req, res) => {
 });
 
 // 📊 Rota para buscar tabela
-app.get('/buscar-tabela', batimentoB2B.buscarTabela);
+app.get("/buscar-tabela", batimentoB2B.buscarTabela);
 
 // --- Rotas Rampa IRR ---
 app.get("/rampa-irr", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "rampa_irr.html"));
 });
 
-app.post("/rampa-irr/upload", upload.single('excelFile'), rampaIrrController.processUpload);
+app.post(
+  "/rampa-irr/upload",
+  upload.single("excelFile"),
+  rampaIrrController.processUpload
+);
 // --- Fim das Rotas Rampa IRR ---
 
 // 🧭 Rotas protegidas
 app.use("/auth", require("./routes/auth"));
 app.use("/home", verificaLogin, require("./routes/protected"));
-app.use('/admin', verificaLogin, verificaADM, require('./routes/admin'));
-app.use('/consulta-ad', require('./consulta_ad/consulta_route'));
+app.use("/admin", verificaLogin, verificaADM, require("./routes/admin"));
+app.use("/consulta-ad", require("./consulta_ad/consulta_route"));
 
 // 🎯 Rotas específicas
 app.use("/planejamento-he", require("./app_he/routes/planejamentoHE"));
