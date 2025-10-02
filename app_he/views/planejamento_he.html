@@ -253,7 +253,7 @@
         <div class="user-menu">
             <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                 <i class="fas fa-user-circle"></i>
-                <span id="userName">Thiago Alves Nunes</span>
+                <span id="userName">...</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
             <div class="dropdown-menu">
@@ -465,7 +465,7 @@
                 })
                 .then(data => {
                     const nomeCompleto = data.nome || 'Usuário';
-                    const perfil = data.perfil || 'USER';
+                    const cargo = data.cargo || 'USUÁRIO'; // Usar o cargo aqui
 
                     // Exibe apenas o primeiro nome na barra superior
                     const primeiroNome = nomeCompleto.split(' ')[0];
@@ -474,10 +474,10 @@
                     // Exibe nome completo no menu lateral
                     document.getElementById('sidebarUserName').textContent = nomeCompleto;
 
-                    // Dentro do .then(data => { ... })
+                    // Atualiza o badge de perfil para exibir o cargo
                     const perfilBadge = document.querySelector('.profile-role');
                     if (perfilBadge) {
-                        perfilBadge.textContent = perfil;
+                        perfilBadge.textContent = cargo;
                     }
                 })
                 .catch(error => {
