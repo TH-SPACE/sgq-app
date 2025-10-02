@@ -113,51 +113,6 @@ router.get("/api/cargo", heAuth.requireHEAuth, async (req, res) => {
   }
 });
 
-// Em app_he/routes/planejamentoHE.js
-const { getValorHora } = require("../utils/valoresHE");
-
-router.get("/api/resumo-he", async (req, res) => {
-  const { gerente, mes } = req.query;
-
-  if (!gerente || !mes) {
-    return res
-      .status(400)
-      .json({ erro: "Parâmetros 'gerente' e 'mes' são obrigatórios." });
-  }
-
-  try {
-    const conexao = db.mysqlPool;
-
-    // Busca TODAS as HEs da gerência e mês (aprovadas + pendentes)
-    const [rows] = await conexao.query(
-      `SELECT CARGO, HORAS, TIPO_HE, STATUS 
-       FROM PLANEJAMENTO_HE 
-       WHERE GERENTE = ? AND MES = ? AND STATUS IN ('APROVADO', 'PENDENTE')`,
-      [gerente, mes]
-    );
-
-    let totalAprovado = 0;
-    let totalPendente = 0;
-
-    rows.forEach((he) => {
-      const valorHora = getValorHora(he.CARGO, he.TIPO_HE);
-      const valorTotal = he.HORAS * valorHora;
-
-      if (he.STATUS === "APROVADO") {
-        totalAprovado += valorTotal;
-      } else if (he.STATUS === "PENDENTE") {
-        totalPendente += valorTotal;
-      }
-    });
-
-    res.json({
-      aprovado: parseFloat(totalAprovado.toFixed(2)),
-      pendente: parseFloat(totalPendente.toFixed(2)),
-    });
-  } catch (error) {
-    console.error("Erro ao buscar resumo HE:", error);
-    res.status(500).json({ erro: "Erro ao buscar dados." });
-  }
-});
+router.get("/api/resumo-he", heAuth.requireHEAuth, planejamentoHE.obterResumoHE);
 
 module.exports = router;
