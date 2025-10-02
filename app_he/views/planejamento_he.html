@@ -265,7 +265,7 @@
 
     <!-- Popover de Perfil do Usuário -->
     <div id="perfilPopover"
-        style="display:none; position:absolute; right:1.5rem; top:56px; width:240px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12); z-index:2000; padding:0.75rem; font-size:0.95rem;">
+        style="display:none; position:absolute; width:240px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12); z-index:2000; padding:0.75rem; font-size:0.95rem;">
         <div style="font-weight:bold; margin-bottom:0.5rem;">Perfil do Usuário</div>
         <div><b>Nome:</b> <span id="popoverNome"></span></div>
         <div><b>Email:</b> <span id="popoverEmail"></span></div>
@@ -422,18 +422,25 @@
         // Abrir popover de perfil ao clicar em 'Ver Perfil'
         document.getElementById('perfilLink').addEventListener('click', function (e) {
             e.preventDefault();
+            // O dropdown será fechado pelo evento de clique no elemento pai, o que é desejável aqui.
             fetch('/home/usuario')
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById('popoverNome').textContent = data.nome || '';
                     document.getElementById('popoverEmail').textContent = data.email || '';
                     document.getElementById('popoverCargo').textContent = data.cargo || '';
+                    
                     const popover = document.getElementById('perfilPopover');
-                    const link = document.getElementById('perfilLink');
-                    const rect = link.getBoundingClientRect();
-                    popover.style.position = 'absolute';
-                    popover.style.top = (rect.bottom + window.scrollY + 4) + 'px';
-                    popover.style.left = (rect.right + window.scrollX - 10) + 'px';
+                    const userMenu = document.querySelector('.user-menu');
+                    const rect = userMenu.getBoundingClientRect();
+
+                    // Usa posição fixa para se alinhar corretamente com a navbar fixa.
+                    // O popover aparecerá abaixo do ícone do usuário, alinhado à direita.
+                    popover.style.position = 'fixed';
+                    popover.style.top = (rect.bottom + 5) + 'px'; // 5px de margem
+                    popover.style.right = '1.5rem'; // Alinha com a margem direita da navbar
+                    popover.style.left = 'auto'; // Remove qualquer posicionamento 'left' conflitante
+                    
                     popover.style.display = 'block';
                 });
         });
