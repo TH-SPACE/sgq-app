@@ -195,7 +195,7 @@ document.getElementById("btnEnviar").addEventListener("click", () => {
     }
 
     if (!valido) {
-        alert("Corrija os erros destacados antes de enviar.");
+        alert("Corrija os erros destacados antes de enviar..");
         return;
     }
 
