@@ -380,61 +380,36 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   showPage("novaSolicitacao");
 
-  // ================= NOVA LÓGICA PARA DROPDOWN E POPOVER =================
-
-  // Elementos
+  // Dropdown usuário
   const userMenu = document.querySelector('.user-menu');
   const dropdown = userMenu.querySelector('.dropdown-menu');
-  const perfilPopover = document.getElementById('perfilPopover');
-  const perfilLink = document.getElementById('perfilLink');
-  const fecharPopoverBtn = document.getElementById('fecharPopover');
-
-  // Abrir/Fechar Dropdown
   userMenu.addEventListener('click', (e) => {
-    if (e.target.closest('#perfilLink')) return; // Se clicar no link do perfil, não faz nada aqui
+    if (e.target.id === 'perfilLink') return; 
     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
   });
 
-  // Abrir Popover de Perfil
-  perfilLink.addEventListener('click', (e) => {
+  // Perfil (agora abre um modal)
+  document.getElementById('perfilLink').addEventListener('click', (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Impede que o clique se propague para outros elementos
+    e.stopPropagation();
 
-    dropdown.style.display = 'none'; // Garante que o dropdown feche
+    dropdown.style.display = 'none';
 
-    const userMenuRect = userMenu.getBoundingClientRect();
-    perfilPopover.style.top = `${userMenuRect.bottom + 5}px`;
-    perfilPopover.style.left = 'auto';
-    perfilPopover.style.right = '1.5rem';
-
-    if (perfilPopover.style.display === 'block') {
-        perfilPopover.style.display = 'none';
-    } else {
-        fetch('/home/usuario')
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('popoverNome').textContent = data.nome || '';
-                document.getElementById('popoverEmail').textContent = data.email || '';
-                document.getElementById('popoverCargo').textContent = data.cargo || '';
-                perfilPopover.style.display = 'block';
-            });
-    }
-  });
-
-  // Fechar Popover
-  fecharPopoverBtn.addEventListener('click', () => {
-    perfilPopover.style.display = 'none';
+    fetch('/home/usuario')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('perfilNome').value = data.nome || '';
+            document.getElementById('perfilEmail').value = data.email || '';
+            document.getElementById('perfilCargo').value = data.cargo || '';
+            
+            $('#perfilModal').modal('show');
+        });
   });
 
   // Fechar menus ao clicar fora
   document.addEventListener('click', (e) => {
-    // Fecha dropdown se clicar fora
     if (!userMenu.contains(e.target)) {
       dropdown.style.display = 'none';
-    }
-    // Fecha popover se clicar fora
-    if (perfilPopover.style.display === 'block' && !perfilPopover.contains(e.target) && e.target !== perfilLink) {
-      perfilPopover.style.display = 'none';
     }
   });
 
@@ -442,7 +417,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("logoutLink").addEventListener("click", (e) => {
     e.preventDefault();
     if (confirm("Tem certeza que deseja sair?")) {
-      window.location.href = "/auth/logout"; // Corrigido para a rota de logout geral
+      window.location.href = "/auth/logout";
     }
   });
 });

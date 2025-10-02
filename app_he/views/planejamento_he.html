@@ -188,15 +188,32 @@
         </div>
     </div>
 
-    <!-- Popover de Perfil -->
-    <div id="perfilPopover"
-        style="display:none; position:fixed; width:240px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12); z-index:2000; padding:0.75rem; font-size:0.95rem; right:1.5rem;">
-        <div style="font-weight:bold; margin-bottom:0.5rem;">Perfil do Usuário</div>
-        <div><b>Nome:</b> <span id="popoverNome"></span></div>
-        <div><b>Email:</b> <span id="popoverEmail"></span></div>
-        <div><b>Cargo:</b> <span id="popoverCargo"></span></div>
-        <div style="text-align:right; margin-top:0.5rem;">
-            <button id="fecharPopover" class="btn btn-sm btn-secondary">Fechar</button>
+    <!-- Modal de Perfil do Usuário -->
+    <div class="modal fade" id="perfilModal" tabindex="-1" role="dialog" aria-labelledby="perfilModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="perfilModalLabel">Perfil do Usuário</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="perfilNome">Nome</label>
+                        <input type="text" class="form-control" id="perfilNome" name="nome" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="perfilEmail">Email</label>
+                        <input type="email" class="form-control" id="perfilEmail" name="email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="perfilCargo">Cargo</label>
+                        <input type="text" class="form-control" id="perfilCargo" name="cargo" readonly>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
