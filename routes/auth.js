@@ -130,6 +130,7 @@ router.post("/login", async (req, res) => {
       nome: user.nome,
       email: user.email,
       perfil: user.perfil,
+      cargo: user.cargo, // Adiciona o cargo à sessão
       acessos: acessos,
     };
 
