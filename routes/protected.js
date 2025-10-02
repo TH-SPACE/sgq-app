@@ -16,6 +16,7 @@ router.get("/usuario", (req, res) => {
     nome: req.session.usuario.nome,
     email: req.session.usuario.email,
     perfil: req.session.usuario.perfil,
+    cargo: req.session.usuario.cargo, // Adicionado para exibir no popover de perfil
     acessos: req.session.usuario.acessos,
   });
 });
