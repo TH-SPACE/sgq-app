@@ -416,7 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Logout
   document.getElementById("logoutLink").addEventListener("click", (e) => {
     e.preventDefault();
-    if (confirm("Tem certeza que deseja sair?")) {
+    if (confirm("Tem certeza que deseja sair?a)) {
       window.location.href = "/auth/logout";
     }
   });
