@@ -6,13 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planejamento de Horas Extras</title>
 
-    <!-- Bootstrap 4.6.2 (compatível com seu enviar.js) -->
+    <!-- Bootstrap 4.6.2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
     <style>
@@ -31,7 +27,6 @@
             flex-direction: column;
         }
 
-        /* Barra Superior Fixa */
         .navbar {
             background-color: var(--primary-color);
             color: white;
@@ -45,14 +40,6 @@
             top: 0;
             left: 0;
             right: 0;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .user-menu {
@@ -72,27 +59,6 @@
             z-index: 1000;
         }
 
-        .dropdown-menu a {
-            display: block;
-            padding: 0.5rem 1rem;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #f8f9fa;
-        }
-
-        /* Corpo Principal */
-        .main-content {
-            display: flex;
-            flex: 1;
-            margin-top: 56px;
-            /* Altura da barra superior */
-            overflow: hidden;
-        }
-
-        /* Menu Lateral */
         .sidebar {
             width: 250px;
             background-color: var(--primary-color);
@@ -111,45 +77,12 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .sidebar-profile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .profile-icon {
-            width: 60px;
-            height: 60px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-        }
-
-        .profile-name {
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
         .profile-role {
             background-color: #42a5f5;
             color: white;
             padding: 0.25rem 0.5rem;
             border-radius: 10px;
             font-size: 0.75rem;
-        }
-
-        .menu-title {
-            padding: 0.75rem 1.5rem;
-            font-weight: bold;
-            color: #ccc;
-            font-size: 0.85rem;
-            text-transform: uppercase;
         }
 
         .menu-item {
@@ -173,7 +106,13 @@
             font-weight: bold;
         }
 
-        /* Conteúdo Principal */
+        .main-content {
+            display: flex;
+            flex: 1;
+            margin-top: 56px;
+            overflow: hidden;
+        }
+
         .content {
             flex: 1;
             padding: 1.5rem;
@@ -186,16 +125,6 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             padding: 1.5rem;
-        }
-
-        .card-title {
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .is-invalid {
@@ -213,18 +142,15 @@
             padding: 5px 8px !important;
         }
 
-        /* Responsividade */
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
-                height: auto;
                 flex-direction: row;
                 overflow-x: auto;
             }
 
             .sidebar-header {
                 padding: 1rem;
-                flex-shrink: 0;
             }
 
             .menu-title {
@@ -244,11 +170,10 @@
 </head>
 
 <body>
-    <!-- Barra Superior Fixa -->
+    <!-- Barra Superior -->
     <div class="navbar">
         <div class="navbar-brand">
-            <i class="fas fa-calendar-check"></i>
-            Planejamento Horas Extras
+            <i class="fas fa-calendar-check"></i> Planejamento Horas Extras
         </div>
         <div class="user-menu">
             <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
@@ -263,88 +188,50 @@
         </div>
     </div>
 
-    <!-- Popover de Perfil do Usuário -->
+    <!-- Popover de Perfil -->
     <div id="perfilPopover"
-        style="display:none; position:absolute; width:240px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12); z-index:2000; padding:0.75rem; font-size:0.95rem;">
+        style="display:none; position:fixed; width:240px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12); z-index:2000; padding:0.75rem; font-size:0.95rem; top:0; right:1.5rem;">
         <div style="font-weight:bold; margin-bottom:0.5rem;">Perfil do Usuário</div>
         <div><b>Nome:</b> <span id="popoverNome"></span></div>
         <div><b>Email:</b> <span id="popoverEmail"></span></div>
         <div><b>Cargo:</b> <span id="popoverCargo"></span></div>
-        <div style="text-align:right; margin-top:0.5rem;"><button id="fecharPopover"
-                class="btn btn-sm btn-secondary">Fechar</button></div>
-    </div>
-
-    <!-- Modal de Perfil do Usuário -->
-    <div class="modal fade" id="perfilModal" tabindex="-1" role="dialog" aria-labelledby="perfilModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="perfilModalLabel">Perfil do Usuário</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="perfilNome">Nome</label>
-                        <input type="text" class="form-control" id="perfilNome" name="nome" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="perfilEmail">Email</label>
-                        <input type="email" class="form-control" id="perfilEmail" name="email" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="perfilCargo">Cargo</label>
-                        <input type="text" class="form-control" id="perfilCargo" name="cargo" readonly>
-                    </div>
-                </div>
-            </div>
+        <div style="text-align:right; margin-top:0.5rem;">
+            <button id="fecharPopover" class="btn btn-sm btn-secondary">Fechar</button>
         </div>
-    </div>
-    </div>
-    </div>
     </div>
 
     <!-- Corpo Principal -->
     <div class="main-content">
-        <!-- Menu Lateral -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-profile">
-                    <div class="profile-icon">
+                    <div class="profile-icon"
+                        style="width:60px; height:60px; background-color:var(--primary-color); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:2rem;">
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="profile-name" id="sidebarUserName">...</div>
                     <div class="profile-role">USUÁRIO</div>
                 </div>
             </div>
-
-            <div class="menu-title">MENU PRINCIPAL</div>
-
+            <div class="menu-title"
+                style="padding:0.75rem 1.5rem; font-weight:bold; color:#ccc; font-size:0.85rem; text-transform:uppercase;">
+                MENU PRINCIPAL</div>
             <a href="#" class="menu-item active" data-page="novaSolicitacao">
-                <i class="fas fa-plus"></i>
-                Nova Solicitação
+                <i class="fas fa-plus"></i> Nova Solicitação
             </a>
-
             <a href="#" class="menu-item" data-page="minhasSolicitacoes">
-                <i class="fas fa-list"></i>
-                Minhas Solicitações
+                <i class="fas fa-list"></i> Minhas Solicitações
             </a>
-
             <a href="#" class="menu-item" data-page="solicitacoesEquipe">
-                <i class="fas fa-users"></i>
-                Solicitações da Equipe
+                <i class="fas fa-users"></i> Solicitações da Equipe
             </a>
         </div>
 
-        <!-- Conteúdo Principal -->
         <div class="content">
             <!-- Tela: Nova Solicitação -->
             <div id="novaSolicitacao" class="card">
                 <h3 class="text-center mb-4">
-                    <i class="fa-solid fa-paper-plane text-primary"></i>
-                    Enviar Planejamento de Horas Extras
+                    <i class="fa-solid fa-paper-plane text-primary"></i> Enviar Planejamento de Horas Extras
                 </h3>
 
                 <!-- Seleção fixa -->
@@ -378,6 +265,9 @@
                     </div>
                 </div>
 
+                <!-- Resumo de HE -->
+                <div id="resumoHE" class="mb-4"></div>
+
                 <!-- Linhas de colaboradores -->
                 <div id="linhasColaboradores"></div>
 
@@ -396,7 +286,7 @@
                 </div>
             </div>
 
-            <!-- Outras telas (ocultas) -->
+            <!-- Outras telas -->
             <div id="minhasSolicitacoes" class="card" style="display: none;">
                 <h2 class="card-title"><i class="fas fa-list"></i> Minhas Solicitações</h2>
                 <p>Carregando...</p>
@@ -413,135 +303,363 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <!-- Seu enviar.js -->
-    <script src="/public/js/enviar.js"></script>
-
-    <!-- Script de navegação e logout -->
-    <!-- Script de navegação, logout e dados do usuário -->
+    <!-- Script principal -->
     <script>
-        // Abrir popover de perfil ao clicar em 'Ver Perfil'
-        document.getElementById('perfilLink').addEventListener('click', function (e) {
-            e.preventDefault();
-            // O dropdown será fechado pelo evento de clique no elemento pai, o que é desejável aqui.
+        // ========== DADOS DO USUÁRIO ==========
+        function carregarDadosUsuario() {
             fetch('/home/usuario')
                 .then(res => res.json())
                 .then(data => {
-                    document.getElementById('popoverNome').textContent = data.nome || '';
-                    document.getElementById('popoverEmail').textContent = data.email || '';
-                    document.getElementById('popoverCargo').textContent = data.cargo || '';
-
-                    const popover = document.getElementById('perfilPopover');
-                    const userMenu = document.querySelector('.user-menu');
-                    const rect = userMenu.getBoundingClientRect();
-
-                    // Usa posição fixa para se alinhar corretamente com a navbar fixa.
-                    // O popover aparecerá abaixo do ícone do usuário, alinhado à direita.
-                    popover.style.position = 'fixed';
-                    popover.style.top = (rect.bottom + 5) + 'px'; // 5px de margem
-                    popover.style.right = '1.5rem'; // Alinha com a margem direita da navbar
-                    popover.style.left = 'auto'; // Remove qualquer posicionamento 'left' conflitante
-
-                    popover.style.display = 'block';
-                });
-            document.querySelector('.dropdown-menu').style.display = 'none'; // ← fecha dropdown
-        });
-        // Fechar popover
-        document.getElementById('fecharPopover').addEventListener('click', function () {
-            document.getElementById('perfilPopover').style.display = 'none';
-        });
-        // Fecha popover ao clicar fora
-        document.addEventListener('click', function (e) {
-            const popover = document.getElementById('perfilPopover');
-            const perfilLink = document.getElementById('perfilLink');
-            if (popover.style.display === 'block' && !popover.contains(e.target) && e.target !== perfilLink) {
-                popover.style.display = 'none';
-            }
-        });
-        // Função para carregar dados do usuário
-        function carregarDadosUsuario() {
-            fetch('/home/usuario')
-                .then(res => {
-                    if (!res.ok) throw new Error('Não autenticado');
-                    return res.json();
-                })
-                .then(data => {
                     const nomeCompleto = data.nome || 'Usuário';
-                    const cargo = data.cargo || 'USUÁRIO'; // Usar o cargo aqui
-
-                    // Exibe apenas o primeiro nome na barra superior
+                    const cargo = data.cargo || 'USUÁRIO';
                     const primeiroNome = nomeCompleto.split(' ')[0];
+
                     document.getElementById('userName').textContent = primeiroNome;
-
-                    // Exibe nome completo no menu lateral
                     document.getElementById('sidebarUserName').textContent = nomeCompleto;
-
-                    // Atualiza o badge de perfil para exibir o cargo
-                    const perfilBadge = document.querySelector('.profile-role');
-                    if (perfilBadge) {
-                        perfilBadge.textContent = cargo;
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar dados do usuário:', error);
-                    // Opcional: redirecionar para login se não autenticado
-                    // window.location.href = '/login';
+                    document.querySelector('.profile-role').textContent = cargo;
                 });
         }
 
-        // Toggle do dropdown do usuário
-        document.addEventListener('DOMContentLoaded', () => {
-            const userMenu = document.querySelector('.user-menu');
-            const dropdown = userMenu.querySelector('.dropdown-menu');
-            userMenu.addEventListener('click', (e) => {
-                // Só abre se clicar na área do usuário
-                if (e.target.closest('.user-menu')) {
-                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-                }
-            });
-            // Fecha dropdown ao clicar fora
-            document.addEventListener('click', (e) => {
-                if (!userMenu.contains(e.target)) {
-                    dropdown.style.display = 'none';
-                }
-            });
-        });
+        // ========== RESUMO DE HE ==========
+        let limitesPorGerente = {};
+        let valoresPorCargo = {};
 
-        function showPage(pageId) {
-            document.querySelectorAll('.card').forEach(card => {
-                card.style.display = 'none';
-            });
-            document.getElementById(pageId).style.display = 'block';
-
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+        function carregarLimitesHE() {
+            fetch('/json/limite_he.json')
+                .then(r => r.json())
+                .then(data => {
+                    limitesPorGerente = {};
+                    data.forEach(item => {
+                        const valor = parseFloat(item.Valores.replace(/\./g, '').replace(',', '.'));
+                        limitesPorGerente[item.Responsavel] = valor;
+                    });
+                });
         }
 
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                showPage(item.getAttribute('data-page'));
-            });
-        });
+        function carregarValoresHE() {
+            fetch('/json/valores_he.json')
+                .then(r => r.json())
+                .then(data => {
+                    valoresPorCargo = data;
+                });
+        }
 
-        document.getElementById('logoutLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            fetch('/auth/logout-he', { method: 'GET', credentials: 'same-origin' })
-                .then(() => {
-                    window.location.href = '/planejamento-he';
+        function mostrarResumoHE(gerente, mes) {
+            const resumoDiv = document.getElementById('resumoHE');
+            const limite = limitesPorGerente[gerente] || 0;
+
+            if (!gerente || !mes || limite === 0) {
+                resumoDiv.innerHTML = limite === 0 ?
+                    '<div class="alert alert-warning">Esta gerência não tem limite definido para HE.</div>' : '';
+                return;
+            }
+
+            fetch(`/planejamento-he/api/resumo-he?gerente=${encodeURIComponent(gerente)}&mes=${encodeURIComponent(mes)}`)
+                .then(r => r.json())
+                .then(data => {
+                    const aprovado = data.aprovado || 0;
+                    const pendente = data.pendente || 0;
+                    const utilizado = aprovado + pendente;
+                    const saldo = Math.max(0, limite - utilizado);
+
+                    resumoDiv.innerHTML = `
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">Resumo de HE - ${gerente} (${mes})</h6>
+              </div>
+              <div class="card-body p-2">
+                <div class="row text-center small">
+                  <div class="col">
+                    <div class="text-muted">Limite</div>
+                    <div class="font-weight-bold text-success">${limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                  </div>
+                  <div class="col">
+                    <div class="text-muted">Aprovado</div>
+                    <div class="font-weight-bold text-info">${aprovado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                  </div>
+                  <div class="col">
+                    <div class="text-muted">Pendente</div>
+                    <div class="font-weight-bold text-warning">${pendente.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                  </div>
+                  <div class="col">
+                    <div class="text-muted">Saldo</div>
+                    <div class="font-weight-bold ${saldo > 0 ? 'text-success' : 'text-danger'}">
+                      ${saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
                 })
                 .catch(() => {
-                    window.location.href = '/planejamento-he';
+                    resumoDiv.innerHTML = '<div class="alert alert-danger">Erro ao carregar resumo.</div>';
                 });
-        });
+        }
 
-        // Inicialização
+        // ========== FORMULÁRIO DINÂMICO (seu enviar.js integrado) ==========
+        function calcularCustoTotal() {
+            let custoTotal = 0;
+            document.querySelectorAll("#linhasColaboradores .form-row").forEach(row => {
+                const cargo = row.querySelector(".cargo").value;
+                const tipoHE = row.querySelector(".tipoHE").value;
+                const horas = parseFloat(row.querySelector(".horas").value) || 0;
+                if (valoresPorCargo[cargo] && valoresPorCargo[cargo][tipoHE] && horas > 0) {
+                    custoTotal += valoresPorCargo[cargo][tipoHE] * horas;
+                }
+            });
+            document.getElementById("valorTotalHoras").textContent =
+                custoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function addLinhaBootstrap() {
+            const container = document.getElementById("linhasColaboradores");
+            const row = document.createElement("div");
+            row.className = "form-row align-items-end mb-3 p-2 border rounded bg-white";
+            row.innerHTML = `
+        <div class="col-md-3">
+          <label>Colaborador</label>
+          <select class="form-control colaborador"><option value="">Selecione</option></select>
+        </div>
+        <div class="col-md-2">
+          <label>Matrícula</label>
+          <input type="text" class="form-control matricula" readonly>
+        </div>
+        <div class="col-md-2">
+          <label>Cargo</label>
+          <input type="text" class="form-control cargo" readonly>
+        </div>
+        <div class="col-md-2">
+          <label>Tipo HE</label>
+          <select class="form-control tipoHE">
+            <option value="">Selecione</option>
+            <option value="50%">50%</option>
+            <option value="100%">100%</option>
+          </select>
+        </div>
+        <div class="col-md-1">
+          <label>Horas</label>
+          <input type="number" class="form-control horas" min="0.5" step="0.5">
+        </div>
+        <div class="col-md-2">
+          <label>Justificativa</label>
+          <select class="form-control justificativa">
+            <option value="">Selecione</option>
+            <option value="Atendimento fora do horário">Atendimento fora do horário</option>
+            <option value="Demanda emergencial">Demanda emergencial</option>
+            <option value="Cobertura de ausência">Cobertura de ausência</option>
+          </select>
+        </div>
+        <div class="col-md-12 mt-2 text-right">
+          <button type="button" class="btn btn-danger btn-sm remover">Remover</button>
+        </div>
+      `;
+            container.appendChild(row);
+
+            // Carregar colaboradores
+            const gerente = document.getElementById("gerente").value;
+            if (gerente) {
+                fetch(`/planejamento-he/api/colaboradores?gerente=${encodeURIComponent(gerente)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const select = row.querySelector(".colaborador");
+                        select.innerHTML = '<option value="">Selecione</option>';
+                        data.colaboradores.forEach(c => {
+                            const opt = document.createElement("option");
+                            opt.value = c;
+                            opt.textContent = c;
+                            select.appendChild(opt);
+                        });
+                        $(select).select2({ width: '100%', placeholder: "Buscar colaborador" });
+                        $(select).on("select2:select", function (e) {
+                            fetch(`/planejamento-he/api/cargo?nome=${encodeURIComponent(e.params.data.id)}`)
+                                .then(r => r.json())
+                                .then(info => {
+                                    row.querySelector(".cargo").value = info.cargo || "";
+                                    row.querySelector(".matricula").value = info.matricula || "";
+                                });
+                        });
+                    });
+            }
+
+            row.querySelector(".remover").addEventListener("click", () => {
+                row.remove();
+                calcularCustoTotal();
+            });
+            calcularCustoTotal();
+        }
+
+        // ========== EVENTOS ==========
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
-            showPage('novaSolicitacao');
-        });
+            carregarLimitesHE();
+            carregarValoresHE();
 
+            // Preencher mês atual
+            const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            document.getElementById('mes').value = meses[new Date().getMonth()];
+
+            // Carregar gerentes
+            fetch('/planejamento-he/api/gerentes')
+                .then(r => r.json())
+                .then(data => {
+                    const select = document.getElementById('gerente');
+                    data.gerentes.forEach(g => {
+                        const opt = document.createElement('option');
+                        opt.value = g;
+                        opt.textContent = g;
+                        select.appendChild(opt);
+                    });
+                });
+
+            // Eventos
+            document.getElementById("gerente").addEventListener("change", () => {
+                const g = document.getElementById("gerente").value;
+                const m = document.getElementById("mes").value;
+                if (g && m) mostrarResumoHE(g, m);
+                else document.getElementById('resumoHE').innerHTML = '';
+            });
+
+            document.getElementById("mes").addEventListener("change", () => {
+                const g = document.getElementById("gerente").value;
+                const m = document.getElementById("mes").value;
+                if (g && m) mostrarResumoHE(g, m);
+                else document.getElementById('resumoHE').innerHTML = '';
+            });
+
+            document.getElementById("addLinha").addEventListener("click", addLinhaBootstrap);
+            document.getElementById("linhasColaboradores").addEventListener('change', (e) => {
+                if (e.target.classList.contains('horas') || e.target.classList.contains('tipoHE')) {
+                    calcularCustoTotal();
+                }
+            });
+
+            document.getElementById("btnEnviar").addEventListener("click", () => {
+                const gerente = document.getElementById("gerente").value;
+                const mes = document.getElementById("mes").value;
+                let valido = true;
+                const dados = [];
+
+                document.querySelectorAll("#linhasColaboradores .form-row").forEach(row => {
+                    const els = ["colaborador", "matricula", "cargo", "tipoHE", "horas", "justificativa"];
+                    els.forEach(name => {
+                        const el = row.querySelector(`.${name}`);
+                        el.classList.remove("is-invalid");
+                        const msg = el.parentNode.querySelector(".erro-msg");
+                        if (msg) msg.remove();
+                    });
+
+                    const addErro = (el, msg) => {
+                        el.classList.add("is-invalid");
+                        const div = document.createElement("div");
+                        div.className = "erro-msg";
+                        div.textContent = msg;
+                        el.parentNode.appendChild(div);
+                        valido = false;
+                    };
+
+                    const colaborador = row.querySelector(".colaborador");
+                    const matricula = row.querySelector(".matricula");
+                    const cargo = row.querySelector(".cargo");
+                    const tipoHE = row.querySelector(".tipoHE");
+                    const horas = row.querySelector(".horas");
+                    const justificativa = row.querySelector(".justificativa");
+
+                    if (!colaborador.value) addErro(colaborador, "Selecione um colaborador");
+                    if (!matricula.value) addErro(matricula, "Matrícula obrigatória");
+                    if (!cargo.value) addErro(cargo, "Cargo obrigatório");
+                    if (!tipoHE.value) addErro(tipoHE, "Tipo de HE obrigatório");
+                    if (!horas.value || parseFloat(horas.value) <= 0) addErro(horas, "Horas > 0");
+                    if (!justificativa.value) addErro(justificativa, "Justificativa obrigatória");
+
+                    dados.push({
+                        gerente, mes,
+                        colaborador: colaborador.value,
+                        matricula: matricula.value,
+                        cargo: cargo.value,
+                        tipoHE: tipoHE.value,
+                        horas: horas.value,
+                        justificativa: justificativa.value
+                    });
+                });
+
+                if (!gerente || !mes) {
+                    alert("Selecione Gerente e Mês.");
+                    return;
+                }
+                if (!valido) {
+                    alert("Corrija os erros antes de enviar.");
+                    return;
+                }
+
+                fetch("/planejamento-he/enviar-multiplo", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dados)
+                })
+                    .then(r => r.json())
+                    .then(resp => {
+                        alert(resp.mensagem);
+                        if (resp.sucesso) window.location.href = "/planejamento-he/envios";
+                    });
+            });
+
+            // Navegação
+            function showPage(id) {
+                document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+                document.getElementById(id).style.display = 'block';
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                document.querySelector(`[data-page="${id}"]`).classList.add('active');
+            }
+            document.querySelectorAll('.menu-item').forEach(i => {
+                i.addEventListener('click', e => {
+                    e.preventDefault();
+                    showPage(i.getAttribute('data-page'));
+                });
+            });
+            showPage('novaSolicitacao');
+
+            // Dropdown usuário
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = userMenu.querySelector('.dropdown-menu');
+            userMenu.addEventListener('click', () => {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', e => {
+                if (!userMenu.contains(e.target)) dropdown.style.display = 'none';
+            });
+
+            // Perfil
+            document.getElementById('perfilLink').addEventListener('click', e => {
+                e.preventDefault();
+                fetch('/home/usuario')
+                    .then(r => r.json())
+                    .then(data => {
+                        document.getElementById('popoverNome').textContent = data.nome || '';
+                        document.getElementById('popoverEmail').textContent = data.email || '';
+                        document.getElementById('popoverCargo').textContent = data.cargo || '';
+                        document.getElementById('perfilPopover').style.display = 'block';
+                    });
+                dropdown.style.display = 'none';
+            });
+            document.getElementById('fecharPopover').addEventListener('click', () => {
+                document.getElementById('perfilPopover').style.display = 'none';
+            });
+            document.addEventListener('click', e => {
+                const popover = document.getElementById('perfilPopover');
+                if (popover.style.display === 'block' && !popover.contains(e.target) && e.target.id !== 'perfilLink') {
+                    popover.style.display = 'none';
+                }
+            });
+
+            // Logout
+            document.getElementById('logoutLink').addEventListener('click', e => {
+                e.preventDefault();
+                if (confirm('Tem certeza que deseja sair?')) {
+                    window.location.href = '/auth/logout-he';
+                }
+            });
+        });
     </script>
 </body>
 
