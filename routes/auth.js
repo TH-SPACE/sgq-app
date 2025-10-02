@@ -163,4 +163,12 @@ router.get("/logout", (req, res) => {
   });
 });
 
+// 🔓 Rota de logout específica para planejamento-he
+router.post("/logout-he", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) console.error("Erro ao destruir sessão:", err);
+    res.redirect("/planejamento-he");
+  });
+});
+
 module.exports = router;

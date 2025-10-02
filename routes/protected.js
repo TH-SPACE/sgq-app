@@ -6,10 +6,6 @@ const uploadPosbd = require("../controllers/uploadPosbd");
 
 const vidaSigitm = require("../controllers/sigitm");
 
-
-
-
-
 router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/index.html"));
 });

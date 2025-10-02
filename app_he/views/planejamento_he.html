@@ -257,9 +257,53 @@
                 <i class="fas fa-chevron-down"></i>
             </div>
             <div class="dropdown-menu">
+                <a href="#" id="perfilLink"><i class="fas fa-user"></i> Ver Perfil</a>
                 <a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Sair</a>
             </div>
         </div>
+    </div>
+
+    <!-- Popover de Perfil do Usuário -->
+    <div id="perfilPopover"
+        style="display:none; position:absolute; right:1.5rem; top:56px; width:240px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12); z-index:2000; padding:0.75rem; font-size:0.95rem;">
+        <div style="font-weight:bold; margin-bottom:0.5rem;">Perfil do Usuário</div>
+        <div><b>Nome:</b> <span id="popoverNome"></span></div>
+        <div><b>Email:</b> <span id="popoverEmail"></span></div>
+        <div><b>Cargo:</b> <span id="popoverCargo"></span></div>
+        <div style="text-align:right; margin-top:0.5rem;"><button id="fecharPopover"
+                class="btn btn-sm btn-secondary">Fechar</button></div>
+    </div>
+
+    <!-- Modal de Perfil do Usuário -->
+    <div class="modal fade" id="perfilModal" tabindex="-1" role="dialog" aria-labelledby="perfilModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="perfilModalLabel">Perfil do Usuário</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="perfilNome">Nome</label>
+                        <input type="text" class="form-control" id="perfilNome" name="nome" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="perfilEmail">Email</label>
+                        <input type="email" class="form-control" id="perfilEmail" name="email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="perfilCargo">Cargo</label>
+                        <input type="text" class="form-control" id="perfilCargo" name="cargo" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
     </div>
 
     <!-- Corpo Principal -->
@@ -375,6 +419,36 @@
     <!-- Script de navegação e logout -->
     <!-- Script de navegação, logout e dados do usuário -->
     <script>
+        // Abrir popover de perfil ao clicar em 'Ver Perfil'
+        document.getElementById('perfilLink').addEventListener('click', function (e) {
+            e.preventDefault();
+            fetch('/home/usuario')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('popoverNome').textContent = data.nome || '';
+                    document.getElementById('popoverEmail').textContent = data.email || '';
+                    document.getElementById('popoverCargo').textContent = data.cargo || '';
+                    const popover = document.getElementById('perfilPopover');
+                    const link = document.getElementById('perfilLink');
+                    const rect = link.getBoundingClientRect();
+                    popover.style.position = 'absolute';
+                    popover.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+                    popover.style.left = (rect.right + window.scrollX - 10) + 'px';
+                    popover.style.display = 'block';
+                });
+        });
+        // Fechar popover
+        document.getElementById('fecharPopover').addEventListener('click', function () {
+            document.getElementById('perfilPopover').style.display = 'none';
+        });
+        // Fecha popover ao clicar fora
+        document.addEventListener('click', function (e) {
+            const popover = document.getElementById('perfilPopover');
+            const perfilLink = document.getElementById('perfilLink');
+            if (popover.style.display === 'block' && !popover.contains(e.target) && e.target !== perfilLink) {
+                popover.style.display = 'none';
+            }
+        });
         // Função para carregar dados do usuário
         function carregarDadosUsuario() {
             fetch('/home/usuario')
@@ -406,6 +480,24 @@
                 });
         }
 
+        // Toggle do dropdown do usuário
+        document.addEventListener('DOMContentLoaded', () => {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = userMenu.querySelector('.dropdown-menu');
+            userMenu.addEventListener('click', (e) => {
+                // Só abre se clicar na área do usuário
+                if (e.target.closest('.user-menu')) {
+                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+            // Fecha dropdown ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (!userMenu.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+
         function showPage(pageId) {
             document.querySelectorAll('.card').forEach(card => {
                 card.style.display = 'none';
@@ -427,9 +519,13 @@
 
         document.getElementById('logoutLink').addEventListener('click', (e) => {
             e.preventDefault();
-            if (confirm('Tem certeza que deseja sair?')) {
-                window.location.href = '/auth/logout';
-            }
+            fetch('/auth/logout-he', { method: 'POST', credentials: 'same-origin' })
+                .then(() => {
+                    window.location.href = '/planejamento-he';
+                })
+                .catch(() => {
+                    window.location.href = '/planejamento-he';
+                });
         });
 
         // Inicialização

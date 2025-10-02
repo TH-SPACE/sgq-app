@@ -17,6 +17,7 @@ const { verificaLogin, verificaADM } = require("./middlewares/autenticacao");
 // ⚙️ Inicializações
 dotenv.config();
 const app = express();
+console.log('Aplicação criada por Thiago Alves Nunes');
 const PORT = process.env.PORT || 3000;
 
 // Configuração do Multer
