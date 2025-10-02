@@ -380,49 +380,61 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   showPage("novaSolicitacao");
 
-  // Dropdown usuário
-  const userMenu = document.querySelector(".user-menu");
-  const dropdown = userMenu.querySelector(".dropdown-menu");
-  userMenu.addEventListener("click", () => {
-    dropdown.style.display =
-      dropdown.style.display === "block" ? "none" : "block";
-  });
-  document.addEventListener("click", (e) => {
-    if (!userMenu.contains(e.target)) dropdown.style.display = "none";
+  // ================= NOVA LÓGICA PARA DROPDOWN E POPOVER =================
+
+  // Elementos
+  const userMenu = document.querySelector('.user-menu');
+  const dropdown = userMenu.querySelector('.dropdown-menu');
+  const perfilPopover = document.getElementById('perfilPopover');
+  const perfilLink = document.getElementById('perfilLink');
+  const fecharPopoverBtn = document.getElementById('fecharPopover');
+
+  // Abrir/Fechar Dropdown
+  userMenu.addEventListener('click', (e) => {
+    if (e.target.closest('#perfilLink')) return; // Se clicar no link do perfil, não faz nada aqui
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
   });
 
-  // Perfil
-  document.getElementById("perfilLink").addEventListener("click", (e) => {
+  // Abrir Popover de Perfil
+  perfilLink.addEventListener('click', (e) => {
     e.preventDefault();
-    const popover = document.getElementById("perfilPopover");
-    const userMenu = document.querySelector(".user-menu");
-    const rect = userMenu.getBoundingClientRect();
+    e.stopPropagation(); // Impede que o clique se propague para outros elementos
 
-    // Posiciona o popover dinamicamente abaixo do menu do usuário
-    popover.style.top = rect.bottom + 5 + "px";
+    dropdown.style.display = 'none'; // Garante que o dropdown feche
 
-    fetch("/home/usuario")
-      .then((r) => r.json())
-      .then((data) => {
-        document.getElementById("popoverNome").textContent = data.nome || "";
-        document.getElementById("popoverEmail").textContent = data.email || "";
-        document.getElementById("popoverCargo").textContent = data.cargo || "";
-        popover.style.display = "block";
-      });
+    const userMenuRect = userMenu.getBoundingClientRect();
+    perfilPopover.style.top = `${userMenuRect.bottom + 5}px`;
+    perfilPopover.style.left = 'auto';
+    perfilPopover.style.right = '1.5rem';
 
-    if (dropdown) dropdown.style.display = "none";
+    if (perfilPopover.style.display === 'block') {
+        perfilPopover.style.display = 'none';
+    } else {
+        fetch('/home/usuario')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('popoverNome').textContent = data.nome || '';
+                document.getElementById('popoverEmail').textContent = data.email || '';
+                document.getElementById('popoverCargo').textContent = data.cargo || '';
+                perfilPopover.style.display = 'block';
+            });
+    }
   });
-  document.getElementById("fecharPopover").addEventListener("click", () => {
-    document.getElementById("perfilPopover").style.display = "none";
+
+  // Fechar Popover
+  fecharPopoverBtn.addEventListener('click', () => {
+    perfilPopover.style.display = 'none';
   });
-  document.addEventListener("click", (e) => {
-    const popover = document.getElementById("perfilPopover");
-    if (
-      popover.style.display === "block" &&
-      !popover.contains(e.target) &&
-      e.target.id !== "perfilLink"
-    ) {
-      popover.style.display = "none";
+
+  // Fechar menus ao clicar fora
+  document.addEventListener('click', (e) => {
+    // Fecha dropdown se clicar fora
+    if (!userMenu.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+    // Fecha popover se clicar fora
+    if (perfilPopover.style.display === 'block' && !perfilPopover.contains(e.target) && e.target !== perfilLink) {
+      perfilPopover.style.display = 'none';
     }
   });
 
