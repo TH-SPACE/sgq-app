@@ -90,4 +90,41 @@ router.get("/api/cargo", heAuth.requireHEAuth, async (req, res) => {
     }
 });
 
+// Rota para buscar resumo de HE por gerente e mês
+router.get("/api/resumo-he", async (req, res) => {
+    const { gerente, mes } = req.query;
+
+    if (!gerente || !mes) {
+        return res.status(400).json({ erro: "Parâmetros 'gerente' e 'mes' são obrigatórios." });
+    }
+
+    try {
+        const conexao = db.mysqlPool;
+
+        // Busca valor APROVADO
+        const [aprovadoResult] = await conexao.query(
+            `SELECT COALESCE(SUM(HORAS * ?), 0) AS valor 
+       FROM PLANEJAMENTO_HE 
+       WHERE GERENTE = ? AND MES = ? AND STATUS = 'APROVADO'`,
+            [1, gerente, mes] // ⚠️ Substitua "1" pelo valor real por hora (ou ajuste conforme sua lógica)
+        );
+
+        // Busca valor PENDENTE
+        const [pendenteResult] = await conexao.query(
+            `SELECT COALESCE(SUM(HORAS * ?), 0) AS valor 
+       FROM PLANEJAMENTO_HE 
+       WHERE GERENTE = ? AND MES = ? AND STATUS = 'PENDENTE'`,
+            [1, gerente, mes]
+        );
+
+        res.json({
+            aprovado: parseFloat(aprovadoResult[0].valor) || 0,
+            pendente: parseFloat(pendenteResult[0].valor) || 0
+        });
+    } catch (error) {
+        console.error("Erro ao buscar resumo HE:", error);
+        res.status(500).json({ erro: "Erro ao buscar dados." });
+    }
+});
+
 module.exports = router;
