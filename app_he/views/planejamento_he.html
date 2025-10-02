@@ -16,6 +16,36 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css  " rel="stylesheet">
 
     <style>
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-5px);
+            }
+
+            40% {
+                transform: translateX(5px);
+            }
+
+            60% {
+                transform: translateX(-5px);
+            }
+
+            80% {
+                transform: translateX(5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        tr.shake {
+            animation: shake 0.4s;
+        }
+
         :root {
             --primary-color: #6a1b9a;
             --primary-light: #e1bee7;
@@ -374,8 +404,24 @@
                 <!-- Resumo de HE -->
                 <div id="resumoHE" class="mb-4"></div>
 
-                <!-- Linhas de colaboradores -->
-                <div id="linhasColaboradores"></div>
+                <!-- Linhas de colaboradores em tabela -->
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Colaborador</th>
+                                <th>Matrícula</th>
+                                <th>Cargo</th>
+                                <th>Tipo HE</th>
+                                <th>Horas</th>
+                                <th>Justificativa</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="linhasColaboradores"></tbody>
+                    </table>
+                </div>
+
 
                 <button type="button" id="addLinha" class="btn btn-secondary mb-3">
                     + Adicionar Colaborador
@@ -383,7 +429,7 @@
 
                 <div class="text-right mb-3">
                     <h4 class="font-weight-bold">
-                        Custo Total Estimado: <span id="valorTotalHoras">R$ 0,00</span>
+                        Estimativa Atual de Custos: <span id="valorTotalHoras">R$ 0,00</span>
                     </h4>
                 </div>
 
