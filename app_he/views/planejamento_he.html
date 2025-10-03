@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planejamento de Horas Extras</title>
 
-    <!-- Bootstrap 4.6.2 (compatível com seu enviar.js) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css  ">
+    <!-- Bootstrap 4.6.2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css  ">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css  " rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
     <style>
         @keyframes shake {
@@ -61,7 +61,6 @@
             flex-direction: column;
         }
 
-        /* Barra Superior Fixa */
         .navbar {
             background-color: var(--primary-color);
             color: white;
@@ -113,16 +112,13 @@
             background-color: #f8f9fa;
         }
 
-        /* Corpo Principal */
         .main-content {
             display: flex;
             flex: 1;
             margin-top: 56px;
-            /* Altura da barra superior */
             overflow: hidden;
         }
 
-        /* Menu Lateral */
         .sidebar {
             width: 250px;
             background-color: var(--primary-color);
@@ -138,7 +134,6 @@
             background-color: var(--primary-light);
             color: var(--primary-color);
             text-align: center;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-profile {
@@ -185,11 +180,10 @@
         .menu-item {
             padding: 0.75rem 1.5rem;
             color: white;
-            text-decoration: none;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: background-color 0.2s;
+            text-decoration: none;
             border-left: 4px solid transparent;
         }
 
@@ -203,7 +197,6 @@
             font-weight: bold;
         }
 
-        /* Conteúdo Principal */
         .content {
             flex: 1;
             padding: 1.5rem;
@@ -233,53 +226,43 @@
             background-color: #ffe6e6;
         }
 
-        .erro-msg {
-            color: red;
-            font-size: 0.85em;
-        }
-
         .select2-container .select2-selection--single {
             height: 38px !important;
             padding: 5px 8px !important;
         }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                flex-direction: row;
-                overflow-x: auto;
-            }
+        /* Offcanvas Sidebar */
+        .offcanvas {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100%;
+            background: #fff;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease-in-out;
+            z-index: 1050;
+            padding: 1rem;
+        }
 
-            .sidebar-header {
-                padding: 1rem;
-                flex-shrink: 0;
-            }
+        .offcanvas.show {
+            right: 0;
+        }
 
-            .menu-title {
-                display: none;
-            }
-
-            .menu-item {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .content {
-                padding: 1rem;
-            }
+        .offcanvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 
 <body>
-    <!-- Barra Superior Fixa -->
+    <!-- Barra Superior -->
     <div class="navbar">
-        <div class="navbar-brand">
-            <i class="fas fa-calendar-check"></i>
-            Planejamento Horas Extras
-        </div>
+        <div class="navbar-brand"><i class="fas fa-calendar-check"></i> Planejamento Horas Extras</div>
         <div class="user-menu">
             <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                 <i class="fas fa-user-circle"></i>
@@ -293,47 +276,28 @@
         </div>
     </div>
 
-    <!-- Popover de Perfil do Usuário -->
-    <div id="perfilPopover"
-        style="display:none; position:absolute; width:240px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12); z-index:2000; padding:0.75rem; font-size:0.95rem;">
-        <div style="font-weight:bold; margin-bottom:0.5rem;">Perfil do Usuário</div>
-        <div><b>Nome:</b> <span id="popoverNome"></span></div>
-        <div><b>Email:</b> <span id="popoverEmail"></span></div>
-        <div><b>Cargo:</b> <span id="popoverCargo"></span></div>
-        <div style="text-align:right; margin-top:0.5rem;"><button id="fecharPopover"
-                class="btn btn-sm btn-secondary">Fechar</button></div>
-    </div>
-
-    <!-- Modal de Perfil do Usuário -->
-    <div class="modal fade" id="perfilModal" tabindex="-1" role="dialog" aria-labelledby="perfilModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="perfilModalLabel">Perfil do Usuário</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="perfilNome">Nome</label>
-                        <input type="text" class="form-control" id="perfilNome" name="nome" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="perfilEmail">Email</label>
-                        <input type="email" class="form-control" id="perfilEmail" name="email" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="perfilCargo">Cargo</label>
-                        <input type="text" class="form-control" id="perfilCargo" name="cargo" readonly>
-                    </div>
-                </div>
+    <!-- Sidebar de Perfil -->
+    <div class="offcanvas" id="perfilSidebar">
+        <div class="offcanvas-header">
+            <h5><i class="fas fa-user"></i> Perfil do Usuário</h5>
+            <button type="button" class="close text-reset" id="fecharPerfilSidebar">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="form-group">
+                <label for="perfilNome">Nome</label>
+                <input type="text" class="form-control" id="perfilNome" readonly>
+            </div>
+            <div class="form-group">
+                <label for="perfilEmail">Email</label>
+                <input type="email" class="form-control" id="perfilEmail" readonly>
+            </div>
+            <div class="form-group">
+                <label for="perfilCargo">Cargo</label>
+                <input type="text" class="form-control" id="perfilCargo" readonly>
             </div>
         </div>
-    </div>
-    </div>
-    </div>
     </div>
 
     <!-- Corpo Principal -->
@@ -342,33 +306,26 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-profile">
-                    <div class="profile-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
+                    <div class="profile-icon"><i class="fas fa-user"></i></div>
                     <div class="profile-name" id="sidebarUserName">...</div>
                     <div class="profile-role">USUÁRIO</div>
                 </div>
             </div>
-            <div class="menu-title"
-                style="padding:0.75rem 1.5rem; font-weight:bold; color:#ccc; font-size:0.85rem; text-transform:uppercase;">
-                MENU PRINCIPAL</div>
-            <a href="#" class="menu-item active" data-page="novaSolicitacao">
-                <i class="fas fa-plus"></i> Nova Solicitação
-            </a>
-            <a href="#" class="menu-item" data-page="minhasSolicitacoes">
-                <i class="fas fa-list"></i> Minhas Solicitações
-            </a>
-            <a href="#" class="menu-item" data-page="solicitacoesEquipe">
-                <i class="fas fa-users"></i> Solicitações da Equipe
-            </a>
+            <div class="menu-title">MENU PRINCIPAL</div>
+            <a href="#" class="menu-item active" data-page="novaSolicitacao"><i class="fas fa-plus"></i> Nova
+                Solicitação</a>
+            <a href="#" class="menu-item" data-page="minhasSolicitacoes"><i class="fas fa-list"></i> Minhas
+                Solicitações</a>
+            <a href="#" class="menu-item" data-page="solicitacoesEquipe"><i class="fas fa-users"></i> Solicitações da
+                Equipe</a>
         </div>
 
         <div class="content">
             <!-- Tela: Nova Solicitação -->
+            <h3 class="text-center mb-3" style="color:#6a1b9a; font-weight:bold;">
+                <i class="fa-solid fa-paper-plane text-primary"></i> Enviar Planejamento de Horas Extras
+            </h3>
             <div id="novaSolicitacao" class="card">
-                <h3 class="text-center mb-4">
-                    <i class="fa-solid fa-paper-plane text-primary"></i> Enviar Planejamento de Horas Extras
-                </h3>
 
                 <!-- Seleção fixa -->
                 <div class="row">
@@ -404,7 +361,7 @@
                 <!-- Resumo de HE -->
                 <div id="resumoHE" class="mb-4"></div>
 
-                <!-- Linhas de colaboradores em tabela -->
+                <!-- Linhas de colaboradores -->
                 <div class="table-responsive mb-3">
                     <table class="table table-sm table-bordered">
                         <thead class="thead-light">
@@ -422,10 +379,7 @@
                     </table>
                 </div>
 
-
-                <button type="button" id="addLinha" class="btn btn-secondary mb-3">
-                    + Adicionar Colaborador
-                </button>
+                <button type="button" id="addLinha" class="btn btn-secondary mb-3">+ Adicionar Colaborador</button>
 
                 <div class="text-right mb-3">
                     <h4 class="font-weight-bold">
@@ -454,9 +408,26 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <!-- Script principal -->
     <script src="/public/js/enviar.js"></script>
+
+    <script>
+        // JS para abrir/fechar sidebar de perfil
+        document.getElementById("perfilLink").addEventListener("click", (e) => {
+            e.preventDefault();
+            fetch("/home/usuario")
+                .then((r) => r.json())
+                .then((data) => {
+                    document.getElementById("perfilNome").value = data.nome || "";
+                    document.getElementById("perfilEmail").value = data.email || "";
+                    document.getElementById("perfilCargo").value = data.cargo || "";
+                    document.getElementById("perfilSidebar").classList.add("show");
+                });
+        });
+
+        document.getElementById("fecharPerfilSidebar").addEventListener("click", () => {
+            document.getElementById("perfilSidebar").classList.remove("show");
+        });
+    </script>
 </body>
 
 </html>

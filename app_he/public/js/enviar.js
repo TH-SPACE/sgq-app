@@ -1,4 +1,6 @@
 // ========== DADOS DO USUÁRIO ==========
+// Função responsável por carregar os dados do usuário logado (nome, cargo, etc.)
+// e atualizar elementos da interface com essas informações.
 function carregarDadosUsuario() {
     fetch("/home/usuario")
         .then((res) => res.json())
@@ -14,9 +16,13 @@ function carregarDadosUsuario() {
 }
 
 // ========== RESUMO DE HE ==========
+// Variáveis globais para armazenar dados carregados de arquivos JSON:
+// - limitesPorGerente: mapeia gerentes aos seus limites financeiros de HE (Horas Extras)
+// - valoresPorCargo: mapeia cargos aos valores/hora por tipo de HE (50%, 100%)
 let limitesPorGerente = {};
 let valoresPorCargo = {};
 
+// Carrega os limites de HE por gerente a partir de um arquivo JSON estático
 function carregarLimitesHE() {
     fetch("/json/limite_he.json")
         .then((r) => r.json())
@@ -31,6 +37,7 @@ function carregarLimitesHE() {
         });
 }
 
+// Carrega os valores por cargo e tipo de HE (50% ou 100%) a partir de um arquivo JSON estático
 function carregarValoresHE() {
     fetch("/json/valores_he.json")
         .then((r) => r.json())
@@ -39,10 +46,13 @@ function carregarValoresHE() {
         });
 }
 
+// Exibe um resumo financeiro de HE para um gerente e mês específicos
+// Mostra limite, valor aprovado, pendente, saldo e estimativa de custo
 function mostrarResumoHE(gerente, mes) {
     const resumoDiv = document.getElementById("resumoHE");
     const limite = limitesPorGerente[gerente] || 0;
 
+    // Se não houver gerente, mês ou limite definido, exibe mensagem apropriada ou limpa o resumo
     if (!gerente || !mes || limite === 0) {
         resumoDiv.innerHTML =
             limite === 0
@@ -51,6 +61,7 @@ function mostrarResumoHE(gerente, mes) {
         return;
     }
 
+    // Busca dados de HE aprovadas e pendentes via API
     fetch(
         `/planejamento-he/api/resumo-he?gerente=${encodeURIComponent(
             gerente
@@ -63,16 +74,42 @@ function mostrarResumoHE(gerente, mes) {
             const utilizado = aprovado + pendente;
             const saldo = Math.max(0, limite - utilizado);
 
+            // Renderiza o resumo com formatação em BRL (Real brasileiro)
             resumoDiv.innerHTML = `
-  <div class="alert alert-info py-2 px-3" style="font-size:0.85rem;">
-    <strong>Resumo de HE - ${gerente} (${mes}):</strong><br>
-    <span class="text-muted">Limite:</span> <span class="text-success">${limite.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span> | 
-    <span class="text-muted">Aprovado:</span> <span class="text-info">${aprovado.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span> | 
-    <span class="text-muted">Pendente:</span> <span class="text-warning">${pendente.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span> | 
-    <span class="text-muted">Saldo:</span> <span class="${saldo > 0 ? "text-success" : "text-danger"}">
-      ${saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-    </span> | 
-    <span class="text-muted">Estimativa Atual de Custos:</span> <span id="valorTotalHorasResumo" class="font-weight-bold">R$ 0,00</span>
+  <div class="mb-2">
+    <strong style="font-size:1rem; color:#000;">Resumo de HE - ${gerente} (${mes})</strong>
+  </div>
+  <div class="row">
+    <div class="col-md-2 col-6 mb-2">
+      <div class="alert alert-primary p-2 mb-0 text-center">
+        <div class="font-weight-bold">Limite</div>
+        <div>${limite.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-2">
+      <div class="alert alert-info p-2 mb-0 text-center">
+        <div class="font-weight-bold">Aprovado</div>
+        <div>${aprovado.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-2">
+      <div class="alert alert-warning p-2 mb-0 text-center">
+        <div class="font-weight-bold">Pendente</div>
+        <div>${pendente.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-2">
+      <div class="alert ${saldo > 0 ? "alert-success" : "alert-danger"} p-2 mb-0 text-center">
+        <div class="font-weight-bold">Saldo</div>
+        <div>${saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-12 mb-2">
+      <div class="alert alert-dark p-2 mb-0 text-center">
+        <div class="font-weight-bold">Estimativa Atual de Custos</div>
+        <div id="valorTotalHorasResumo">R$ 0,00</div>
+      </div>
+    </div>
   </div>
 `;
         })
@@ -82,22 +119,27 @@ function mostrarResumoHE(gerente, mes) {
         });
 }
 
+// Calcula o custo total das horas extras com base nas linhas preenchidas na tabela
+// e atualiza os elementos que exibem esse valor (no rodapé e no resumo)
 function calcularCustoTotal() {
     let custoTotal = 0;
 
+    // Itera sobre todas as linhas da tabela de colaboradores
     document.querySelectorAll("#linhasColaboradores tr").forEach((row) => {
         const cargo = row.querySelector(".cargo")?.value || "";
         const tipoHE = row.querySelector(".tipoHE")?.value || "";
         const horas = parseFloat(row.querySelector(".horas")?.value) || 0;
 
+        // Se houver valor definido para o cargo e tipo de HE, calcula o custo
         if (valoresPorCargo[cargo] && valoresPorCargo[cargo][tipoHE] && horas > 0) {
             custoTotal += valoresPorCargo[cargo][tipoHE] * horas;
         }
     });
 
-    // Atualiza os dois locais (resumo e rodapé, se ainda existir)
+    // Formata o valor total em BRL
     const valorTotal = custoTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+    // Atualiza os elementos na página que mostram o valor total
     const totalRodape = document.getElementById("valorTotalHoras");
     if (totalRodape) totalRodape.textContent = valorTotal;
 
@@ -106,10 +148,13 @@ function calcularCustoTotal() {
 }
 
 
+// Adiciona uma nova linha à tabela de planejamento de HE
+// com campos para colaborador, matrícula, cargo, tipo de HE, horas e justificativa
 function addLinhaTabela() {
     const tbody = document.getElementById("linhasColaboradores");
     const row = document.createElement("tr");
 
+    // Cria o HTML da nova linha com campos de formulário
     row.innerHTML = `
     <td>
       <select class="form-control form-control-sm colaborador">
@@ -129,9 +174,16 @@ function addLinhaTabela() {
     <td>
       <select class="form-control form-control-sm justificativa">
         <option value="">Selecione</option>
-        <option value="Atendimento fora do horário">Atendimento fora do horário</option>
-        <option value="Demanda emergencial">Demanda emergencial</option>
-        <option value="Cobertura de ausência">Cobertura de ausência</option>
+        <option value="B2B Avançado">B2B Avançado</option>
+        <option value="BackOffice">BackOffice</option>
+        <option value="Célula Agendamento Regional">Célula Agendamento Regional</option>
+        <option value="Implantação">Implantação</option>
+        <option value="Manutenção de Redes">Manutenção de Redes</option>
+        <option value="Móvel">Móvel</option>
+        <option value="O&M">O&M</option>
+        <option value="Produção">Produção</option>
+        <option value="Projetos Especiais">Projetos Especiais</option>
+        <option value="Reparo">Reparo</option>
       </select>
     </td>
     <td class="text-center">
@@ -141,7 +193,7 @@ function addLinhaTabela() {
 
     tbody.appendChild(row);
 
-    // Carregar colaboradores via API
+    // Carrega a lista de colaboradores do gerente selecionado via API
     const gerente = document.getElementById("gerente").value;
     if (gerente) {
         fetch(`/planejamento-he/api/colaboradores?gerente=${encodeURIComponent(gerente)}`)
@@ -155,7 +207,9 @@ function addLinhaTabela() {
                     opt.textContent = c;
                     select.appendChild(opt);
                 });
+                // Inicializa o Select2 para busca amigável
                 $(select).select2({ width: "100%", placeholder: "Buscar colaborador" });
+                // Ao selecionar um colaborador, busca seu cargo e matrícula
                 $(select).on("select2:select", function (e) {
                     fetch(`/planejamento-he/api/cargo?nome=${encodeURIComponent(e.params.data.id)}`)
                         .then((r) => r.json())
@@ -167,23 +221,25 @@ function addLinhaTabela() {
             });
     }
 
-    // Evento remover
+    // Configura o botão de remover linha
     row.querySelector(".remover").addEventListener("click", () => {
         row.remove();
-        calcularCustoTotal();
+        calcularCustoTotal(); // Atualiza o custo após remoção
     });
 
-    calcularCustoTotal();
+    calcularCustoTotal(); // Atualiza o custo mesmo que a linha esteja vazia (por segurança)
 }
 
 
 // ========== EVENTOS ==========
+// Executado quando o DOM está totalmente carregado
 document.addEventListener("DOMContentLoaded", () => {
+    // Carrega dados iniciais
     carregarDadosUsuario();
     carregarLimitesHE();
     carregarValoresHE();
 
-    // Preencher mês atual
+    // Define o mês atual como valor padrão no seletor de mês
     const meses = [
         "Janeiro",
         "Fevereiro",
@@ -200,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     document.getElementById("mes").value = meses[new Date().getMonth()];
 
-    // Carregar gerentes
+    // Carrega a lista de gerentes via API e popula o seletor
     fetch("/planejamento-he/api/gerentes")
         .then((r) => r.json())
         .then((data) => {
@@ -213,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-    // Eventos
+    // Eventos de mudança no seletor de gerente e mês: atualizam o resumo de HE
     document.getElementById("gerente").addEventListener("change", () => {
         const g = document.getElementById("gerente").value;
         const m = document.getElementById("mes").value;
@@ -228,8 +284,24 @@ document.addEventListener("DOMContentLoaded", () => {
         else document.getElementById("resumoHE").innerHTML = "";
     });
 
-    document.getElementById("addLinha").addEventListener("click", addLinhaTabela);
+    // Adiciona uma nova linha à tabela ao clicar no botão "+"
+    document.getElementById("addLinha").addEventListener("click", () => {
+        const gerente = document.getElementById("gerente").value;
+        if (!gerente) {
+            // Mostra alerta se não tiver gerente selecionado
+            const resumoDiv = document.getElementById("resumoHE");
+            resumoDiv.innerHTML = `
+      <div class="alert alert-danger py-2 px-3">
+        <i class="fas fa-exclamation-triangle"></i> 
+        Selecione um <strong>Gerente</strong> antes de adicionar colaboradores.
+      </div>
+    `;
+            return;
+        }
+        addLinhaTabela(); // só adiciona se gerente estiver escolhido
+    });
 
+    // Recalcula o custo total sempre que o valor de horas ou tipo de HE for alterado
     document.getElementById("linhasColaboradores").addEventListener("change", (e) => {
         if (
             e.target.classList.contains("horas") ||
@@ -239,12 +311,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Lógica de envio do formulário de planejamento de HE
     document.getElementById("btnEnviar").addEventListener("click", () => {
         const gerente = document.getElementById("gerente").value;
         const mes = document.getElementById("mes").value;
         let valido = true;
         const dados = [];
 
+        // Valida cada linha da tabela
         document.querySelectorAll("#linhasColaboradores tr").forEach((row) => {
             let linhaValida = true;
 
@@ -255,11 +329,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const horas = row.querySelector(".horas");
             const justificativa = row.querySelector(".justificativa");
 
-            // reset classes
+            // Remove classes de erro antes da validação
             [colaborador, matricula, cargo, tipoHE, horas, justificativa].forEach((el) => {
                 el.classList.remove("is-invalid");
             });
 
+            // Valida campos obrigatórios
             if (!colaborador.value) { colaborador.classList.add("is-invalid"); linhaValida = false; }
             if (!matricula.value) { matricula.classList.add("is-invalid"); linhaValida = false; }
             if (!cargo.value) { cargo.classList.add("is-invalid"); linhaValida = false; }
@@ -267,12 +342,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!horas.value || parseFloat(horas.value) <= 0) { horas.classList.add("is-invalid"); linhaValida = false; }
             if (!justificativa.value) { justificativa.classList.add("is-invalid"); linhaValida = false; }
 
+            // Se a linha for inválida, aplica animação de erro
             if (!linhaValida) {
                 valido = false;
                 row.classList.add("shake");
-                setTimeout(() => row.classList.remove("shake"), 500); // remove a classe pra poder animar de novo depois
+                setTimeout(() => row.classList.remove("shake"), 500); // remove animação após 500ms
             }
 
+            // Coleta os dados da linha para envio
             dados.push({
                 gerente,
                 mes,
@@ -285,16 +362,18 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-
+        // Verifica se gerente e mês foram selecionados
         if (!gerente || !mes) {
             alert("Selecione Gerente e Mês.");
             return;
         }
+        // Se houver erros de validação, não envia
         if (!valido) {
-            //alert("Corrija os erros antes de enviar.");
+            // alert("Corrija os erros antes de enviar."); // Alert comentado propositalmente
             return;
         }
 
+        // Envia os dados para o backend
         fetch("/planejamento-he/enviar-multiplo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -307,7 +386,8 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     });
 
-    // Navegação
+    // ========== NAVEGAÇÃO ENTRE PÁGINAS (abas) ==========
+    // Função para exibir uma aba específica e esconder as demais
     function showPage(id) {
         document
             .querySelectorAll(".card")
@@ -318,29 +398,35 @@ document.addEventListener("DOMContentLoaded", () => {
             .forEach((i) => i.classList.remove("active"));
         document.querySelector(`[data-page="${id}"]`).classList.add("active");
     }
+
+    // Configura os cliques nos itens do menu para alternar abas
     document.querySelectorAll(".menu-item").forEach((i) => {
         i.addEventListener("click", (e) => {
             e.preventDefault();
             showPage(i.getAttribute("data-page"));
         });
     });
+
+    // Exibe a aba inicial por padrão
     showPage("novaSolicitacao");
 
-    // Dropdown usuário
+    // ========== MENU DO USUÁRIO (dropdown) ==========
     const userMenu = document.querySelector(".user-menu");
     const dropdown = userMenu.querySelector(".dropdown-menu");
+
+    // Alterna a visibilidade do dropdown ao clicar no ícone do usuário
     userMenu.addEventListener("click", (e) => {
-        if (e.target.id === "perfilLink") return;
+        if (e.target.id === "perfilLink") return; // Evita fechar ao clicar no link de perfil
         dropdown.style.display =
             dropdown.style.display === "block" ? "none" : "block";
     });
 
-    // Perfil (agora abre um modal)
+    // Ao clicar em "Perfil", abre um modal com os dados do usuário
     document.getElementById("perfilLink").addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        dropdown.style.display = "none";
+        dropdown.style.display = "none"; // Fecha o dropdown
 
         fetch("/home/usuario")
             .then((r) => r.json())
@@ -349,18 +435,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("perfilEmail").value = data.email || "";
                 document.getElementById("perfilCargo").value = data.cargo || "";
 
-                $("#perfilModal").modal("show");
+                $("#perfilModal").modal("show"); // Usa Bootstrap Modal via jQuery
             });
     });
 
-    // Fechar menus ao clicar fora
+    // Fecha o dropdown se o clique for fora dele
     document.addEventListener("click", (e) => {
         if (!userMenu.contains(e.target)) {
             dropdown.style.display = "none";
         }
     });
 
-    // Logout
+    // Lógica de logout
     document.getElementById("logoutLink").addEventListener("click", (e) => {
         e.preventDefault();
         window.location.href = "/auth/logout-he";
