@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const db = require("../../db/db");
-const planejamentoHE = require("../controllers/planejamentoHE");
+const planejamentoHE = require("../controllers/planejamentoHEController");
 
 // Middleware de autenticação para o módulo HE (reutiliza sessão do THANOS)
 const heAuth = require("../middleware/heAuth");

@@ -101,7 +101,7 @@ app.use("/admin", verificaLogin, verificaADM, require("./routes/admin"));
 app.use("/consulta-ad", require("./consulta_ad/consulta_route"));
 
 // 🎯 Rotas específicas
-app.use("/planejamento-he", require("./app_he/routes/planejamentoHE"));
+app.use("/planejamento-he", require("./app_he/routes/planejamentoHERoutes"));
 
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
