@@ -31,25 +31,61 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function carregarDashboardPorGerente(mes) {
-  const accordionContainer = document.getElementById("dashboardAccordion");
-  if (!accordionContainer) return;
+  const accordionContainer = document.getElementById('dashboardAccordion');
+  const resumoContainer = document.getElementById('dashboardResumo');
+  if (!accordionContainer || !resumoContainer) return;
 
-  accordionContainer.innerHTML =
-    '<p class="text-center">Carregando dados dos gerentes...</p>';
+  accordionContainer.innerHTML = '<p class="text-center">Carregando dados dos gerentes...</p>';
+  resumoContainer.innerHTML = '';
 
   fetch(`/planejamento-he/api/dashboard-summary?mes=${mes}`)
-    .then((response) => response.json())
-    .then((data) => {
+    .then(response => response.json())
+    .then(data => {
       if (data.erro) {
         accordionContainer.innerHTML = `<div class="alert alert-danger">${data.erro}</div>`;
         return;
       }
 
       if (data.length === 0) {
-        accordionContainer.innerHTML =
-          '<p class="text-center text-muted">Nenhum dado encontrado para este mês.</p>';
+        accordionContainer.innerHTML = '<p class="text-center text-muted">Nenhum dado encontrado para este mês.</p>';
         return;
       }
+
+      // 🔹 Calcular totais de horas
+      let totalHoras = 0, horasPend = 0, horasAprov = 0;
+      let totalRec = 0; // apenas contagem de recusadas
+
+      data.forEach(d => {
+        totalHoras += Number(d.totalHoras) || 0;
+        horasPend += Number(d.horasPendentes) || 0;   // precisa vir da API
+        horasAprov += Number(d.horasAprovadas) || 0;   // idem
+
+      });
+
+      // 🔹 Renderizar cards resumo
+      resumoContainer.innerHTML = `
+    <div class="col-md-4">
+        <div class="summary-card purple">
+            <div class="icon"><i class="fas fa-clock"></i></div>
+            <div class="title">Horas Totais</div>
+            <div class="value">${totalHoras.toLocaleString('pt-BR')}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="summary-card orange">
+            <div class="icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="title">Horas Pendentes</div>
+            <div class="value">${horasPend.toLocaleString('pt-BR')}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="summary-card green">
+            <div class="icon"><i class="fas fa-check-circle"></i></div>
+            <div class="title">Horas Aprovadas</div>
+            <div class="value">${horasAprov.toLocaleString('pt-BR')}</div>
+        </div>
+    </div>
+`;
 
       let accordionHtml = "";
       data.forEach((gerenteData, index) => {
@@ -60,28 +96,22 @@ function carregarDashboardPorGerente(mes) {
                             <h5 class="mb-0">
                                 <button class="btn btn-link text-white" type="button" data-toggle="collapse"
                                     data-target="#collapse-${gerenteId}" aria-expanded="false"
-                                    aria-controls="collapse-${gerenteId}" data-gerente="${
-          gerenteData.GERENTE
-        }">
-                                    ${
-                                      gerenteData.GERENTE ||
-                                      "Gerente não especificado"
-                                    }
+                                    aria-controls="collapse-${gerenteId}" data-gerente="${gerenteData.GERENTE
+          }">
+                                    ${gerenteData.GERENTE ||
+          "Gerente não especificado"
+          }
                                 </button>
                             </h5>
                             <div class="stats">
-                                <span class="badge badge-info">Horas: ${
-                                  gerenteData.totalHoras || 0
-                                }</span>
-                                <span class="badge badge-warning">Pendentes: ${
-                                  gerenteData.pendentes || 0
-                                }</span>
-                                <span class="badge badge-success">Aprovadas: ${
-                                  gerenteData.aprovadas || 0
-                                }</span>
-                                <span class="badge badge-danger">Recusadas: ${
-                                  gerenteData.recusadas || 0
-                                }</span>
+                                <span class="badge badge-info">Horas: ${gerenteData.totalHoras || 0
+          }</span>
+                                <span class="badge badge-warning">Pendentes: ${gerenteData.pendentes || 0
+          }</span>
+                                <span class="badge badge-success">Aprovadas: ${gerenteData.aprovadas || 0
+          }</span>
+                                <span class="badge badge-danger">Recusadas: ${gerenteData.recusadas || 0
+          }</span>
                             </div>
                         </div>
 
@@ -170,8 +200,8 @@ function carregarDetalhesGerente(gerente, mes, gerenteId) {
           s.STATUS === "APROVADO"
             ? '<span class="badge badge-success">✔ Aprovado</span>'
             : s.STATUS === "RECUSADO"
-            ? '<span class="badge badge-danger">❌ Recusado</span>'
-            : '<span class="badge badge-warning">⏳ Pendente</span>';
+              ? '<span class="badge badge-danger">❌ Recusado</span>'
+              : '<span class="badge badge-warning">⏳ Pendente</span>';
 
         if (s.STATUS === "APROVADO") countAprov++;
         else if (s.STATUS === "RECUSADO") countRec++;
