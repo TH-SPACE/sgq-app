@@ -333,5 +333,5 @@ exports.aprovarSolicitacao = (req, res) => {
 
 exports.recusarSolicitacao = (req, res) => {
   // Lógica para recusar
-  res.json({ sucesso: true, mensagem: "Solicitação recusada!" });
+  res.json({ sucesso: true, mensagem: "Solicitação recusada!!" });
 };
