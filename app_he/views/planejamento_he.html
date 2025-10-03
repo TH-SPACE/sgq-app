@@ -49,6 +49,9 @@
         :root {
             --primary-color: #6a1b9a;
             --primary-light: #e1bee7;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
         }
 
         body {
@@ -256,6 +259,27 @@
             border-bottom: 1px solid #ddd;
             margin-bottom: 1rem;
         }
+
+        .summary-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .summary-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-card .title {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -316,17 +340,15 @@
                 Solicitação</a>
             <a href="#" class="menu-item" data-page="minhasSolicitacoes"><i class="fas fa-list"></i> Minhas
                 Solicitações</a>
-            <a href="#" class="menu-item" data-page="solicitacoesEquipe"><i class="fas fa-users"></i> Solicitações da
-                Equipe</a>
+            <a href="#" class="menu-item" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         </div>
 
         <div class="content">
             <!-- Tela: Nova Solicitação -->
-            <h3 class="text-center mb-3" style="color:#6a1b9a; font-weight:bold;">
-                <i class="fa-solid fa-paper-plane text-primary"></i> Enviar Planejamento de Horas Extras
-            </h3>
             <div id="novaSolicitacao" class="card">
-
+                <h3 class="text-center mb-3" style="color:#6a1b9a; font-weight:bold;">
+                    <i class="fa-solid fa-paper-plane text-primary"></i> Enviar Planejamento de Horas Extras
+                </h3>
                 <!-- Seleção fixa -->
                 <div class="row">
                     <div class="col-md-8">
@@ -436,9 +458,35 @@
             </div>
 
 
-            <div id="solicitacoesEquipe" class="card" style="display: none;">
-                <h2 class="card-title"><i class="fas fa-users"></i> Solicitações da Equipe</h2>
-                <p>Carregando...</p>
+            <!-- Tela: Dashboard -->
+            <div id="dashboard" class="card" style="display: none;">
+                <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> Dashboard por Gerência</h2>
+
+                <!-- Filtro de Mês -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="dashboardFiltroMes">Mês</label>
+                        <select id="dashboardFiltroMes" class="form-control">
+                            <option value="Janeiro">Janeiro</option>
+                            <option value="Fevereiro">Fevereiro</option>
+                            <option value="Março">Março</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Maio">Maio</option>
+                            <option value="Junho">Junho</option>
+                            <option value="Julho">Julho</option>
+                            <option value="Agosto">Agosto</option>
+                            <option value="Setembro">Setembro</option>
+                            <option value="Outubro">Outubro</option>
+                            <option value="Novembro">Novembro</option>
+                            <option value="Dezembro">Dezembro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Accordion para Gerentes -->
+                <div id="dashboardAccordion">
+                    <!-- O conteúdo será gerado dinamicamente -->
+                </div>
             </div>
         </div>
     </div>
@@ -449,23 +497,59 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="/public/js/enviar.js"></script>
     <script src="/public/js/minhas.js"></script>
+    <script src="/public/js/dashboard_he.js"></script>
 
     <script>
-        // JS para abrir/fechar sidebar de perfil
-        document.getElementById("perfilLink").addEventListener("click", (e) => {
-            e.preventDefault();
-            fetch("/home/usuario")
-                .then((r) => r.json())
-                .then((data) => {
-                    document.getElementById("perfilNome").value = data.nome || "";
-                    document.getElementById("perfilEmail").value = data.email || "";
-                    document.getElementById("perfilCargo").value = data.cargo || "";
-                    document.getElementById("perfilSidebar").classList.add("show");
-                });
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const pages = {
+                'novaSolicitacao': document.getElementById('novaSolicitacao'),
+                'minhasSolicitacoes': document.getElementById('minhasSolicitacoes'),
+                'dashboard': document.getElementById('dashboard')
+            };
 
-        document.getElementById("fecharPerfilSidebar").addEventListener("click", () => {
-            document.getElementById("perfilSidebar").classList.remove("show");
+            // Função para trocar de página
+            function showPage(pageName) {
+                Object.values(pages).forEach(page => page.style.display = 'none');
+                pages[pageName].style.display = 'block';
+
+                menuItems.forEach(item => {
+                    if (item.getAttribute('data-page') === pageName) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            // Event listeners para os itens do menu
+            menuItems.forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const pageName = this.getAttribute('data-page');
+                    showPage(pageName);
+                });
+            });
+
+            // Mostrar a página inicial
+            showPage('novaSolicitacao');
+
+            // JS para abrir/fechar sidebar de perfil
+            document.getElementById("perfilLink").addEventListener("click", (e) => {
+                e.preventDefault();
+                fetch("/home/usuario")
+                    .then((r) => r.json())
+                    .then((data) => {
+                        document.getElementById("perfilNome").value = data.nome || "";
+                        document.getElementById("perfilEmail").value = data.email || "";
+                        document.getElementById("perfilCargo").value = data.cargo || "";
+                        document.getElementById("perfilSidebar").classList.add("show");
+                    });
+            });
+
+            document.getElementById("fecharPerfilSidebar").addEventListener("click", () => {
+                document.getElementById("perfilSidebar").classList.remove("show");
+            });
         });
     </script>
 </body>

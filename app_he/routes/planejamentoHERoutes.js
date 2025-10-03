@@ -148,9 +148,6 @@ router.get("/api/solicitacao/:id", heAuth.requireHEAuth, async (req, res) => {
   }
 });
 
-router.get("/dashboard", heAuth.requireHEAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/dashboard_he.html"));
-});
 
 router.get(
   "/api/resumo-he",
@@ -162,6 +159,12 @@ router.get(
   "/api/dashboard-summary",
   heAuth.requireHEAuth,
   planejamentoHE.getDashboardData
+);
+
+router.get(
+  "/api/todas-solicitacoes",
+  heAuth.requireHEAuth,
+  planejamentoHE.listarTodasSolicitacoes
 );
 
 module.exports = router;

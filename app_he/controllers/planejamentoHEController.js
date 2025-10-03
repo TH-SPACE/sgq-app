@@ -259,35 +259,59 @@ exports.excluirEnvio = async (req, res) => {
 
 exports.getDashboardData = async (req, res) => {
   const conexao = db.mysqlPool;
-  const emailUsuario = req.session.usuario?.email;
+  const { mes } = req.query;
 
-  if (!emailUsuario) {
-    return res.status(401).json({ erro: "Usuário não autenticado." });
+  if (!mes) {
+    return res.status(400).json({ erro: "O parâmetro 'mes' é obrigatório." });
   }
 
   try {
     const [rows] = await conexao.query(
       `SELECT 
+        GERENTE,
         SUM(HORAS) as totalHoras,
         SUM(CASE WHEN STATUS = 'PENDENTE' THEN 1 ELSE 0 END) as pendentes,
         SUM(CASE WHEN STATUS = 'APROVADO' THEN 1 ELSE 0 END) as aprovadas,
         SUM(CASE WHEN STATUS = 'RECUSADO' THEN 1 ELSE 0 END) as recusadas
        FROM PLANEJAMENTO_HE 
-       WHERE ENVIADO_POR = ?`,
-      [emailUsuario]
+       WHERE MES = ?
+       GROUP BY GERENTE`,
+      [mes]
     );
 
-    const summary = {
-      totalHoras: parseFloat(rows[0].totalHoras) || 0,
-      pendentes: parseInt(rows[0].pendentes) || 0,
-      aprovadas: parseInt(rows[0].aprovadas) || 0,
-      recusadas: parseInt(rows[0].recusadas) || 0,
-    };
-
-    res.json(summary);
+    res.json(rows);
   } catch (error) {
     console.error("Erro ao buscar dados do dashboard:", error);
     res.status(500).json({ erro: "Erro ao buscar dados para o dashboard." });
+  }
+};
+
+exports.listarTodasSolicitacoes = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const { gerente, mes } = req.query;
+
+  if (!gerente || !mes) {
+    return res.status(400).json({ erro: "Os parâmetros 'gerente' e 'mes' são obrigatórios." });
+  }
+
+  try {
+    const [rows] = await conexao.query(
+      `SELECT 
+        id,
+        COLABORADOR,
+        HORAS,
+        TIPO_HE,
+        STATUS,
+        DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
+      FROM PLANEJAMENTO_HE 
+      WHERE GERENTE = ? AND MES = ?
+      ORDER BY DATA_ENVIO DESC`,
+      [gerente, mes]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error("Erro ao listar todas as solicitações:", error);
+    res.status(500).json({ erro: "Erro ao carregar as solicitações." });
   }
 };
 
