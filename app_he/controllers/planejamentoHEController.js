@@ -257,6 +257,40 @@ exports.excluirEnvio = async (req, res) => {
   }
 };
 
+exports.getDashboardData = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const emailUsuario = req.session.usuario?.email;
+
+  if (!emailUsuario) {
+    return res.status(401).json({ erro: "Usuário não autenticado." });
+  }
+
+  try {
+    const [rows] = await conexao.query(
+      `SELECT 
+        SUM(HORAS) as totalHoras,
+        SUM(CASE WHEN STATUS = 'PENDENTE' THEN 1 ELSE 0 END) as pendentes,
+        SUM(CASE WHEN STATUS = 'APROVADO' THEN 1 ELSE 0 END) as aprovadas,
+        SUM(CASE WHEN STATUS = 'RECUSADO' THEN 1 ELSE 0 END) as recusadas
+       FROM PLANEJAMENTO_HE 
+       WHERE ENVIADO_POR = ?`,
+      [emailUsuario]
+    );
+
+    const summary = {
+      totalHoras: parseFloat(rows[0].totalHoras) || 0,
+      pendentes: parseInt(rows[0].pendentes) || 0,
+      aprovadas: parseInt(rows[0].aprovadas) || 0,
+      recusadas: parseInt(rows[0].recusadas) || 0,
+    };
+
+    res.json(summary);
+  } catch (error) {
+    console.error("Erro ao buscar dados do dashboard:", error);
+    res.status(500).json({ erro: "Erro ao buscar dados para o dashboard." });
+  }
+};
+
 exports.gerarDash = (req, res) => {
   // Lógica para gerar dados da dashboard
   res.json({ totalHoras: 120, colaboradores: 8 });
