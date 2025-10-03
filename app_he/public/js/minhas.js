@@ -1,40 +1,52 @@
 // minhas.js
 
 function getMesAtualPortugues() {
-    const meses = [
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    ];
-    return meses[new Date().getMonth()];
+  const meses = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
+  return meses[new Date().getMonth()];
 }
 
-function carregarMinhasSolicitacoes(colaborador = '', mes = '') {
-    const container = document.getElementById('tabelaMinhasSolicitacoes');
-    container.innerHTML = '<p>Carregando...</p>';
+function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
+  const container = document.getElementById("tabelaMinhasSolicitacoes");
+  container.innerHTML = "<p>Carregando...</p>";
 
-    const params = new URLSearchParams();
-    if (colaborador) params.append('colaborador', colaborador);
-    if (mes) params.append('mes', mes);
+  const params = new URLSearchParams();
+  if (colaborador) params.append("colaborador", colaborador);
+  if (mes) params.append("mes", mes);
 
-    const url = `/planejamento-he/api/minhas-solicitacoes${params.toString() ? '?' + params.toString() : ''}`;
+  const url = `/planejamento-he/api/minhas-solicitacoes${
+    params.toString() ? "?" + params.toString() : ""
+  }`;
 
-    fetch(url)
-        .then(response => {
-            if (!response.ok) throw new Error('Erro na resposta da API');
-            return response.json();
-        })
-        .then(dados => {
-            if (dados.erro) {
-                container.innerHTML = `<div class="alert alert-danger">${dados.erro}</div>`;
-                return;
-            }
+  fetch(url)
+    .then((response) => {
+      if (!response.ok) throw new Error("Erro na resposta da API");
+      return response.json();
+    })
+    .then((dados) => {
+      if (dados.erro) {
+        container.innerHTML = `<div class="alert alert-danger">${dados.erro}</div>`;
+        return;
+      }
 
-            if (dados.length === 0) {
-                container.innerHTML = `<p class="text-muted">Nenhuma solicitação encontrada.</p>`;
-                return;
-            }
+      if (dados.length === 0) {
+        container.innerHTML = `<p class="text-muted">Nenhuma solicitação encontrada.</p>`;
+        return;
+      }
 
-            let tabelaHtml = `
+      let tabelaHtml = `
         <div class="table-responsive">
           <table class="table table-bordered table-hover">
             <thead class="thead-light">
@@ -54,108 +66,119 @@ function carregarMinhasSolicitacoes(colaborador = '', mes = '') {
             <tbody>
       `;
 
-            dados.forEach(s => {
-                const statusBadge =
-                    s.STATUS === 'APROVADO' ? '<span class="badge badge-success">Aprovado</span>' :
-                        s.STATUS === 'RECUSADO' ? '<span class="badge badge-danger">Recusado</span>' :
-                            '<span class="badge badge-warning">Pendente</span>';
+      dados.forEach((s) => {
+        const statusBadge =
+          s.STATUS === "APROVADO"
+            ? '<span class="badge badge-success">Aprovado</span>'
+            : s.STATUS === "RECUSADO"
+            ? '<span class="badge badge-danger">Recusado</span>'
+            : '<span class="badge badge-warning">Pendente</span>';
 
-                const acoes = `
-  <button class="btn btn-sm btn-outline-primary" onclick="editarSolicitacao(${s.id})">
+        const acoes = `
+  <button class="btn btn-sm btn-outline-primary" onclick="editarSolicitacao(${
+    s.id
+  })">
     <i class="fas fa-edit"></i>
   </button>
-  ${s.STATUS === 'PENDENTE' ?
-                        `<button class="btn btn-sm btn-outline-danger" onclick="excluirSolicitacaoDireto(${s.id})">
+  ${
+    s.STATUS === "PENDENTE"
+      ? `<button class="btn btn-sm btn-outline-danger" onclick="excluirSolicitacaoDireto(${s.id})">
       <i class="fas fa-trash"></i>
-    </button>` : ''
-                    }
+    </button>`
+      : ""
+  }
 `;
 
-                tabelaHtml += `
+        tabelaHtml += `
   <tr>
-    <td>${s.GERENTE || '-'}</td>
-    <td>${s.COLABORADOR || '-'}</td>
-    <td>${s.MATRICULA || '-'}</td>
-    <td>${s.CARGO || '-'}</td>
-    <td>${s.MES || '-'}</td>
-    <td>${s.HORAS || '0'}</td>
-    <td>${s.TIPO_HE || '-'}</td>
+    <td>${s.GERENTE || "-"}</td>
+    <td>${s.COLABORADOR || "-"}</td>
+    <td>${s.MATRICULA || "-"}</td>
+    <td>${s.CARGO || "-"}</td>
+    <td>${s.MES || "-"}</td>
+    <td>${s.HORAS || "0"}</td>
+    <td>${s.TIPO_HE || "-"}</td>
     <td>${statusBadge}</td>
-    <td>${s.DATA_ENVIO_FORMATADA || '-'}</td>
+    <td>${s.DATA_ENVIO_FORMATADA || "-"}</td>
     <td>${acoes}</td>
   </tr>
 `;
-            });
+      });
 
-            tabelaHtml += `
+      tabelaHtml += `
             </tbody>
           </table>
         </div>
       `;
 
-            container.innerHTML = tabelaHtml;
-        })
-        .catch(erro => {
-            console.error('Erro ao carregar minhas solicitações:', erro);
-            container.innerHTML = `<div class="alert alert-danger">Erro ao carregar dados. Tente novamente.</div>`;
-        });
+      container.innerHTML = tabelaHtml;
+    })
+    .catch((erro) => {
+      console.error("Erro ao carregar minhas solicitações:", erro);
+      container.innerHTML = `<div class="alert alert-danger">Erro ao carregar dados. Tente novamente.</div>`;
+    });
 }
 
 // Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-    const mesAtual = getMesAtualPortugues();
-    document.getElementById('filtroMes').value = mesAtual;
+document.addEventListener("DOMContentLoaded", () => {
+  const mesAtual = getMesAtualPortugues();
+  document.getElementById("filtroMes").value = mesAtual;
 
-    document.querySelectorAll('.menu-item').forEach(item => {
-        if (item.getAttribute('data-page') === 'minhasSolicitacoes') {
-            item.addEventListener('click', () => {
-                setTimeout(() => {
-                    const colaborador = document.getElementById('filtroColaborador').value;
-                    const mes = document.getElementById('filtroMes').value;
-                    carregarMinhasSolicitacoes(colaborador, mes);
-                }, 100);
-            });
-        }
+  document.querySelectorAll(".menu-item").forEach((item) => {
+    if (item.getAttribute("data-page") === "minhasSolicitacoes") {
+      item.addEventListener("click", () => {
+        setTimeout(() => {
+          const colaborador =
+            document.getElementById("filtroColaborador").value;
+          const mes = document.getElementById("filtroMes").value;
+          carregarMinhasSolicitacoes(colaborador, mes);
+        }, 100);
+      });
+    }
+  });
+
+  document.getElementById("btnFiltrar").addEventListener("click", () => {
+    const colaborador = document.getElementById("filtroColaborador").value;
+    const mes = document.getElementById("filtroMes").value;
+    carregarMinhasSolicitacoes(colaborador, mes);
+  });
+
+  document
+    .getElementById("filtroColaborador")
+    .addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        document.getElementById("btnFiltrar").click();
+      }
     });
 
-    document.getElementById('btnFiltrar').addEventListener('click', () => {
-        const colaborador = document.getElementById('filtroColaborador').value;
-        const mes = document.getElementById('filtroMes').value;
-        carregarMinhasSolicitacoes(colaborador, mes);
-    });
-
-    document.getElementById('filtroColaborador').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            document.getElementById('btnFiltrar').click();
-        }
-    });
-
-    document.getElementById('btnLimparFiltros').addEventListener('click', limparFiltros);
+  document
+    .getElementById("btnLimparFiltros")
+    .addEventListener("click", limparFiltros);
 });
 
 function limparFiltros() {
-    document.getElementById('filtroColaborador').value = '';
-    document.getElementById('filtroMes').value = getMesAtualPortugues();
-    carregarMinhasSolicitacoes('', getMesAtualPortugues());
+  document.getElementById("filtroColaborador").value = "";
+  document.getElementById("filtroMes").value = getMesAtualPortugues();
+  carregarMinhasSolicitacoes("", getMesAtualPortugues());
 }
 
 function editarSolicitacao(id) {
-    fetch(`/planejamento-he/api/solicitacao/${id}`)
-        .then(res => res.json())
-        .then(dados => {
-            if (dados.erro) throw new Error(dados.erro);
-            abrirModalEdicao(dados);
-        })
-        .catch(err => {
-            alert('Erro ao carregar solicitação para edição: ' + err.message);
-        });
+  fetch(`/planejamento-he/api/solicitacao/${id}`)
+    .then((res) => res.json())
+    .then((dados) => {
+      if (dados.erro) throw new Error(dados.erro);
+      abrirModalEdicao(dados);
+    })
+    .catch((err) => {
+      alert("Erro ao carregar solicitação para edição: " + err.message);
+    });
 }
 
 function abrirModalEdicao(dados) {
-    const modalAntigo = document.getElementById('modalEdicao');
-    if (modalAntigo) modalAntigo.remove();
+  const modalAntigo = document.getElementById("modalEdicao");
+  if (modalAntigo) modalAntigo.remove();
 
-    const modalHTML = `
+  const modalHTML = `
     <div class="modal fade" id="modalEdicao" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -203,86 +226,93 @@ function abrirModalEdicao(dados) {
     </div>
   `;
 
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  document.body.insertAdjacentHTML("beforeend", modalHTML);
 
-    // Preenche os campos existentes
-    document.getElementById('editColaborador').value = dados.COLABORADOR || '';
-    document.getElementById('editMes').value = dados.MES || '';
-    document.getElementById('editHoras').value = dados.HORAS || '';
-    document.getElementById('editTipoHE').value = dados.TIPO_HE || '50%';
-    document.getElementById('editJustificativa').value = dados.JUSTIFICATIVA || '';
+  // Preenche os campos existentes
+  document.getElementById("editColaborador").value = dados.COLABORADOR || "";
+  document.getElementById("editMes").value = dados.MES || "";
+  document.getElementById("editHoras").value = dados.HORAS || "";
+  document.getElementById("editTipoHE").value = dados.TIPO_HE || "50%";
+  document.getElementById("editJustificativa").value =
+    dados.JUSTIFICATIVA || "";
 
-    $('#modalEdicao').modal('show');
+  $("#modalEdicao").modal("show");
 
-    // Evento de salvar
-    document.getElementById('btnSalvarEdicao').addEventListener('click', salvarEdicao);
+  // Evento de salvar
+  document
+    .getElementById("btnSalvarEdicao")
+    .addEventListener("click", salvarEdicao);
 }
 
 function salvarEdicao(event) {
-    const botao = event.currentTarget;
-    const id = botao.getAttribute('data-id');
+  const botao = event.currentTarget;
+  const id = botao.getAttribute("data-id");
 
-    const dados = {
-        id: id,
-        mes: document.getElementById('editMes').value,
-        horas: parseFloat(document.getElementById('editHoras').value),
-        tipoHE: document.getElementById('editTipoHE').value,
-        justificativa: document.getElementById('editJustificativa').value.trim()
-    };
+  const dados = {
+    id: id,
+    mes: document.getElementById("editMes").value,
+    horas: parseFloat(document.getElementById("editHoras").value),
+    tipoHE: document.getElementById("editTipoHE").value,
+    justificativa: document.getElementById("editJustificativa").value.trim(),
+  };
 
-    console.log("Dados enviados:", dados);
+  console.log("Dados enviados:", dados);
 
-    if (!id || !dados.mes || !dados.horas || !dados.justificativa) {
-        alert('Preencha todos os campos obrigatórios.');
-        return;
-    }
+  if (!id || !dados.mes || !dados.horas || !dados.justificativa) {
+    alert("Preencha todos os campos obrigatórios.");
+    return;
+  }
 
-    fetch('/planejamento-he/editar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
+  fetch("/planejamento-he/editar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.sucesso) {
+        $("#modalEdicao").modal("hide");
+        const colaborador = document.getElementById("filtroColaborador").value;
+        const mes = document.getElementById("filtroMes").value;
+        carregarMinhasSolicitacoes(colaborador, mes);
+      } else {
+        alert("Erro ao salvar: " + (data.mensagem || "Desconhecido"));
+      }
     })
-        .then(res => res.json())
-        .then(data => {
-            if (data.sucesso) {
-                $('#modalEdicao').modal('hide');
-                const colaborador = document.getElementById('filtroColaborador').value;
-                const mes = document.getElementById('filtroMes').value;
-                carregarMinhasSolicitacoes(colaborador, mes);
-            } else {
-                alert('Erro ao salvar: ' + (data.mensagem || 'Desconhecido'));
-            }
-        })
-        .catch(err => {
-            alert('Erro de conexão: ' + err.message);
-        });
+    .catch((err) => {
+      alert("Erro de conexão: " + err.message);
+    });
 }
 
 function excluirSolicitacaoDireto(id) {
-    if (!confirm('Tem certeza que deseja excluir esta solicitação? Esta ação não pode ser desfeita.')) {
-        return;
-    }
+  if (
+    !confirm(
+      "Tem certeza que deseja excluir esta solicitação? Esta ação não pode ser desfeita."
+    )
+  ) {
+    return;
+  }
 
-    fetch('/planejamento-he/excluir', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id })
+  fetch("/planejamento-he/excluir", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id }),
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error("Erro na resposta do servidor");
+      return response.json();
     })
-        .then(response => {
-            if (!response.ok) throw new Error('Erro na resposta do servidor');
-            return response.json();
-        })
-        .then(data => {
-            if (data.sucesso) {
-                const colaborador = document.getElementById('filtroColaborador').value;
-                const mes = document.getElementById('filtroMes').value;
-                carregarMinhasSolicitacoes(colaborador, mes);
-            } else {
-                alert('Erro: ' + (data.mensagem || 'Não foi possível excluir.'));
-            }
-        })
-        .catch(erro => {
-            console.error('Erro ao excluir:', erro);
-            alert('Erro ao excluir solicitação. Verifique oo console para detalhes.');
-        });
+    .then((data) => {
+      if (data.sucesso) {
+        const colaborador = document.getElementById("filtroColaborador").value;
+        const mes = document.getElementById("filtroMes").value;
+        carregarMinhasSolicitacoes(colaborador, mes);
+      } else {
+        alert("Erro: " + (data.mensagem || "Não foi possível excluir."));
+      }
+    })
+    .catch((erro) => {
+      console.error("Erro ao excluir:", erro);
+      alert("Erro ao excluir solicitação. Verifique oo console para detalhes.");
+    });
 }

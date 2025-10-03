@@ -151,11 +151,15 @@ exports.editarEnvio = async (req, res) => {
   const { id, mes, horas, tipoHE, justificativa } = req.body;
 
   if (!emailUsuario) {
-    return res.status(401).json({ sucesso: false, mensagem: "Não autenticado." });
+    return res
+      .status(401)
+      .json({ sucesso: false, mensagem: "Não autenticado." });
   }
 
   if (!id || !mes || !horas || !tipoHE || !justificativa) {
-    return res.status(400).json({ sucesso: false, mensagem: "Dados incompletos." });
+    return res
+      .status(400)
+      .json({ sucesso: false, mensagem: "Dados incompletos." });
   }
 
   try {
@@ -166,11 +170,16 @@ exports.editarEnvio = async (req, res) => {
     );
 
     if (verificacao.length === 0) {
-      return res.status(403).json({ sucesso: false, mensagem: "Solicitação não encontrada ou acesso negado." });
+      return res
+        .status(403)
+        .json({
+          sucesso: false,
+          mensagem: "Solicitação não encontrada ou acesso negado.",
+        });
     }
 
     const statusAtual = verificacao[0].STATUS;
-    let novoStatus = 'PENDENTE';
+    let novoStatus = "PENDENTE";
 
     // Regra: se já foi aprovada ou recusada, ao editar volta para PENDENTE
     // (isso já está garantido com novoStatus = 'PENDENTE')
@@ -182,10 +191,15 @@ exports.editarEnvio = async (req, res) => {
       [mes, horas, tipoHE, justificativa, novoStatus, id, emailUsuario]
     );
 
-    res.json({ sucesso: true, mensagem: "Solicitação atualizada com sucesso!" });
+    res.json({
+      sucesso: true,
+      mensagem: "Solicitação atualizada com sucesso!",
+    });
   } catch (error) {
     console.error("Erro ao editar envio:", error);
-    res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar solicitação." });
+    res
+      .status(500)
+      .json({ sucesso: false, mensagem: "Erro ao atualizar solicitação." });
   }
 };
 
@@ -196,9 +210,11 @@ exports.excluirEnvio = async (req, res) => {
 
   // Validação crítica
   if (!emailUsuario) {
-    return res.status(401).json({ sucesso: false, mensagem: "Não autenticado." });
+    return res
+      .status(401)
+      .json({ sucesso: false, mensagem: "Não autenticado." });
   }
-  if (!id || typeof id !== 'number' && isNaN(id)) {
+  if (!id || (typeof id !== "number" && isNaN(id))) {
     return res.status(400).json({ sucesso: false, mensagem: "ID inválido." });
   }
 
@@ -210,11 +226,21 @@ exports.excluirEnvio = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(403).json({ sucesso: false, mensagem: "Solicitação não encontrada ou acesso negado." });
+      return res
+        .status(403)
+        .json({
+          sucesso: false,
+          mensagem: "Solicitação não encontrada ou acesso negado.",
+        });
     }
 
-    if (rows[0].STATUS !== 'PENDENTE') {
-      return res.status(400).json({ sucesso: false, mensagem: "Só é possível excluir solicitações pendentes." });
+    if (rows[0].STATUS !== "PENDENTE") {
+      return res
+        .status(400)
+        .json({
+          sucesso: false,
+          mensagem: "Só é possível excluir solicitações pendentes.",
+        });
     }
 
     await conexao.query(
@@ -225,7 +251,9 @@ exports.excluirEnvio = async (req, res) => {
     res.json({ sucesso: true, mensagem: "Solicitação excluída com sucesso!" });
   } catch (error) {
     console.error("Erro ao excluir envio:", error);
-    res.status(500).json({ sucesso: false, mensagem: "Erro interno ao excluir." });
+    res
+      .status(500)
+      .json({ sucesso: false, mensagem: "Erro interno ao excluir." });
   }
 };
 

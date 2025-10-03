@@ -114,7 +114,11 @@ router.get("/api/cargo", heAuth.requireHEAuth, async (req, res) => {
   }
 });
 
-router.get("/api/minhas-solicitacoes", heAuth.requireHEAuth, planejamentoHE.listarEnvios);
+router.get(
+  "/api/minhas-solicitacoes",
+  heAuth.requireHEAuth,
+  planejamentoHE.listarEnvios
+);
 
 // Rota para buscar uma solicitação por ID (só o dono pode ver)
 router.get("/api/solicitacao/:id", heAuth.requireHEAuth, async (req, res) => {
@@ -127,12 +131,14 @@ router.get("/api/solicitacao/:id", heAuth.requireHEAuth, async (req, res) => {
 
   try {
     const [rows] = await db.mysqlPool.query(
-      `SELECT * FROM PLANEJAMENTO_HE WHERE id = ? AND ENVIADO_POR = ?`,
+      `SELECT id, GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR, DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA FROM PLANEJAMENTO_HE WHERE id = ? AND ENVIADO_POR = ?`,
       [id, emailUsuario]
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ erro: "Solicitação não encontrada ou acesso negado." });
+      return res
+        .status(404)
+        .json({ erro: "Solicitação não encontrada ou acesso negado." });
     }
 
     res.json(rows[0]);
