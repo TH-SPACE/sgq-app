@@ -12,7 +12,6 @@ function carregarMinhasSolicitacoes(colaborador = '', mes = '') {
     const container = document.getElementById('tabelaMinhasSolicitacoes');
     container.innerHTML = '<p>Carregando...</p>';
 
-    // Monta a URL com query params
     const params = new URLSearchParams();
     if (colaborador) params.append('colaborador', colaborador);
     if (mes) params.append('mes', mes);
@@ -68,8 +67,7 @@ function carregarMinhasSolicitacoes(colaborador = '', mes = '') {
   ${s.STATUS === 'PENDENTE' ?
                         `<button class="btn btn-sm btn-outline-danger" onclick="excluirSolicitacaoDireto(${s.id})">
       <i class="fas fa-trash"></i>
-    </button>`
-                        : ''
+    </button>` : ''
                     }
 `;
 
@@ -103,13 +101,11 @@ function carregarMinhasSolicitacoes(colaborador = '', mes = '') {
         });
 }
 
-// Inicializa os filtros quando a aba for aberta
+// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    // Define o mês atual como padrão
     const mesAtual = getMesAtualPortugues();
     document.getElementById('filtroMes').value = mesAtual;
 
-    // Carrega com o mês atual ao entrar na aba
     document.querySelectorAll('.menu-item').forEach(item => {
         if (item.getAttribute('data-page') === 'minhasSolicitacoes') {
             item.addEventListener('click', () => {
@@ -122,35 +118,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Botão de filtrar
     document.getElementById('btnFiltrar').addEventListener('click', () => {
         const colaborador = document.getElementById('filtroColaborador').value;
         const mes = document.getElementById('filtroMes').value;
         carregarMinhasSolicitacoes(colaborador, mes);
     });
 
-    // Opcional: filtrar ao pressionar Enter no campo de colaborador
     document.getElementById('filtroColaborador').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             document.getElementById('btnFiltrar').click();
         }
     });
+
+    document.getElementById('btnLimparFiltros').addEventListener('click', limparFiltros);
 });
 
 function limparFiltros() {
     document.getElementById('filtroColaborador').value = '';
-    document.getElementById('filtroMes').value = getMesAtualPortugues(); // ou '' se quiser "Todos"
+    document.getElementById('filtroMes').value = getMesAtualPortugues();
     carregarMinhasSolicitacoes('', getMesAtualPortugues());
 }
-
-document.getElementById('btnLimparFiltros').addEventListener('click', limparFiltros);
 
 function editarSolicitacao(id) {
     fetch(`/planejamento-he/api/solicitacao/${id}`)
         .then(res => res.json())
         .then(dados => {
             if (dados.erro) throw new Error(dados.erro);
-            abrirModalEdicao(dados); // ← agora passamos o objeto completo (com STATUS)
+            abrirModalEdicao(dados);
         })
         .catch(err => {
             alert('Erro ao carregar solicitação para edição: ' + err.message);
@@ -158,11 +152,9 @@ function editarSolicitacao(id) {
 }
 
 function abrirModalEdicao(dados) {
-    // Remove o modal antigo, se existir (evita conflitos)
     const modalAntigo = document.getElementById('modalEdicao');
     if (modalAntigo) modalAntigo.remove();
 
-    // Cria novo modal com todos os campos
     const modalHTML = `
     <div class="modal fade" id="modalEdicao" tabindex="-1">
       <div class="modal-dialog">
@@ -174,7 +166,6 @@ function abrirModalEdicao(dados) {
             </button>
           </div>
           <div class="modal-body">
-            
             <div class="form-group">
               <label>Colaborador</label>
               <input type="text" class="form-control" id="editColaborador" readonly>
@@ -202,11 +193,11 @@ function abrirModalEdicao(dados) {
             </div>
           </div>
           <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-  <button type="button" class="btn btn-primary" id="btnSalvarEdicao" data-id="${dados.id}">
-    Salvar Alterações
-  </button>
-</div>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="btnSalvarEdicao" data-id="${dados.id}">
+              Salvar Alterações
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -214,28 +205,21 @@ function abrirModalEdicao(dados) {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    // Preenche os dados
-    document.getElementById('editId').value = dados.id;
+    // Preenche os campos existentes
     document.getElementById('editColaborador').value = dados.COLABORADOR || '';
     document.getElementById('editMes').value = dados.MES || '';
     document.getElementById('editHoras').value = dados.HORAS || '';
     document.getElementById('editTipoHE').value = dados.TIPO_HE || '50%';
     document.getElementById('editJustificativa').value = dados.JUSTIFICATIVA || '';
 
-    // Mostra o modal
     $('#modalEdicao').modal('show');
 
-    // Atualiza o evento de salvar
-    const btnSalvar = document.getElementById('btnSalvarEdicao');
-    btnSalvar.onclick = salvarEdicao; // ←←← passa o evento automaticamente
-    const salvarHandler = () => salvarEdicao();
-    btnSalvar.removeEventListener('click', salvarHandler);
-    btnSalvar.addEventListener('click', salvarHandler);
+    // Evento de salvar
+    document.getElementById('btnSalvarEdicao').addEventListener('click', salvarEdicao);
 }
 
 function salvarEdicao(event) {
-    // Pega o botão que foi clicado
-    const botao = event.target || event.srcElement;
+    const botao = event.currentTarget;
     const id = botao.getAttribute('data-id');
 
     const dados = {
@@ -246,7 +230,7 @@ function salvarEdicao(event) {
         justificativa: document.getElementById('editJustificativa').value.trim()
     };
 
-    console.log("Dados enviados:", dados); // para debug
+    console.log("Dados enviados:", dados);
 
     if (!id || !dados.mes || !dados.horas || !dados.justificativa) {
         alert('Preencha todos os campos obrigatórios.');
@@ -262,7 +246,6 @@ function salvarEdicao(event) {
         .then(data => {
             if (data.sucesso) {
                 $('#modalEdicao').modal('hide');
-                // Recarrega com filtros atuais
                 const colaborador = document.getElementById('filtroColaborador').value;
                 const mes = document.getElementById('filtroMes').value;
                 carregarMinhasSolicitacoes(colaborador, mes);
@@ -280,13 +263,10 @@ function excluirSolicitacaoDireto(id) {
         return;
     }
 
-    // Envia o ID como JSON no corpo da requisição
     fetch('/planejamento-he/excluir', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: id }) // ←←← chave "id" obrigatória
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id })
     })
         .then(response => {
             if (!response.ok) throw new Error('Erro na resposta do servidor');
@@ -294,7 +274,6 @@ function excluirSolicitacaoDireto(id) {
         })
         .then(data => {
             if (data.sucesso) {
-                // Recarrega a lista com os filtros atuais
                 const colaborador = document.getElementById('filtroColaborador').value;
                 const mes = document.getElementById('filtroMes').value;
                 carregarMinhasSolicitacoes(colaborador, mes);
