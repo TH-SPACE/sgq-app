@@ -283,6 +283,6 @@ function excluirSolicitacaoDireto(id) {
         })
         .catch(erro => {
             console.error('Erro ao excluir:', erro);
-            alert('Erro ao excluir solicitação. Verifique o console para detalhes.');
+            alert('Erro ao excluir solicitação. Verifique oo console para detalhes.');
         });
 }
