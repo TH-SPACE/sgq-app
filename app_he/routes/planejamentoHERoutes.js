@@ -25,6 +25,7 @@ router.get("/", heAuth.requireHEAuth, (req, res) => {
 
 // Rotas protegidas: qualquer usuário logado no THANOS pode usar
 router.get("/enviar", heAuth.requireHEAuth, planejamentoHE.telaEnvio);
+
 router.post(
   "/enviar-multiplo",
   heAuth.requireHEAuth,
@@ -110,6 +111,34 @@ router.get("/api/cargo", heAuth.requireHEAuth, async (req, res) => {
   } catch (error) {
     console.error("Erro ao buscar cargo/matrícula:", error);
     res.status(500).json({ erro: "Erro ao buscar dados" });
+  }
+});
+
+router.get("/api/minhas-solicitacoes", heAuth.requireHEAuth, planejamentoHE.listarEnvios);
+
+// Rota para buscar uma solicitação por ID (só o dono pode ver)
+router.get("/api/solicitacao/:id", heAuth.requireHEAuth, async (req, res) => {
+  const { id } = req.params;
+  const emailUsuario = req.session.usuario?.email;
+
+  if (!emailUsuario) {
+    return res.status(401).json({ erro: "Não autenticado." });
+  }
+
+  try {
+    const [rows] = await db.mysqlPool.query(
+      `SELECT * FROM PLANEJAMENTO_HE WHERE id = ? AND ENVIADO_POR = ?`,
+      [id, emailUsuario]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ erro: "Solicitação não encontrada ou acesso negado." });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error("Erro ao buscar solicitação:", error);
+    res.status(500).json({ erro: "Erro ao carregar solicitação." });
   }
 });
 

@@ -392,11 +392,50 @@
                 </div>
             </div>
 
-            <!-- Outras telas -->
+            <!-- Tela: Minhas Solicitações -->
             <div id="minhasSolicitacoes" class="card" style="display: none;">
                 <h2 class="card-title"><i class="fas fa-list"></i> Minhas Solicitações</h2>
-                <p>Carregando...</p>
+
+                <!-- Filtros -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="filtroColaborador">Filtrar por Colaborador</label>
+                        <input type="text" id="filtroColaborador" class="form-control"
+                            placeholder="Digite nome do colaborador...">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="filtroMes">Mês</label>
+                        <select id="filtroMes" class="form-control">
+                            <option value="">Todos os meses</option>
+                            <option value="Janeiro">Janeiro</option>
+                            <option value="Fevereiro">Fevereiro</option>
+                            <option value="Março">Março</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Maio">Maio</option>
+                            <option value="Junho">Junho</option>
+                            <option value="Julho">Julho</option>
+                            <option value="Agosto">Agosto</option>
+                            <option value="Setembro">Setembro</option>
+                            <option value="Outubro">Outubro</option>
+                            <option value="Novembro">Novembro</option>
+                            <option value="Dezembro">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <div class="btn-group w-100" role="group">
+                            <button id="btnFiltrar" class="btn btn-outline-primary">Filtrar</button>
+                            <button id="btnLimparFiltros" class="btn btn-outline-secondary">Limpar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resultado -->
+                <div id="tabelaMinhasSolicitacoes">
+                    <p>Carregando...</p>
+                </div>
             </div>
+
+
             <div id="solicitacoesEquipe" class="card" style="display: none;">
                 <h2 class="card-title"><i class="fas fa-users"></i> Solicitações da Equipe</h2>
                 <p>Carregando...</p>
@@ -409,6 +448,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="/public/js/enviar.js"></script>
+    <script src="/public/js/minhas.js"></script>
 
     <script>
         // JS para abrir/fechar sidebar de perfil

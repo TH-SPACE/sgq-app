@@ -27,6 +27,7 @@ const upload = multer({ storage: storage });
 // Configurações do app
 app.set("trust proxy", true);
 
+app.use(express.json());
 // 📁 Arquivos estáticos públicos
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/json", express.static(path.join(__dirname, "app_he", "json")));

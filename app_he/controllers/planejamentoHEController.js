@@ -94,19 +94,139 @@ exports.obterResumoHE = async (req, res) => {
   }
 };
 
-exports.listarEnvios = (req, res) => {
-  // Lógica para listar envios
-  res.json([{ id: 1, colaborador: "Fulano", horas: 5 }]);
+exports.listarEnvios = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const emailUsuario = req.session.usuario?.email;
+  const { colaborador, mes } = req.query; // ←←← novos parâmetros
+
+  if (!emailUsuario) {
+    return res.status(401).json({ erro: "Usuário não autenticado." });
+  }
+
+  try {
+    let query = `
+      SELECT 
+        id,
+        GERENTE,
+        COLABORADOR,
+        MATRICULA,
+        CARGO,
+        MES,
+        HORAS,
+        JUSTIFICATIVA,
+        TIPO_HE,
+        STATUS,
+        ENVIADO_POR,
+        DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
+      FROM PLANEJAMENTO_HE 
+      WHERE ENVIADO_POR = ?
+    `;
+    const params = [emailUsuario];
+
+    // Filtro por colaborador (busca parcial, case-insensitive)
+    if (colaborador) {
+      query += ` AND COLABORADOR LIKE ?`;
+      params.push(`%${colaborador.trim()}%`);
+    }
+
+    // Filtro por mês
+    if (mes) {
+      query += ` AND MES = ?`;
+      params.push(mes);
+    }
+
+    query += ` ORDER BY DATA_ENVIO DESC`;
+
+    const [rows] = await conexao.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error("Erro ao listar envios:", error);
+    res.status(500).json({ erro: "Erro ao carregar suas solicitações." });
+  }
 };
 
-exports.editarEnvio = (req, res) => {
-  // Lógica para editar envio
-  res.json({ sucesso: true, mensagem: "Envio editado com sucesso!" });
+exports.editarEnvio = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const emailUsuario = req.session.usuario?.email;
+  const { id, mes, horas, tipoHE, justificativa } = req.body;
+
+  if (!emailUsuario) {
+    return res.status(401).json({ sucesso: false, mensagem: "Não autenticado." });
+  }
+
+  if (!id || !mes || !horas || !tipoHE || !justificativa) {
+    return res.status(400).json({ sucesso: false, mensagem: "Dados incompletos." });
+  }
+
+  try {
+    // Verifica se a solicitação pertence ao usuário
+    const [verificacao] = await conexao.query(
+      "SELECT STATUS FROM PLANEJAMENTO_HE WHERE id = ? AND ENVIADO_POR = ?",
+      [id, emailUsuario]
+    );
+
+    if (verificacao.length === 0) {
+      return res.status(403).json({ sucesso: false, mensagem: "Solicitação não encontrada ou acesso negado." });
+    }
+
+    const statusAtual = verificacao[0].STATUS;
+    let novoStatus = 'PENDENTE';
+
+    // Regra: se já foi aprovada ou recusada, ao editar volta para PENDENTE
+    // (isso já está garantido com novoStatus = 'PENDENTE')
+
+    await conexao.query(
+      `UPDATE PLANEJAMENTO_HE 
+       SET MES = ?, HORAS = ?, TIPO_HE = ?, JUSTIFICATIVA = ?, STATUS = ?
+       WHERE id = ? AND ENVIADO_POR = ?`,
+      [mes, horas, tipoHE, justificativa, novoStatus, id, emailUsuario]
+    );
+
+    res.json({ sucesso: true, mensagem: "Solicitação atualizada com sucesso!" });
+  } catch (error) {
+    console.error("Erro ao editar envio:", error);
+    res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar solicitação." });
+  }
 };
 
-exports.excluirEnvio = (req, res) => {
-  // Lógica para excluir envio
-  res.json({ sucesso: true, mensagem: "Envio excluído com sucesso!" });
+exports.excluirEnvio = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const emailUsuario = req.session.usuario?.email;
+  const { id } = req.body; // ←←← req.body.id, não req.query ou req.params
+
+  // Validação crítica
+  if (!emailUsuario) {
+    return res.status(401).json({ sucesso: false, mensagem: "Não autenticado." });
+  }
+  if (!id || typeof id !== 'number' && isNaN(id)) {
+    return res.status(400).json({ sucesso: false, mensagem: "ID inválido." });
+  }
+
+  try {
+    // Verifica se pertence ao usuário e está PENDENTE
+    const [rows] = await conexao.query(
+      "SELECT STATUS FROM PLANEJAMENTO_HE WHERE id = ? AND ENVIADO_POR = ?",
+      [Number(id), emailUsuario]
+    );
+
+    if (rows.length === 0) {
+      return res.status(403).json({ sucesso: false, mensagem: "Solicitação não encontrada ou acesso negado." });
+    }
+
+    if (rows[0].STATUS !== 'PENDENTE') {
+      return res.status(400).json({ sucesso: false, mensagem: "Só é possível excluir solicitações pendentes." });
+    }
+
+    await conexao.query(
+      "DELETE FROM PLANEJAMENTO_HE WHERE id = ? AND ENVIADO_POR = ?",
+      [Number(id), emailUsuario]
+    );
+
+    res.json({ sucesso: true, mensagem: "Solicitação excluída com sucesso!" });
+  } catch (error) {
+    console.error("Erro ao excluir envio:", error);
+    res.status(500).json({ sucesso: false, mensagem: "Erro interno ao excluir." });
+  }
 };
 
 exports.gerarDash = (req, res) => {
