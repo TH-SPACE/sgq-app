@@ -12,6 +12,8 @@ exports.telaEnvio = (req, res) => {
 exports.enviarSolicitacoesMultiplo = async (req, res) => {
   const conexao = db.mysqlPool;
   const enviadoPor = req.session.usuario?.email || "desconhecido";
+  const user = req.session.usuario;
+  const ip = req.ip;
 
   try {
     const solicitacoes = req.body; // array de objetos
@@ -20,6 +22,8 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
         .status(400)
         .json({ sucesso: false, mensagem: "Nenhuma solicitação enviada." });
     }
+
+    console.log(`[INFO] Usuário: ${user?.nome || "desconhecido"}, IP: ${ip}, Ação: Envio de ${solicitacoes.length} solicitações de HE.`);
 
     for (const s of solicitacoes) {
       await conexao.query(
@@ -42,7 +46,7 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
 
     res.json({ sucesso: true, mensagem: "Solicitações enviadas com sucesso!" });
   } catch (error) {
-    console.error("Erro ao enviar múltiplas solicitações:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || "desconhecido"}, IP: ${ip}, Ação: Erro ao enviar múltiplas solicitações de HE.`, error);
     res.status(500).json({
       sucesso: false,
       mensagem: "Erro interno ao enviar solicitações.",
@@ -148,7 +152,11 @@ exports.listarEnvios = async (req, res) => {
 exports.editarEnvio = async (req, res) => {
   const conexao = db.mysqlPool;
   const emailUsuario = req.session.usuario?.email;
+  const user = req.session.usuario;
+  const ip = req.ip;
   const { id, mes, horas, tipoHE, justificativa } = req.body;
+
+  console.log(`[INFO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Tentativa de edição da solicitação ID: ${id}.`);
 
   if (!emailUsuario) {
     return res
@@ -170,6 +178,7 @@ exports.editarEnvio = async (req, res) => {
     );
 
     if (verificacao.length === 0) {
+      console.log(`[FALHA] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Edição da solicitação ID: ${id}. Motivo: Solicitação não encontrada ou acesso negado.`);
       return res
         .status(403)
         .json({
@@ -191,12 +200,13 @@ exports.editarEnvio = async (req, res) => {
       [mes, horas, tipoHE, justificativa, novoStatus, id, emailUsuario]
     );
 
+    console.log(`[SUCESSO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Edição da solicitação ID: ${id}.`);
     res.json({
       sucesso: true,
       mensagem: "Solicitação atualizada com sucesso!",
     });
   } catch (error) {
-    console.error("Erro ao editar envio:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Erro ao editar a solicitação ID: ${id}.`, error);
     res
       .status(500)
       .json({ sucesso: false, mensagem: "Erro ao atualizar solicitação." });
@@ -206,7 +216,11 @@ exports.editarEnvio = async (req, res) => {
 exports.excluirEnvio = async (req, res) => {
   const conexao = db.mysqlPool;
   const emailUsuario = req.session.usuario?.email;
+  const user = req.session.usuario;
+  const ip = req.ip;
   const { id } = req.body; // ←←← req.body.id, não req.query ou req.params
+
+  console.log(`[INFO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Tentativa de exclusão da solicitação ID: ${id}.`);
 
   // Validação crítica
   if (!emailUsuario) {
@@ -226,6 +240,7 @@ exports.excluirEnvio = async (req, res) => {
     );
 
     if (rows.length === 0) {
+      console.log(`[FALHA] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Exclusão da solicitação ID: ${id}. Motivo: Solicitação não encontrada ou acesso negado.`);
       return res
         .status(403)
         .json({
@@ -235,6 +250,7 @@ exports.excluirEnvio = async (req, res) => {
     }
 
     if (rows[0].STATUS !== "PENDENTE") {
+      console.log(`[FALHA] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Exclusão da solicitação ID: ${id}. Motivo: Status da solicitação não é 'PENDENTE'.`);
       return res
         .status(400)
         .json({
@@ -248,45 +264,73 @@ exports.excluirEnvio = async (req, res) => {
       [Number(id), emailUsuario]
     );
 
+    console.log(`[SUCESSO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Exclusão da solicitação ID: ${id}.`);
     res.json({ sucesso: true, mensagem: "Solicitação excluída com sucesso!" });
   } catch (error) {
-    console.error("Erro ao excluir envio:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Erro ao excluir a solicitação ID: ${id}.`, error);
     res
       .status(500)
       .json({ sucesso: false, mensagem: "Erro interno ao excluir." });
   }
 };
 
+// --- Substitua o método atual getDashboardData por este ---
 exports.getDashboardData = async (req, res) => {
   const conexao = db.mysqlPool;
-  const { mes } = req.query;
+  const { mes, gerente } = req.query;
 
   if (!mes) {
     return res.status(400).json({ erro: "O parâmetro 'mes' é obrigatório." });
   }
 
   try {
-    const [rows] = await conexao.query(
-      `SELECT 
+    let query = `
+      SELECT 
         GERENTE,
         SUM(HORAS) as totalHoras,
         SUM(CASE WHEN STATUS = 'PENDENTE' THEN 1 ELSE 0 END) as pendentes,
         SUM(CASE WHEN STATUS = 'APROVADO' THEN 1 ELSE 0 END) as aprovadas,
         SUM(CASE WHEN STATUS = 'RECUSADO' THEN 1 ELSE 0 END) as recusadas,
         SUM(CASE WHEN STATUS = 'PENDENTE' THEN HORAS ELSE 0 END) as horasPendentes,
-        SUM(CASE WHEN STATUS = 'APROVADO' THEN HORAS ELSE 0 END) as horasAprovadas
-       FROM PLANEJAMENTO_HE 
-       WHERE MES = ?
-       GROUP BY GERENTE`,
-      [mes]
-    );
+        SUM(CASE WHEN STATUS = 'APROVADO' THEN HORAS ELSE 0 END) as horasAprovadas,
+        SUM(CASE WHEN STATUS = 'RECUSADO' THEN HORAS ELSE 0 END) as horasRecusadas
+      FROM PLANEJAMENTO_HE
+      WHERE MES = ?
+    `;
+    const params = [mes];
 
+    if (gerente) {
+      query += ` AND GERENTE LIKE ?`;
+      params.push(`%${gerente}%`);
+    }
+
+    query += ` GROUP BY GERENTE ORDER BY GERENTE`;
+
+    const [rows] = await conexao.query(query, params);
     res.json(rows);
   } catch (error) {
     console.error("Erro ao buscar dados do dashboard:", error);
     res.status(500).json({ erro: "Erro ao buscar dados para o dashboard." });
   }
 };
+
+// Retorna lista de gerentes únicos para preencher o dropdown da dashboard
+exports.getGerentes = async (req, res) => {
+  const conexao = db.mysqlPool;
+  try {
+    const [rows] = await conexao.query(`
+      SELECT DISTINCT GERENTE AS nome
+      FROM PLANEJAMENTO_HE
+      WHERE GERENTE IS NOT NULL AND GERENTE <> ''
+      ORDER BY GERENTE
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error("Erro ao listar gerentes:", error);
+    res.status(500).json({ erro: "Erro ao listar gerentes." });
+  }
+};
+
 
 exports.listarTodasSolicitacoes = async (req, res) => {
   const conexao = db.mysqlPool;
