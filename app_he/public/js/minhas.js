@@ -124,18 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mesAtual = getMesAtualPortugues();
   document.getElementById("filtroMes").value = mesAtual;
 
-  document.querySelectorAll(".menu-item").forEach((item) => {
-    if (item.getAttribute("data-page") === "minhasSolicitacoes") {
-      item.addEventListener("click", () => {
-        setTimeout(() => {
-          const colaborador =
-            document.getElementById("filtroColaborador").value;
-          const mes = document.getElementById("filtroMes").value;
-          carregarMinhasSolicitacoes(colaborador, mes);
-        }, 100);
-      });
-    }
-  });
+
 
   document.getElementById("btnFiltrar").addEventListener("click", () => {
     const colaborador = document.getElementById("filtroColaborador").value;

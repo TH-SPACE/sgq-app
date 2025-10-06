@@ -454,29 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // ========== NAVEGAÇÃO ENTRE PÁGINAS (abas) ==========
-  // Função para exibir uma aba específica e esconder as demais
-  function showPage(id) {
-    document
-      .querySelectorAll(".card")
-      .forEach((c) => (c.style.display = "none"));
-    document.getElementById(id).style.display = "block";
-    document
-      .querySelectorAll(".menu-item")
-      .forEach((i) => i.classList.remove("active"));
-    document.querySelector(`[data-page="${id}"]`).classList.add("active");
-  }
 
-  // Configura os cliques nos itens do menu para alternar abas
-  document.querySelectorAll(".menu-item").forEach((i) => {
-    i.addEventListener("click", (e) => {
-      e.preventDefault();
-      showPage(i.getAttribute("data-page"));
-    });
-  });
-
-  // Exibe a aba inicial por padrão
-  showPage("novaSolicitacao");
 
   // ========== MENU DO USUÁRIO (dropdown) ==========
   const userMenu = document.querySelector(".user-menu");
