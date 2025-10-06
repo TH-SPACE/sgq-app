@@ -1,55 +1,68 @@
 function inicializarDashboard() {
   const filtroMes = document.getElementById("dashboardFiltroMes");
+  const filtroGerente = document.getElementById("dashboardFiltroGerente");
 
   function getMesAtualPortugues() {
     const meses = [
-      "Janeiro",
-      "Fevereiro",
-      "Março",
-      "Abril",
-      "Maio",
-      "Junho",
-      "Julho",
-      "Agosto",
-      "Setembro",
-      "Outubro",
-      "Novembro",
-      "Dezembro",
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
     ];
     return meses[new Date().getMonth()];
   }
 
-  const mesAtual = getMesAtualPortugues();
-  if (filtroMes) {
-    // Apenas define o valor e carrega se não tiver sido carregado antes para este mês
-    const ultimoMesCarregado = filtroMes.getAttribute('data-carregado');
-    if (ultimoMesCarregado !== mesAtual) {
-      filtroMes.value = mesAtual;
-      carregarDashboardPorGerente(mesAtual);
-      filtroMes.setAttribute('data-carregado', mesAtual);
-    }
+  // Popula o filtro de gerentes
+  function popularGerentes() {
+    // Evita repopular se já foi feito
+    if (filtroGerente.options.length > 1) return;
 
-    // Garante que o evento de change só seja adicionado uma vez
-    if (!filtroMes.dataset.changeEventAdded) {
-      filtroMes.addEventListener("change", () => {
-        const novoMes = filtroMes.value;
-        carregarDashboardPorGerente(novoMes);
-        filtroMes.setAttribute('data-carregado', novoMes);
+    fetch("/planejamento-he/api/gerentes")
+      .then(r => r.json())
+      .then(data => {
+        if (data.gerentes) {
+          data.gerentes.forEach(g => {
+            const opt = document.createElement("option");
+            opt.value = g;
+            opt.textContent = g;
+            filtroGerente.appendChild(opt);
+          });
+        }
       });
+  }
+
+  function aplicarFiltros() {
+    const mes = filtroMes.value;
+    const gerente = filtroGerente.value;
+    carregarDashboardPorGerente(mes, gerente);
+  }
+
+  if (filtroMes && filtroGerente) {
+    const mesAtual = getMesAtualPortugues();
+    filtroMes.value = mesAtual;
+    
+    popularGerentes();
+    aplicarFiltros();
+
+    // Garante que os eventos de change só sejam adicionados uma vez
+    if (!filtroMes.dataset.changeEventAdded) {
+      filtroMes.addEventListener("change", aplicarFiltros);
+      filtroGerente.addEventListener("change", aplicarFiltros);
       filtroMes.dataset.changeEventAdded = 'true';
     }
   }
 }
 
-function carregarDashboardPorGerente(mes) {
+function carregarDashboardPorGerente(mes, gerente) {
   const accordionContainer = document.getElementById('dashboardAccordion');
   const resumoContainer = document.getElementById('dashboardResumo');
   if (!accordionContainer || !resumoContainer) return;
 
-  accordionContainer.innerHTML = '<p class="text-center">Carregando dados dos gerentes...</p>';
+  accordionContainer.innerHTML = '<p class="text-center">Carregando dados...</p>';
   resumoContainer.innerHTML = '';
 
-  fetch(`/planejamento-he/api/dashboard-summary?mes=${mes}`)
+  let url = `/planejamento-he/api/dashboard-summary?mes=${mes}`;
+  if (gerente && gerente !== 'Todos') {
+    url += `&gerente=${encodeURIComponent(gerente)}`;
+  }
     .then(response => response.json())
     .then(data => {
       if (data.erro) {

@@ -259,15 +259,14 @@ exports.excluirEnvio = async (req, res) => {
 
 exports.getDashboardData = async (req, res) => {
   const conexao = db.mysqlPool;
-  const { mes } = req.query;
+  const { mes, gerente } = req.query;
 
   if (!mes) {
     return res.status(400).json({ erro: "O parâmetro 'mes' é obrigatório." });
   }
 
   try {
-    const [rows] = await conexao.query(
-      `SELECT 
+    let query = `SELECT 
         GERENTE,
         SUM(HORAS) as totalHoras,
         SUM(CASE WHEN STATUS = 'PENDENTE' THEN 1 ELSE 0 END) as pendentes,
@@ -276,10 +275,18 @@ exports.getDashboardData = async (req, res) => {
         SUM(CASE WHEN STATUS = 'PENDENTE' THEN HORAS ELSE 0 END) as horasPendentes,
         SUM(CASE WHEN STATUS = 'APROVADO' THEN HORAS ELSE 0 END) as horasAprovadas
        FROM PLANEJAMENTO_HE 
-       WHERE MES = ?
-       GROUP BY GERENTE`,
-      [mes]
-    );
+       WHERE MES = ?`;
+
+    const params = [mes];
+
+    if (gerente && gerente !== 'Todos') {
+      query += ` AND GERENTE = ?`;
+      params.push(gerente);
+    }
+
+    query += ` GROUP BY GERENTE`;
+
+    const [rows] = await conexao.query(query, params);
 
     res.json(rows);
   } catch (error) {
