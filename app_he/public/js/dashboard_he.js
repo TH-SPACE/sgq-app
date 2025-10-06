@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+function inicializarDashboard() {
   const filtroMes = document.getElementById("dashboardFiltroMes");
 
   function getMesAtualPortugues() {
@@ -21,14 +21,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const mesAtual = getMesAtualPortugues();
   if (filtroMes) {
-    filtroMes.value = mesAtual;
-    carregarDashboardPorGerente(mesAtual);
+    // Apenas define o valor e carrega se não tiver sido carregado antes para este mês
+    const ultimoMesCarregado = filtroMes.getAttribute('data-carregado');
+    if (ultimoMesCarregado !== mesAtual) {
+      filtroMes.value = mesAtual;
+      carregarDashboardPorGerente(mesAtual);
+      filtroMes.setAttribute('data-carregado', mesAtual);
+    }
 
-    filtroMes.addEventListener("change", () => {
-      carregarDashboardPorGerente(filtroMes.value);
-    });
+    // Garante que o evento de change só seja adicionado uma vez
+    if (!filtroMes.dataset.changeEventAdded) {
+      filtroMes.addEventListener("change", () => {
+        const novoMes = filtroMes.value;
+        carregarDashboardPorGerente(novoMes);
+        filtroMes.setAttribute('data-carregado', novoMes);
+      });
+      filtroMes.dataset.changeEventAdded = 'true';
+    }
   }
-});
+}
 
 function carregarDashboardPorGerente(mes) {
   const accordionContainer = document.getElementById('dashboardAccordion');
@@ -48,38 +59,37 @@ function carregarDashboardPorGerente(mes) {
 
       if (data.length === 0) {
         accordionContainer.innerHTML = '<p class="text-center text-muted">Nenhum dado encontrado para este mês.</p>';
+        resumoContainer.innerHTML = ''; // Limpa o resumo também
         return;
       }
 
       // 🔹 Calcular totais de horas
       let totalHoras = 0, horasPend = 0, horasAprov = 0;
-      let totalRec = 0; // apenas contagem de recusadas
-
+      
       data.forEach(d => {
         totalHoras += Number(d.totalHoras) || 0;
-        horasPend += Number(d.horasPendentes) || 0;   // precisa vir da API
-        horasAprov += Number(d.horasAprovadas) || 0;   // idem
-
+        horasPend += Number(d.horasPendentes) || 0;
+        horasAprov += Number(d.horasAprovadas) || 0;
       });
 
       // 🔹 Renderizar cards resumo
       resumoContainer.innerHTML = `
-    <div class="col-md-4">
-        <div class="summary-card purple">
+    <div class="col-md-4 mb-3">
+        <div class="summary-card purple h-100">
             <div class="icon"><i class="fas fa-clock"></i></div>
-            <div class="title">Horas Totais</div>
+            <div class="title">Horas Totais Planejadas</div>
             <div class="value">${totalHoras.toLocaleString('pt-BR')}</div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="summary-card orange">
+    <div class="col-md-4 mb-3">
+        <div class="summary-card orange h-100">
             <div class="icon"><i class="fas fa-hourglass-half"></i></div>
             <div class="title">Horas Pendentes</div>
             <div class="value">${horasPend.toLocaleString('pt-BR')}</div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="summary-card green">
+    <div class="col-md-4 mb-3">
+        <div class="summary-card green h-100">
             <div class="icon"><i class="fas fa-check-circle"></i></div>
             <div class="title">Horas Aprovadas</div>
             <div class="value">${horasAprov.toLocaleString('pt-BR')}</div>
@@ -134,7 +144,7 @@ function carregarDashboardPorGerente(mes) {
 
       accordionContainer.innerHTML = accordionHtml;
 
-      // Adicionar event listeners
+      // Adicionar event listeners para o collapse
       $("#dashboardAccordion .collapse").on("show.bs.collapse", function () {
         const gerente = this.previousElementSibling
           .querySelector("button")
@@ -171,21 +181,32 @@ function carregarDetalhesGerente(gerente, mes, gerenteId) {
       if (solicitacoes.length === 0) {
         tableContainer.innerHTML =
           '<p class="text-muted">Nenhuma solicitação para este gerente no mês.</p>';
+        // Não desenha o gráfico se não houver dados
+        new Chart(chartCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: ['Nenhum dado'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['#f0f0f0']
+                }]
+            },
+            options: { responsive: true, legend: { display: false } }
+        });
         tableContainer.setAttribute("data-loaded", "true");
         return;
       }
 
       // Montar tabela
       let tableHtml = `
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
                     <table class="table table-sm table-hover table-bordered">
-                        <thead class="thead-light">
+                        <thead class="thead-light" style="position: sticky; top: 0;">
                             <tr>
                                 <th>Colaborador</th>
                                 <th>Horas</th>
                                 <th>Tipo HE</th>
                                 <th>Status</th>
-                                <th>Enviado em</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -213,7 +234,6 @@ function carregarDetalhesGerente(gerente, mes, gerenteId) {
                         <td>${s.HORAS || "0"}</td>
                         <td>${s.TIPO_HE || "-"}</td>
                         <td>${statusBadge}</td>
-                        <td>${s.DATA_ENVIO_FORMATADA || "-"}</td>
                     </tr>
                 `;
       });

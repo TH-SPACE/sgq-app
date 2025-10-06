@@ -633,7 +633,7 @@
     <script src="/public/js/enviar.js"></script>
     <script src="/public/js/minhas.js"></script>
     <script src="/public/js/dashboard_he.js"></script>
-    <script src="/public/js/sweetalert2.all.min.js"></script>
+    <script src="/js/sweetalert2.all.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -664,6 +664,18 @@
                     e.preventDefault();
                     const pageName = this.getAttribute('data-page');
                     showPage(pageName);
+
+                    // Se a página for o dashboard, inicializa seus componentes
+                    if (pageName === 'dashboard') {
+                        inicializarDashboard();
+                    }
+                    // Adicionado para carregar as solicitações ao clicar na aba
+                    if (pageName === 'minhasSolicitacoes') {
+                        // Usa um pequeno timeout para garantir que a aba esteja visível
+                        setTimeout(() => {
+                            document.getElementById('btnFiltrar').click();
+                        }, 100);
+                    }
                 });
             });
 
