@@ -1,68 +1,55 @@
 function inicializarDashboard() {
   const filtroMes = document.getElementById("dashboardFiltroMes");
-  const filtroGerente = document.getElementById("dashboardFiltroGerente");
 
   function getMesAtualPortugues() {
     const meses = [
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
     ];
     return meses[new Date().getMonth()];
   }
 
-  // Popula o filtro de gerentes
-  function popularGerentes() {
-    // Evita repopular se já foi feito
-    if (filtroGerente.options.length > 1) return;
+  const mesAtual = getMesAtualPortugues();
+  if (filtroMes) {
+    // Apenas define o valor e carrega se não tiver sido carregado antes para este mês
+    const ultimoMesCarregado = filtroMes.getAttribute('data-carregado');
+    if (ultimoMesCarregado !== mesAtual) {
+      filtroMes.value = mesAtual;
+      carregarDashboardPorGerente(mesAtual);
+      filtroMes.setAttribute('data-carregado', mesAtual);
+    }
 
-    fetch("/planejamento-he/api/gerentes")
-      .then(r => r.json())
-      .then(data => {
-        if (data.gerentes) {
-          data.gerentes.forEach(g => {
-            const opt = document.createElement("option");
-            opt.value = g;
-            opt.textContent = g;
-            filtroGerente.appendChild(opt);
-          });
-        }
-      });
-  }
-
-  function aplicarFiltros() {
-    const mes = filtroMes.value;
-    const gerente = filtroGerente.value;
-    carregarDashboardPorGerente(mes, gerente);
-  }
-
-  if (filtroMes && filtroGerente) {
-    const mesAtual = getMesAtualPortugues();
-    filtroMes.value = mesAtual;
-    
-    popularGerentes();
-    aplicarFiltros();
-
-    // Garante que os eventos de change só sejam adicionados uma vez
+    // Garante que o evento de change só seja adicionado uma vez
     if (!filtroMes.dataset.changeEventAdded) {
-      filtroMes.addEventListener("change", aplicarFiltros);
-      filtroGerente.addEventListener("change", aplicarFiltros);
+      filtroMes.addEventListener("change", () => {
+        const novoMes = filtroMes.value;
+        carregarDashboardPorGerente(novoMes);
+        filtroMes.setAttribute('data-carregado', novoMes);
+      });
       filtroMes.dataset.changeEventAdded = 'true';
     }
   }
 }
 
-function carregarDashboardPorGerente(mes, gerente) {
+function carregarDashboardPorGerente(mes) {
   const accordionContainer = document.getElementById('dashboardAccordion');
   const resumoContainer = document.getElementById('dashboardResumo');
   if (!accordionContainer || !resumoContainer) return;
 
-  accordionContainer.innerHTML = '<p class="text-center">Carregando dados...</p>';
+  accordionContainer.innerHTML = '<p class="text-center">Carregando dados dos gerentes...</p>';
   resumoContainer.innerHTML = '';
 
-  let url = `/planejamento-he/api/dashboard-summary?mes=${mes}`;
-  if (gerente && gerente !== 'Todos') {
-    url += `&gerente=${encodeURIComponent(gerente)}`;
-  }
+  fetch(`/planejamento-he/api/dashboard-summary?mes=${mes}`)
     .then(response => response.json())
     .then(data => {
       if (data.erro) {
