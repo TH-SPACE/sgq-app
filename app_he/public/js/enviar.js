@@ -177,7 +177,7 @@ function addLinhaTabela() {
         <option value="">Selecione</option>
       </select>
     </td>
-    <td><input type="text" class="form-control form-control-sm matricula" readonly></td>
+    <td style="display: none;"><input type="text" class="form-control form-control-sm matricula" readonly></td>
     <td><input type="text" class="form-control form-control-sm cargo" readonly></td>
     <td>
       <select class="form-control form-control-sm tipoHE">
