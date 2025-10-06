@@ -426,17 +426,30 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then((r) => r.json())
       .then((resp) => {
-        alert(resp.mensagem);
         if (resp.sucesso) {
-          // Limpa a tabela de novas solicitações
-          document.getElementById("linhasColaboradores").innerHTML = "";
-          calcularCustoTotal(); // Recalcula o custo para zerar a estimativa
+          Swal.fire({
+            title: "Sucesso!",
+            text: resp.mensagem,
+            icon: "success",
+            confirmButtonText: "Ok",
+          }).then(() => {
+            // Limpa a tabela de novas solicitações
+            document.getElementById("linhasColaboradores").innerHTML = "";
+            calcularCustoTotal(); // Recalcula o custo para zerar a estimativa
 
-          // Navega para a aba de "Minhas Solicitações" e a atualiza
-          showPage("minhasSolicitacoes");
-          if (typeof carregarMinhasSolicitacoes === "function") {
-            carregarMinhasSolicitacoes(); // Atualiza a lista
-          }
+            // Navega para a aba de "Minhas Solicitações" e a atualiza
+            showPage("minhasSolicitacoes");
+            if (typeof carregarMinhasSolicitacoes === "function") {
+              carregarMinhasSolicitacoes(); // Atualiza a lista
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Erro!",
+            text: resp.mensagem,
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
         }
       });
   });
