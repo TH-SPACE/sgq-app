@@ -426,26 +426,8 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then((r) => r.json())
       .then((resp) => {
-        Swal.fire({
-          icon: resp.sucesso ? 'success' : 'error',
-          title: resp.mensagem,
-          showConfirmButton: false,
-          timer: 2000
-        });
-
-        if (resp.sucesso) {
-          // Limpa a tabela de nova solicitação
-          document.getElementById("linhasColaboradores").innerHTML = "";
-          document.getElementById("valorTotalHoras").textContent = "R$ 0,00";
-          const totalResumo = document.getElementById("valorTotalHorasResumo");
-          if (totalResumo) totalResumo.textContent = "R$ 0,00";
-          
-          // Muda para a aba "Minhas Solicitações" e recarrega os dados
-          showPage("minhasSolicitacoes");
-          if (typeof carregarMinhasSolicitacoes === "function") {
-            carregarMinhasSolicitacoes();
-          }
-        }
+        alert(resp.mensagem);
+        if (resp.sucesso) window.location.href = "/planejamento-he/envios";
       });
   });
 
