@@ -57,6 +57,10 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
 // Função para obter o resumo de HE
 exports.obterResumoHE = async (req, res) => {
   const { gerente, mes } = req.query;
+  const user = req.session.usuario;
+  const ip = req.ip;
+
+  console.log(`[INFO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Obter resumo de HE para gerente: ${gerente}, mês: ${mes}.`);
 
   if (!gerente || !mes) {
     return res
@@ -93,7 +97,7 @@ exports.obterResumoHE = async (req, res) => {
       pendente: parseFloat(totalPendente.toFixed(2)),
     });
   } catch (error) {
-    console.error("Erro ao buscar resumo HE:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Erro ao obter resumo de HE para gerente: ${gerente}, mês: ${mes}.`, error);
     res.status(500).json({ erro: "Erro ao buscar dados." });
   }
 };
@@ -101,7 +105,11 @@ exports.obterResumoHE = async (req, res) => {
 exports.listarEnvios = async (req, res) => {
   const conexao = db.mysqlPool;
   const emailUsuario = req.session.usuario?.email;
+  const user = req.session.usuario;
+  const ip = req.ip;
   const { colaborador, mes } = req.query; // ←←← novos parâmetros
+
+  console.log(`[INFO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Listar envios com filtros: colaborador=${colaborador}, mes=${mes}.`);
 
   if (!emailUsuario) {
     return res.status(401).json({ erro: "Usuário não autenticado." });
@@ -122,7 +130,7 @@ exports.listarEnvios = async (req, res) => {
         STATUS,
         ENVIADO_POR,
         DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
-      FROM PLANEJAMENTO_HE 
+      FROM PLANEJamento_HE 
       WHERE ENVIADO_POR = ?
     `;
     const params = [emailUsuario];
@@ -144,7 +152,7 @@ exports.listarEnvios = async (req, res) => {
     const [rows] = await conexao.query(query, params);
     res.json(rows);
   } catch (error) {
-    console.error("Erro ao listar envios:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || emailUsuario}, IP: ${ip}, Ação: Erro ao listar envios.`, error);
     res.status(500).json({ erro: "Erro ao carregar suas solicitações." });
   }
 };
@@ -278,6 +286,10 @@ exports.excluirEnvio = async (req, res) => {
 exports.getDashboardData = async (req, res) => {
   const conexao = db.mysqlPool;
   const { mes, gerente } = req.query;
+  const user = req.session.usuario;
+  const ip = req.ip;
+
+  console.log(`[INFO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Obter dados do dashboard com filtros: mes=${mes}, gerente=${gerente}.`);
 
   if (!mes) {
     return res.status(400).json({ erro: "O parâmetro 'mes' é obrigatório." });
@@ -309,7 +321,7 @@ exports.getDashboardData = async (req, res) => {
     const [rows] = await conexao.query(query, params);
     res.json(rows);
   } catch (error) {
-    console.error("Erro ao buscar dados do dashboard:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Erro ao buscar dados do dashboard.`, error);
     res.status(500).json({ erro: "Erro ao buscar dados para o dashboard." });
   }
 };
@@ -317,6 +329,11 @@ exports.getDashboardData = async (req, res) => {
 // Retorna lista de gerentes únicos para preencher o dropdown da dashboard
 exports.getGerentes = async (req, res) => {
   const conexao = db.mysqlPool;
+  const user = req.session.usuario;
+  const ip = req.ip;
+
+  console.log(`[INFO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Listar gerentes.`);
+
   try {
     const [rows] = await conexao.query(`
       SELECT DISTINCT GERENTE AS nome
@@ -326,7 +343,7 @@ exports.getGerentes = async (req, res) => {
     `);
     res.json(rows);
   } catch (error) {
-    console.error("Erro ao listar gerentes:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Erro ao listar gerentes.`, error);
     res.status(500).json({ erro: "Erro ao listar gerentes." });
   }
 };
@@ -335,6 +352,10 @@ exports.getGerentes = async (req, res) => {
 exports.listarTodasSolicitacoes = async (req, res) => {
   const conexao = db.mysqlPool;
   const { gerente, mes } = req.query;
+  const user = req.session.usuario;
+  const ip = req.ip;
+
+  console.log(`[INFO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Listar todas as solicitações para gerente: ${gerente}, mês: ${mes}.`);
 
   if (!gerente || !mes) {
     return res.status(400).json({ erro: "Os parâmetros 'gerente' e 'mes' são obrigatórios." });
@@ -356,7 +377,7 @@ exports.listarTodasSolicitacoes = async (req, res) => {
     );
     res.json(rows);
   } catch (error) {
-    console.error("Erro ao listar todas as solicitações:", error);
+    console.error(`[ERRO] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Ação: Erro ao listar todas as solicitações para gerente: ${gerente}, mês: ${mes}.`, error);
     res.status(500).json({ erro: "Erro ao carregar as solicitações." });
   }
 };
