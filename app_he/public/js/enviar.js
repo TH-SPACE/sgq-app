@@ -427,7 +427,17 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((r) => r.json())
       .then((resp) => {
         alert(resp.mensagem);
-        if (resp.sucesso) window.location.href = "/planejamento-he/envios";
+        if (resp.sucesso) {
+          // Limpa a tabela de novas solicitações
+          document.getElementById("linhasColaboradores").innerHTML = "";
+          calcularCustoTotal(); // Recalcula o custo para zerar a estimativa
+
+          // Navega para a aba de "Minhas Solicitações" e a atualiza
+          showPage("minhasSolicitacoes");
+          if (typeof carregarMinhasSolicitacoes === "function") {
+            carregarMinhasSolicitacoes(); // Atualiza a lista
+          }
+        }
       });
   });
 
