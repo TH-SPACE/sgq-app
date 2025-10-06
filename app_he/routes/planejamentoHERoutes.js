@@ -4,6 +4,7 @@ const path = require("path");
 const db = require("../../db/db");
 const planejamentoHE = require("../controllers/planejamentoHEController");
 
+
 // Middleware de autenticação para o módulo HE (reutiliza sessão do THANOS)
 const heAuth = require("../middleware/heAuth");
 
@@ -15,7 +16,7 @@ function verificaHEADM(req, res, next) {
   // Se não for ADM, redireciona ou nega acesso
   return res
     .status(403)
-    .json({ erro: "Acesso negado. Apenas diretores podem aprovar." });
+    .json({ erro: "Acesso negado. Apenas administradores podem acessar esta página." });
 }
 
 // Rotas públicas do HE (só login)
@@ -57,6 +58,10 @@ router.post(
   verificaHEADM,
   planejamentoHE.recusarSolicitacao
 );
+
+
+
+
 
 // APIs públicas (mas protegidas por login, pois usam dados sensíveis)
 router.get("/api/gerentes", heAuth.requireHEAuth, async (req, res) => {
