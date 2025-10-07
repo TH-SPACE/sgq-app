@@ -2,116 +2,241 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <title>ThanOS - Centro de Soluções</title>
-    <link rel="icon" href="/img/b2b.png">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ThanOS - Painel do Administrador</title>
+    <link rel="icon" href="/img/b2b.png" />
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-    <!-- Ícones Font Awesome para o dropdown -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <link rel="stylesheet" href="/css/menu.css">
+    <style>
+        body {
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
 
+        .navbar-brand img {
+            margin-right: 8px;
+        }
+
+        .card-header {
+            font-weight: 600;
+        }
+
+        .table th {
+            background-color: #f1f3f5;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-light" style="padding-top: 70px;">
-
+<body>
     <!-- Navbar -->
-    <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="/home">
-                <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
+                <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle" alt="Logo">
                 <span>ThanOS</span>
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                 aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active" id="vida_sigitm">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item" id="vida_sigitm">
                         <a class="nav-link" href="/home/sigitm">VIDA B2B</a>
                     </li>
-
-                    <li class="nav-item active" id="posBd">
+                    <li class="nav-item" id="posBd">
                         <a class="nav-link" href="/home/pos_bd_b2b">PÓS BD B2B</a>
                     </li>
-                    <li class="nav-item dropdown active">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">LINKS B2B</a>
-                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
-
-                            <a class="dropdown-item" href="https://brtdtlts0002fu.redecorp.br/gps/dashboard_b2b/index"
-                                target="_blank" rel="noopener noreferrer">GPS EMPRESARIAL</a>
-
-                            <a class="dropdown-item"
-                                href="https://app.powerbi.com/groups/me/reports/3138e4a6-bc78-4424-9ce6-c67b6a55644d/ReportSectionb445b0614e5c0e30a351?experience=power-bi&clientSideAuth=0"
-                                target="_blank" rel="noopener noreferrer">IRR/IRT B2B</a>
-
-                            <a class="dropdown-item"
-                                href="https://app.powerbi.com/groups/me/reports/8448e95d-70a3-4dcd-8b5f-74cf7de5c377/ReportSection1d11583f2f338d57ce8e?experience=power-bi"
-                                target="_blank" rel="noopener noreferrer">ABERTOS E ENCERRADOS / VUST</a>
-
-                            <a class="dropdown-item"
-                                href="https://app.powerbi.com/groups/me/reports/77ce5d9e-0de8-4a24-992c-5905c57c1e3b/ReportSection?experience=power-bi">PLANTA
-                                B2B</a>
-                            <div class="dropdown-divider"></div>
-
-                        </div>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="linksB2BDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">LINKS B2B</a>
+                        <ul class="dropdown-menu" aria-labelledby="linksB2BDropdown">
+                            <li><a class="dropdown-item"
+                                    href="https://brtdtlts0002fu.redecorp.br/gps/dashboard_b2b/index" target="_blank"
+                                    rel="noopener noreferrer">GPS EMPRESARIAL</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://app.powerbi.com/groups/me/reports/3138e4a6-bc78-4424-9ce6-c67b6a55644d/ReportSectionb445b0614e5c0e30a351?experience=power-bi&clientSideAuth=0"
+                                    target="_blank" rel="noopener noreferrer">IRR/IRT B2B</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://app.powerbi.com/groups/me/reports/8448e95d-70a3-4dcd-8b5f-74cf7de5c377/ReportSection1d11583f2f338d57ce8e?experience=power-bi"
+                                    target="_blank" rel="noopener noreferrer">ABERTOS E ENCERRADOS / VUST</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://app.powerbi.com/groups/me/reports/77ce5d9e-0de8-4a24-992c-5905c57c1e3b/ReportSection?experience=power-bi"
+                                    target="_blank" rel="noopener noreferrer">PLANTA B2B</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item dropdown active">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">POWER APPS B2B</a>
-                        <div class="dropdown-menu" aria-labelledby="menuDropdown">
-                            <a class="dropdown-item"
-                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/4a6e89fa-81bd-43f3-82b7-5799ed6f108f?hidenavbar=true"
-                                target="_blank" rel="noopener noreferrer">QUALIDADE B2B</a>
-
-                            <a class="dropdown-item"
-                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/ba24c9cb-d58a-431c-88bf-30719d3f054f?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609437&source=portal"
-                                target="_blank" rel="noopener noreferrer">IRR B2B</a>
-
-                            <a class="dropdown-item"
-                                href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/a28a8168-8d3b-44fd-8d97-30772b7b8263?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609435&source=portal">B2B
-                                VUST</a>
-                            <div class="dropdown-divider"></div>
-
-                        </div>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="powerAppsDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">POWER APPS B2B</a>
+                        <ul class="dropdown-menu" aria-labelledby="powerAppsDropdown">
+                            <li><a class="dropdown-item"
+                                    href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/4a6e89fa-81bd-43f3-82b7-5799ed6f108f?hidenavbar=true"
+                                    target="_blank" rel="noopener noreferrer">QUALIDADE B2B</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/ba24c9cb-d58a-431c-88bf-30719d3f054f?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609437&source=portal"
+                                    target="_blank" rel="noopener noreferrer">IRR B2B</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/a28a8168-8d3b-44fd-8d97-30772b7b8263?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609435&source=portal"
+                                    target="_blank" rel="noopener noreferrer">B2B VUST</a></li>
+                        </ul>
                     </li>
                 </ul>
 
-                <!-- Usuário -->
+                <!-- Dropdown do Usuário -->
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
-                        id="usuarioDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="fas fa-user-circle fa-lg mr-2"></i>
+                        id="usuarioDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle fa-lg me-2"></i>
                         <span id="nomeUsuario">Usuário</span>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
-                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
-                            <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
-                        </a>
-                        <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
-                            <i class="fas fa-cogs text-warning mr-2"></i>PAINEL ADM
-                        </a>
-                        <a class="dropdown-item" href="/auth/logout">
-                            <i class="fas fa-sign-out-alt text-danger mr-2"></i>SAIR
-                        </a>
-
-                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="usuarioDropdown">
+                        <li><a id="painelUpload" class="dropdown-item" href="/home/upload_bases" style="display: none;">
+                                <i class="fa-solid fa-upload text-info me-2"></i> UPLOAD BASES
+                            </a></li>
+                        <li><a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
+                                <i class="fas fa-cogs text-warning me-2"></i> PAINEL ADM
+                            </a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="/auth/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i> SAIR
+                            </a></li>
+                    </ul>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Script para mostrar nome e botão ADM -->
-    <!-- JS Usuário -->
+    <!-- Conteúdo Principal -->
+    <div class="container-fluid px-4 py-3">
+        <div class="d-flex align-items-center mb-4">
+            <img src="/img/mano.gif" alt="Ícone" class="me-3" style="width: 50px; height: 50px;" />
+            <h2 class="text-primary mb-0">
+                <i class="fas fa-user-shield me-2"></i>Painel do Administrador
+            </h2>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-users me-2"></i>Lista de Usuários</span>
+                <div class="search-container">
+                    <input type="text" id="buscaUsuario" class="form-control form-control-sm"
+                        placeholder="Buscar por nome ou e-mail" />
+                    <button id="btnResetar" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-redo me-1"></i>Resetar
+                    </button>
+                    <button id="btnAdicionar" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
+                        <i class="fas fa-plus me-1"></i>Adicionar Usuário
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Perfil</th>
+                                <th>Cargo</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaUsuarios">
+                            <!-- Conteúdo dinâmico via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formEditar">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel"><i class="fas fa-edit me-2"></i>Editar Usuário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editarId" />
+                        <div class="mb-3">
+                            <label class="form-label">Nome completo</label>
+                            <input type="text" id="editarNome" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cargo</label>
+                            <input type="text" id="editarCargo" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Perfis (selecione um ou mais)</label>
+                            <div id="editarPerfil" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionar Usuário -->
+    <div class="modal fade" id="modalAdicionar" tabindex="-1" aria-labelledby="modalAdicionarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formAdicionar">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarLabel"><i class="fas fa-user-plus me-2"></i>Adicionar Novo Usuário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">E-mail do Usuário (do Active Directory)</label>
+                            <input type="email" id="adicionarEmail" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Adicionar Usuário</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        // Carregar dados do usuário logado
         fetch('/home/usuario')
             .then(res => res.json())
             .then(data => {
@@ -119,137 +244,40 @@
                 const perfilUsuario = data.perfil;
                 const acessos = data.acessos;
 
-                document.getElementById('nomeUsuario').innerText = nomeUsuario
+                document.getElementById('nomeUsuario').innerText = nomeUsuario;
 
                 if (perfilUsuario.includes('ADM')) {
-                    document.getElementById('painelAdmBtn').style.display = 'inline-block';
+                    document.getElementById('painelAdmBtn').style.display = 'block';
                 }
-
                 if (perfilUsuario.includes('ADM') || perfilUsuario.includes('USER_UPLOAD')) {
-                    document.getElementById('painelUpload').style.display = 'inline-block'
+                    document.getElementById('painelUpload').style.display = 'block';
                 }
-                // Liberar POS BD se tiver permissão
                 if (acessos.includes('posbd')) {
-                    document.getElementById('posBd').style.display = 'inline-block';
+                    document.getElementById('posBd').style.display = 'block';
                 }
-                if (acessos.includes('relatorios')) {
-                    document.getElementById('relatorios').style.display = 'inline-block';
-                } console.log('Acessos do usuário:', acessos);
-
-
+                // Nota: 'relatorios' não está no HTML atual, então foi mantido comentado
+                console.log('Acessos do usuário:', acessos);
             });
-    </script>
 
-    <div class="container mt-2">
-        <div class="d-flex left-content-between align-items-center mb-4">
-            <img class="mr-3" src="/img/mano.gif" alt="Ícone Métricas" style="width: 60px;">
-            <h2 class="text-primary">Painel do Administrador</h2>
-        </div>
-
-        <!-- Tabela de usuários -->
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                Lista de Usuários
-            </div>
-            <div class="card-body p-0">
-                <div class="d-flex justify-content-between align-items-center p-2">
-                    <div class="w-50">
-                        <input type="text" id="buscaUsuario" class="form-control"
-                            placeholder="Buscar por nome ou email">
-                    </div>
-
-                    <!-- Botão totalmente à direita -->
-                    <button id="btnResetar" class="btn btn-secondary  mx-3">Resetar
-                        Filtros</button>
-
-                </div>
-                <table class="table table-striped table-hover mb-0">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Perfil</th>
-                            <th>Cargo</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaUsuarios">
-                        <!-- Conteúdo dinâmico via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Edição -->
-    <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form id="formEditar" method="POST">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">Editar Usuário</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="editarId">
-                        <div class="form-group">
-                            <label>Nome</label>
-                            <input type="text" name="nome" id="editarNome" class="form-control" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Cargo</label>
-                            <input type="text" name="cargo" id="editarCargo" class="form-control">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Perfil</label>
-                            <select name="perfil" id="editarPerfil" class="form-control">
-                                <option value="USER" selected>USER</option>
-                                <option value="ADM">ADM</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Salvar</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-
-    <!-- Script para carregar usuários e abrir modal -->
-    <script>
-
-        // 1. Função principal que renderiza a tabela
+        // Função para renderizar usuários
         function renderUsuarios() {
-            fetch('/admin/usuarios') // acessa o backend /usuário da pasta admin.js
-                .then(res => res.json()) //retorna um Json
-                .then(usuarios => { // cria um array de usuários                   
-                    const tabela = document.getElementById('tabelaUsuarios'); //pega o elemento do html e adiciona na const tabela
-                    tabela.innerHTML = ''; // limpa antes de recarregar remove o tr anterior
+            fetch('/admin/usuarios')
+                .then(res => res.json())
+                .then(usuarios => {
+                    const tabela = document.getElementById('tabelaUsuarios');
+                    tabela.innerHTML = '';
 
-                    usuarios.forEach(user => { //para cada usuário cria um TR na tabela
-                        const tr = document.createElement('tr');//para cada usuário cria um TR na tabela
-
+                    usuarios.forEach(user => {
+                        const tr = document.createElement('tr');
                         tr.innerHTML = `
               <td>${user.id}</td>
               <td>${user.nome}</td>
               <td>${user.email}</td>
               <td>${user.perfil}</td>
               <td>${user.cargo || ''}</td>
-              <td>                 
-
-                <button class="btn btn-sm btn-warning mr-1" onclick="abrirModalEditar(${user.id}, '${user.nome}', '${user.perfil}', '${user.cargo || ''}')">Editar</button>
-                <button class="btn btn-sm btn-danger" onclick="alertaExcluir(${user.id}, '${user.nome}')">Excluir</button>
-
+              <td class="text-center">
+                <button class="btn btn-sm btn-warning me-1" onclick="abrirModalEditar(${user.id}, '${user.nome.replace(/'/g, "\\'")}', '${user.perfil}', '${(user.cargo || '').replace(/'/g, "\\'")}')">Editar</button>
+                <button class="btn btn-sm btn-danger" onclick="alertaExcluir(${user.id}, '${user.nome.replace(/'/g, "\\'")}')">Excluir</button>
               </td>
             `;
                         tabela.appendChild(tr);
@@ -258,101 +286,135 @@
                 .catch(err => console.error('Erro ao carregar usuários:', err));
         }
 
-        // 2. Abrir modal de edição
         function abrirModalEditar(id, nome, perfil, cargo) {
             document.getElementById('editarId').value = id;
             document.getElementById('editarNome').value = nome;
-            document.getElementById("editarPerfil").value = perfil;
             document.getElementById('editarCargo').value = cargo || '';
-            document.getElementById('formEditar').action = `/admin/editar/${id}`;
-            $('#modalEditar').modal('show');
+
+            const perfisDisponiveis = ['USER', 'ADM', 'HE_USER', 'HE_APROVADOR', 'USER_UPLOAD'];
+            const perfisUsuario = perfil.split(',').map(p => p.trim());
+            const container = document.getElementById('editarPerfil');
+            container.innerHTML = '';
+
+            perfisDisponiveis.forEach(p => {
+                const isChecked = perfisUsuario.includes(p);
+                const div = document.createElement('div');
+                div.classList.add('form-check');
+                div.innerHTML = `
+          <input class="form-check-input" type="checkbox" name="perfil" value="${p}" id="perfil_${p}" ${isChecked ? 'checked' : ''}>
+          <label class="form-check-label" for="perfil_${p}">${p}</label>
+        `;
+                container.appendChild(div);
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
+            modal.show();
         }
 
-        // 3. Submissão da edição via JS
         document.getElementById('formEditar').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const id = document.getElementById('editarId').value;
+            const nome = document.getElementById('editarNome').value;
+            const cargo = document.getElementById('editarCargo').value;
+            const perfisSelecionados = Array.from(document.querySelectorAll('#editarPerfil input:checked')).map(cb => cb.value);
+            const perfil = perfisSelecionados.join(',');
 
-            const form = new URLSearchParams(new FormData(this));
+            const formData = new URLSearchParams();
+            formData.append('id', id);
+            formData.append('nome', nome);
+            formData.append('cargo', cargo);
+            formData.append('perfil', perfil);
 
             fetch(`/admin/editar/${id}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: form
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
             })
                 .then(() => {
-                    $('#modalEditar').modal('hide');
+                    bootstrap.Modal.getInstance(document.getElementById('modalEditar')).hide();
                     renderUsuarios();
                 })
                 .catch(err => console.error('Erro ao editar:', err));
         });
 
-        // 4. Abrir alerta de exclusão
         function alertaExcluir(id, nome) {
             Swal.fire({
-                title: `Tem certeza?`,
+                title: 'Tem certeza?',
                 text: `Deseja realmente excluir o usuário "${nome}"?`,
-                icon: "warning",
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Sim, excluir!",
-                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch(`/admin/excluir/${id}`, {
-                        method: 'POST'
-                    })
+                    fetch(`/admin/excluir/${id}`, { method: 'POST' })
                         .then(() => {
-                            Swal.fire(
-                                "Excluído!",
-                                "O usuário foi removido com sucesso.",
-                                "success"
-                            );
+                            Swal.fire('Excluído!', 'O usuário foi removido com sucesso.', 'success');
                             renderUsuarios();
                         })
                         .catch(() => {
-                            Swal.fire(
-                                "Erro!",
-                                "Não foi possível excluir o usuário.",
-                                "error"
-                            );
+                            Swal.fire('Erro!', 'Não foi possível excluir o usuário.', 'error');
                         });
                 }
             });
         }
 
-        // 6. Filtro de busca em tempo real
         document.getElementById('buscaUsuario').addEventListener('input', function () {
             const termo = this.value.toLowerCase();
             const linhas = document.querySelectorAll('#tabelaUsuarios tr');
-
             linhas.forEach(linha => {
-                const nome = linha.children[1].textContent.toLowerCase();
-                const email = linha.children[2].textContent.toLowerCase();
-                const visivel = nome.includes(termo) || email.includes(termo);
-                linha.style.display = visivel ? '' : 'none';
+                const nome = linha.children[1]?.textContent.toLowerCase() || '';
+                const email = linha.children[2]?.textContent.toLowerCase() || '';
+                linha.style.display = (nome.includes(termo) || email.includes(termo)) ? '' : 'none';
             });
         });
 
-        // resetar filtros
         document.getElementById('btnResetar').addEventListener('click', function () {
-            document.getElementById('buscaUsuario').value = ''
-            renderUsuarios() //recarrega a lista
-        })
+            document.getElementById('buscaUsuario').value = '';
+            renderUsuarios();
+        });
 
-        // 7. Inicialização
         document.addEventListener('DOMContentLoaded', renderUsuarios);
+
+        // Abrir modal de adicionar
+        document.getElementById('btnAdicionar').addEventListener('click', () => {
+            const modal = new bootstrap.Modal(document.getElementById('modalAdicionar'));
+            modal.show();
+        });
+
+        // Submissão do formulário de adicionar
+        document.getElementById('formAdicionar').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('adicionarEmail').value;
+
+            const formData = new URLSearchParams();
+            formData.append('email', email);
+
+            fetch('/admin/adicionar_usuario', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.sucesso) {
+                    bootstrap.Modal.getInstance(document.getElementById('modalAdicionar')).hide();
+                    Swal.fire('Sucesso!', data.mensagem, 'success');
+                    renderUsuarios();
+                } else {
+                    Swal.fire('Erro!', data.erro, 'error');
+                }
+            })
+            .catch(err => {
+                console.error('Erro ao adicionar usuário:', err);
+                Swal.fire('Erro!', 'Ocorreu um erro inesperado.', 'error');
+            });
+        });
     </script>
-
-    <script src="/js/sweetalert2.all.min.js"></script>
-    <!-- jQuery & Bootstrap JS (necessário para modal funcionar) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>

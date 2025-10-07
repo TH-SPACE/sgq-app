@@ -12,7 +12,7 @@ const batimentoB2B = require("./controllers/batimento_b2b");
 const rampaIrrController = require("./controllers/rampa_irr_controller");
 
 // 🔐 Middlewares
-const { verificaLogin, verificaADM } = require("./middlewares/autenticacao");
+const { verificaLogin, verificaADM, verificaUSER } = require("./middlewares/autenticacao");
 
 // ⚙️ Inicializações
 dotenv.config();
@@ -97,7 +97,7 @@ app.post(
 
 // 🧭 Rotas protegidas
 app.use("/auth", require("./routes/auth"));
-app.use("/home", verificaLogin, require("./routes/protected"));
+app.use("/home", verificaLogin, verificaUSER, require("./routes/protected"));
 app.use("/admin", verificaLogin, verificaADM, require("./routes/admin"));
 app.use("/consulta-ad", require("./consulta_ad/consulta_route"));
 

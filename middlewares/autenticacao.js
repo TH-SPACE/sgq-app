@@ -14,7 +14,15 @@ function verificaADM(req, res, next) {
     next();
 }
 
+function verificaUSER(req, res, next) {
+    if (!req.session.usuario || !req.session.usuario.perfil.includes("USER")) {
+        return res.redirect('/logout-acesso-negado');
+    }
+    next();
+}
+
 module.exports = {
     verificaLogin,
     verificaADM,
+    verificaUSER,
 };
