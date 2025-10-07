@@ -105,12 +105,6 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
         .json({ sucesso: false, mensagem: "Nenhuma solicitação enviada." });
     }
 
-    console.log(
-      `[INFO] Usuário: ${
-        user?.nome || "desconhecido"
-      }, IP: ${ip}, Ação: Envio de ${solicitacoes.length} solicitações de HE.`
-    );
-
     for (const s of solicitacoes) {
       await conexao.query(
         `INSERT INTO PLANEJAMENTO_HE 
@@ -152,12 +146,6 @@ exports.obterResumoHE = async (req, res) => {
   const { gerente, mes } = req.query;
   const user = req.session.usuario;
   const ip = req.ip;
-
-  console.log(
-    `[INFO] Usuário: ${
-      user?.nome || "desconhecido"
-    }, IP: ${ip}, Ação: Obter resumo de HE para gerente: ${gerente}, mês: ${mes}.`
-  );
 
   if (!gerente || !mes) {
     return res
@@ -207,12 +195,6 @@ exports.listarEnvios = async (req, res) => {
   const ip = req.ip;
   const { colaborador, mes } = req.query;
 
-  console.log(
-    `[INFO] Usuário: ${
-      user?.nome || emailUsuario
-    }, IP: ${ip}, Ação: Listar envios com filtros: colaborador=${colaborador}, mes=${mes}.`
-  );
-
   if (!emailUsuario) {
     return res.status(401).json({ erro: "Usuário não autenticado." });
   }
@@ -257,12 +239,6 @@ exports.editarEnvio = async (req, res) => {
   const ip = req.ip;
   const { id, mes, horas, tipoHE, justificativa } = req.body;
 
-  console.log(
-    `[INFO] Usuário: ${
-      user?.nome || emailUsuario
-    }, IP: ${ip}, Ação: Tentativa de edição da solicitação ID: ${id}.`
-  );
-
   if (!emailUsuario) {
     return res
       .status(401)
@@ -281,11 +257,6 @@ exports.editarEnvio = async (req, res) => {
     );
 
     if (verificacao.length === 0) {
-      console.log(
-        `[FALHA] Usuário: ${
-          user?.nome || emailUsuario
-        }, IP: ${ip}, Ação: Edição da solicitação ID: ${id}. Motivo: Solicitação não encontrada ou acesso negado.`
-      );
       return res
         .status(403)
         .json({
@@ -301,11 +272,6 @@ exports.editarEnvio = async (req, res) => {
       [mes, horas, tipoHE, justificativa, id, emailUsuario]
     );
 
-    console.log(
-      `[SUCESSO] Usuário: ${
-        user?.nome || emailUsuario
-      }, IP: ${ip}, Ação: Edição da solicitação ID: ${id}.`
-    );
     res.json({
       sucesso: true,
       mensagem: "Solicitação atualizada com sucesso!",
@@ -331,12 +297,6 @@ exports.excluirEnvio = async (req, res) => {
   const ip = req.ip;
   const { id } = req.body;
 
-  console.log(
-    `[INFO] Usuário: ${
-      user?.nome || emailUsuario
-    }, IP: ${ip}, Ação: Tentativa de exclusão da solicitação ID: ${id}.`
-  );
-
   if (!emailUsuario) {
     return res
       .status(401)
@@ -353,11 +313,6 @@ exports.excluirEnvio = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      console.log(
-        `[FALHA] Usuário: ${
-          user?.nome || emailUsuario
-        }, IP: ${ip}, Ação: Exclusão da solicitação ID: ${id}. Motivo: Solicitação não encontrada ou acesso negado.`
-      );
       return res
         .status(403)
         .json({
@@ -367,11 +322,6 @@ exports.excluirEnvio = async (req, res) => {
     }
 
     if (rows[0].STATUS !== "PENDENTE") {
-      console.log(
-        `[FALHA] Usuário: ${
-          user?.nome || emailUsuario
-        }, IP: ${ip}, Ação: Exclusão da solicitação ID: ${id}. Motivo: Status da solicitação não é 'PENDENTE'.`
-      );
       return res
         .status(400)
         .json({
@@ -385,11 +335,6 @@ exports.excluirEnvio = async (req, res) => {
       [Number(id), emailUsuario]
     );
 
-    console.log(
-      `[SUCESSO] Usuário: ${
-        user?.nome || emailUsuario
-      }, IP: ${ip}, Ação: Exclusão da solicitação ID: ${id}.`
-    );
     res.json({ sucesso: true, mensagem: "Solicitação excluída com sucesso!" });
   } catch (error) {
     console.error(
@@ -410,12 +355,6 @@ exports.getDashboardData = async (req, res) => {
   const { mes, gerente } = req.query;
   const user = req.session.usuario;
   const ip = req.ip;
-
-  console.log(
-    `[INFO] Usuário: ${
-      user?.nome || "desconhecido"
-    }, IP: ${ip}, Ação: Obter dados do dashboard com filtros: mes=${mes}, gerente=${gerente}.`
-  );
 
   if (!mes) {
     return res.status(400).json({ erro: "O parâmetro 'mes' é obrigatório." });
@@ -461,12 +400,6 @@ exports.getGerentes = async (req, res) => {
   const user = req.session.usuario;
   const ip = req.ip;
 
-  console.log(
-    `[INFO] Usuário: ${
-      user?.nome || "desconhecido"
-    }, IP: ${ip}, Ação: Listar gerentes.`
-  );
-
   try {
     const [rows] = await conexao.query(`
       SELECT DISTINCT GERENTE AS nome
@@ -492,13 +425,6 @@ exports.listarSolicitacoesPendentes = async (req, res) => {
   const user = req.session.usuario;
   const ip = req.ip;
   const { gerente, status, mes } = req.query;
-
-  console.log(
-    `[INFO] Usuário: ${
-      user?.nome || "desconhecido"
-    }, IP: ${ip}, Ação: Listar solicitações para tratamento com filtros:`,
-    req.query
-  );
 
   try {
     let query = `
@@ -545,10 +471,6 @@ exports.aprovarSolicitacao = async (req, res) => {
   const user = req.session.usuario;
   const ip = req.ip;
 
-  console.log(
-    `[INFO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Aprovar solicitação ID: ${id}.`
-  );
-
   if (!id) {
     return res
       .status(400)
@@ -582,10 +504,6 @@ exports.recusarSolicitacao = async (req, res) => {
   const user = req.session.usuario;
   const ip = req.ip;
 
-  console.log(
-    `[INFO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Recusar solicitação ID: ${id}.`
-  );
-
   if (!id) {
     return res
       .status(400)
@@ -618,10 +536,6 @@ exports.tratarSolicitacoesEmMassa = async (req, res) => {
   const { ids, status } = req.body;
   const user = req.session.usuario;
   const ip = req.ip;
-
-  console.log(
-    `[INFO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Tratar ${ids.length} solicitações em massa para o status '${status}'.`
-  );
 
   if (!Array.isArray(ids) || ids.length === 0) {
     return res

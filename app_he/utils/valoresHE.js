@@ -9,7 +9,6 @@ let valoresPorCargo = {};
 try {
   const data = fs.readFileSync(valoresHEPath, "utf8");
   valoresPorCargo = JSON.parse(data);
-  console.log("✅ Valores de HE por cargo carregados no backend.");
 } catch (err) {
   console.error("❌ Erro ao carregar valores_he.json:", err);
 }

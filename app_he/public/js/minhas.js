@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mesAtual = getMesAtualPortugues();
   document.getElementById("filtroMes").value = mesAtual;
 
-
+  carregarMinhasSolicitacoes("", mesAtual);
 
   let debounceTimer;
 
@@ -245,8 +245,6 @@ function salvarEdicao(event) {
     tipoHE: document.getElementById("editTipoHE").value,
     justificativa: document.getElementById("editJustificativa").value.trim(),
   };
-
-  console.log("Dados enviados:", dados);
 
   if (!id || !dados.mes || !dados.horas || !dados.justificativa) {
     alert("Preencha todos os campos obrigatórios.");
