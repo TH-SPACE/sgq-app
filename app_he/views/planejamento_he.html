@@ -526,10 +526,7 @@
                         </select>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <div class="btn-group w-100" role="group">
-                            <button id="btnFiltrar" class="btn btn-outline-primary">Filtrar</button>
-                            <button id="btnLimparFiltros" class="btn btn-outline-secondary">Limpar</button>
-                        </div>
+                        <button id="btnLimparFiltros" class="btn btn-outline-secondary w-100">Limpar</button>
                     </div>
                 </div>
 
@@ -654,15 +651,16 @@
                     const pageName = this.getAttribute('data-page');
                     showPage(pageName);
 
-                    // // Se a página for o dashboard, inicializa seus componentes
-                    // if (pageName === 'dashboard') {
-                    //     inicializarDashboard();
-                    // }
                     // Adicionado para carregar as solicitações ao clicar na aba
                     if (pageName === 'minhasSolicitacoes') {
                         // Usa um pequeno timeout para garantir que a aba esteja visível
                         setTimeout(() => {
-                            document.getElementById('btnFiltrar').click();
+                            // Chama a função de carregamento diretamente, pois o botão foi removido
+                            if (typeof carregarMinhasSolicitacoes === 'function') {
+                                const colaborador = document.getElementById("filtroColaborador").value;
+                                const mes = document.getElementById("filtroMes").value;
+                                carregarMinhasSolicitacoes(colaborador, mes);
+                            }
                         }, 100);
                     }
                 });

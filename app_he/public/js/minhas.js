@@ -126,19 +126,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  document.getElementById("btnFiltrar").addEventListener("click", () => {
+  let debounceTimer;
+
+  function aplicarFiltros() {
     const colaborador = document.getElementById("filtroColaborador").value;
     const mes = document.getElementById("filtroMes").value;
     carregarMinhasSolicitacoes(colaborador, mes);
+  }
+
+  document.getElementById("filtroColaborador").addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(aplicarFiltros, 500); // 500ms de atraso
   });
 
-  document
-    .getElementById("filtroColaborador")
-    .addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        document.getElementById("btnFiltrar").click();
-      }
-    });
+  document.getElementById("filtroMes").addEventListener("change", aplicarFiltros);
 
   document
     .getElementById("btnLimparFiltros")
