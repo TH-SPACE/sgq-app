@@ -138,9 +138,7 @@
                 const perfilUsuario = data.perfil;
                 const acessos = data.acessos;
 
-                document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
-
-                document.getElementById('nomeUsuario1').innerText = nomeUsuario.split(' ')[0]
+                document.getElementById('nomeUsuario').innerText = nomeUsuario
 
                 if (perfilUsuario.includes('ADM')) {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
