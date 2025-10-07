@@ -130,7 +130,7 @@ exports.listarEnvios = async (req, res) => {
         STATUS,
         ENVIADO_POR,
         DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
-      FROM PLANEJamento_HE 
+      FROM PLANEJAMENTO_HE 
       WHERE ENVIADO_POR = ?
     `;
     const params = [emailUsuario];
