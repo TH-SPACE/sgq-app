@@ -7,7 +7,7 @@ function carregarDadosUsuario() {
     .then((data) => {
       const nomeCompleto = data.nome || "Usuário";
       const cargo = data.cargo || "USUÁRIO";
-      const primeiroNome = nomeCompleto.split(" ")[0];
+      const primeiroNome = nomeCompleto;
 
       document.getElementById("userName").textContent = primeiroNome;
       document.getElementById("sidebarUserName").textContent = nomeCompleto;
@@ -453,8 +453,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
   });
-
-
 
   // ========== MENU DO USUÁRIO (dropdown) ==========
   const userMenu = document.querySelector(".user-menu");
