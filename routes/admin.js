@@ -71,12 +71,27 @@ router.post('/adicionar_usuario', async (req, res) => {
         }
 
         // 2. Configura e conecta no Active Directory
-        const adConfig = {
-            url: process.env.LDAP_URL,
-            baseDN: process.env.LDAP_BASE_DN,
-            username: process.env.LDAP_USERNAME, // Usuário de serviço para consulta
-            password: process.env.LDAP_PASSWORD, // Senha do usuário de serviço
-        };
+        const adConfig ={
+    url: process.env.LDAP_URL,
+    baseDN: process.env.LDAP_BASE_DN,
+    username: process.env.LDAP_USER,
+    password: process.env.LDAP_PASS,
+    referral: false,
+
+    attributes: {
+        user: [
+            "givenName", "initials", "sn", "displayName", "description",
+            "physicalDeliveryOfficeName", "telephoneNumber", "mail", "wWWHomePage",
+            "streetAddress", "postOfficeBox", "l", "st", "postalCode", "co",
+            "userPrincipalName", "sAMAccountName", "profilePath", "scriptPath",
+            "homeDirectory", "homeDrive", "homePhone", "pager", "mobile",
+            "facsimileTelephoneNumber", "ipPhone", "title", "department",
+            "company", "manager", "directReports", "distinguishedName",
+            "objectClass", "objectCategory", "memberOf", "userAccountControl", "whenCreated", "extensionAttribute1", "extensionAttribute2", "birthDate"
+        ]
+    }
+
+};
         const ad = new ActiveDirectory(adConfig);
 
         // 3. Busca o usuário no AD
