@@ -10,189 +10,134 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #4a00e0, #8e2de2, #6a11cb);
+            background-color: #f5f7fa;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 380px;
-            margin-bottom: 60px;
-            /* Espaço para o rodapé */
+            font-family: "Segoe UI", system-ui, sans-serif;
         }
 
         .login-card {
-            background: rgba(15, 10, 25, 0.85);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 32px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            padding: 36px 32px;
+            width: 100%;
+            max-width: 380px;
         }
 
-        .login-card .card-title {
-            font-weight: 700;
-            font-size: 2rem;
+        .login-card h3 {
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: #333;
+            text-align: center;
             margin-bottom: 24px;
-            color: #e0d6ff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
-        .login-card .form-label {
-            color: #d0c4ff;
+        .form-label {
             font-weight: 500;
-            margin-top: 16px;
+            color: #555;
         }
 
-        .login-card .form-control {
-            background: rgba(30, 20, 50, 0.7);
-            border: 1px solid rgba(138, 90, 255, 0.4);
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            padding: 10px;
         }
 
-        .login-card .form-control:focus {
-            background: rgba(35, 25, 60, 0.9);
-            border-color: #8e2de2;
-            box-shadow: 0 0 0 0.25rem rgba(142, 45, 226, 0.25);
-            color: white;
+        .form-control:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.15);
         }
 
-        .login-card .btn-primary {
-            background: linear-gradient(to right, #8e2de2, #6a11cb);
+        .btn-primary {
+            background-color: #6a11cb;
             border: none;
+            width: 100%;
             padding: 12px;
             font-weight: 600;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            border-radius: 8px;
             margin-top: 20px;
+            transition: 0.3s;
         }
 
-        .login-card .btn-primary:hover {
-            background: linear-gradient(to right, #6a11cb, #4a00e0);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.4);
+        .btn-primary:hover {
+            background-color: #4a00e0;
         }
 
         .login-card .alert {
-            background: rgba(30, 20, 50, 0.9);
-            border: 1px solid;
-            border-radius: 12px;
-            color: white;
+            border-radius: 8px;
             margin-top: 16px;
         }
 
-        .login-card .alert-danger {
-            border-color: #ff6b6b;
-        }
-
-        .login-card .alert-warning {
-            border-color: #ffd166;
-            color: #fff;
-        }
-
         .login-card a {
-            color: #b388ff;
+            display: inline-block;
+            margin-top: 10px;
+            text-align: center;
+            width: 100%;
+            color: #6a11cb;
             text-decoration: none;
             font-size: 0.9rem;
-            transition: color 0.2s;
         }
 
         .login-card a:hover {
-            color: #e0d6ff;
             text-decoration: underline;
         }
 
-        .user-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #6a11cb, #8e2de2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-            box-shadow: 0 4px 12px rgba(106, 17, 203, 0.5);
-        }
-
-        /* Estilo do rodapé */
         footer {
             position: fixed;
             bottom: 0;
             width: 100%;
             text-align: center;
-            padding: 12px 0;
-            background: rgba(10, 5, 20, 0.6);
-            backdrop-filter: blur(6px);
-            border-top: 1px solid rgba(138, 90, 255, 0.2);
-            color: #d0c4ff;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            color: #555;
             font-size: 0.85rem;
         }
 
-        .footer-highlight {
-            color: #e0d6ff;
-            font-weight: 600;
+        .user-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #eee;
+            color: #6a11cb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px auto;
         }
     </style>
 </head>
 
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="d-flex align-items-center mb-4">
-                <div class="user-icon">
-                    <i class="fas fa-user-tie"></i>
-                </div>
-                <h3 class="card-title mb-0">Login</h3>
-            </div>
 
-            <div id="alertaErroEmail" class="alert alert-danger alert-dismissible fade show" role="alert"
-                style="display: none;">
-                Email inválido!!
-            </div>
-            <div id="alertaErro" class="alert alert-danger alert-dismissible fade show" role="alert"
-                style="display: none; text-align: center;">
-                Usuário ou senha inválidos.
-            </div>
-            <div id="alertaErro2" class="alert alert-warning alert-dismissible fade show" role="alert"
-                style="display: none;">
-                Sua conta ainda não foi aprovada pelo administrador.
-            </div>
+    <div class="login-card">
+        <div class="user-icon"><i class="fas fa-user"></i></div>
+        <h3>Login</h3>
 
-            <form action="/auth/login" method="POST">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" id="email" placeholder="Digite seu email"
-                        required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Senha</label>
-                    <input type="password" name="senha" class="form-control" id="password"
-                        placeholder="Digite sua senha" required>
-                </div>
-
-                <input type="hidden" name="redirect" id="redirectInput" value="/home">
-                <button type="submit" class="btn btn-primary w-100">Entrar</button>
-            </form>
-
-            <div class="text-center mt-3">
-                <a href="/consulta-ad"><i class="fas fa-search me-1"></i>Consultar Usuário no AD</a>
-            </div>
+        <div id="alertaErroEmail" class="alert alert-danger" style="display:none;">Email inválido!</div>
+        <div id="alertaErro" class="alert alert-danger" style="display:none;">Usuário ou senha inválidos.</div>
+        <div id="alertaErro2" class="alert alert-warning" style="display:none;">Conta não aprovada pelo administrador.
         </div>
+
+        <form action="/auth/login" method="POST">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="Digite seu email" required>
+
+            <label for="password" class="form-label mt-3">Senha</label>
+            <input type="password" name="senha" id="password" class="form-control" placeholder="Digite sua senha"
+                required>
+
+            <input type="hidden" name="redirect" id="redirectInput" value="/home">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+        </form>
+
+        <a href="/consulta-ad"><i class="fas fa-search me-1"></i>Consultar Usuário no AD</a>
     </div>
 
-    <!-- Rodapé -->
     <footer>
         <span class="footer-highlight">Qualidade CW</span> • Criado por Thiago Alves Nunes
     </footer>
@@ -202,21 +147,12 @@
         const redirect = urlParams.get('redirect');
         const erro = urlParams.get('erro');
 
-        if (redirect) {
-            document.getElementById('redirectInput').value = redirect;
-        }
-
-        if (erro === "1") {
-            document.getElementById("alertaErro").style.display = "block";
-        } else if (erro === "2") {
-            document.getElementById("alertaErro2").style.display = "block";
-        } else if (erro === "email_nao_encontrado") {
-            document.getElementById("alertaErroEmail").style.display = "block";
-        }
+        if (redirect) document.getElementById('redirectInput').value = redirect;
+        if (erro === "1") document.getElementById("alertaErro").style.display = "block";
+        else if (erro === "2") document.getElementById("alertaErro2").style.display = "block";
+        else if (erro === "email_nao_encontrado") document.getElementById("alertaErroEmail").style.display = "block";
     </script>
 
-    <script src="/js/sweetalert2.all.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
