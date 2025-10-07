@@ -8,7 +8,7 @@ function verificaLogin(req, res, next) {
 }
 
 function verificaADM(req, res, next) {
-    if (!req.session.usuario || req.session.usuario.perfil !== "ADM") {
+    if (!req.session.usuario || !req.session.usuario.perfil.includes("ADM")) {
         return res.sendFile(path.join(__dirname, "../views", "acesso_negado.html"));
     }
     next();

@@ -423,6 +423,8 @@
             <a href="#" class="menu-item" data-page="minhasSolicitacoes"><i class="fas fa-list"></i> Minhas
                 Solicitações</a>
             <a href="#" class="menu-item" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#" class="menu-item" data-page="aprovacoes" id="menuAprovacoes" style="display: none;"><i
+                    class="fas fa-tasks"></i> Tratar Solicitações</a>
         </div>
 
         <div class="content">
@@ -608,6 +610,50 @@
                 </div>
             </div>
 
+            <!-- Tela: Aprovações (NOVA) -->
+            <div id="aprovacoes" class="card" style="display: none;">
+                <h2 class="card-title"><i class="fas fa-tasks"></i> Tratar Solicitações</h2>
+
+                <!-- Filtros da Tela de Aprovação -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <label for="aprovacaoFiltroGerente">Gerente</label>
+                        <select id="aprovacaoFiltroGerente" class="form-control"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="aprovacaoFiltroStatus">Status</label>
+                        <select id="aprovacaoFiltroStatus" class="form-control">
+                            <option value="PENDENTE">Pendente</option>
+                            <option value="APROVADO">Aprovado</option>
+                            <option value="RECUSADO">Recusado</option>
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="aprovacaoFiltroMes">Mês</label>
+                        <select id="aprovacaoFiltroMes" class="form-control"></select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button id="btnLimparFiltrosAprovacao" class="btn btn-outline-secondary w-100">Limpar</button>
+                    </div>
+                </div>
+
+                <!-- Tabela Resumo Financeiro -->
+                <div id="resumoFinanceiroContainer" class="mb-4"></div>
+
+                <!-- Ações em Massa -->
+                <div class="mb-3">
+                    <button id="btnAprovarSelecionados" class="btn btn-success"><i class="fas fa-check"></i> Aprovar
+                        Selecionados</button>
+                    <button id="btnRecusarSelecionados" class="btn btn-danger"><i class="fas fa-times"></i> Recusar
+                        Selecionados</button>
+                </div>
+
+                <div id="tabelaAprovacoesContainer">
+                    <p class="text-center text-muted">Carregando...</p>
+                </div>
+
+            </div>
 
         </div>
     </div>
@@ -616,10 +662,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="/js/sweetalert2.all.min.js"></script>
+
     <script src="/public/js/enviar.js"></script>
     <script src="/public/js/minhas.js"></script>
     <script src="/public/js/dashboard_he.js"></script>
-    <script src="/js/sweetalert2.all.min.js"></script>
+    <script src="/public/js/aprovacao.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -627,7 +675,8 @@
             const pages = {
                 'novaSolicitacao': document.getElementById('novaSolicitacao'),
                 'minhasSolicitacoes': document.getElementById('minhasSolicitacoes'),
-                'dashboard': document.getElementById('dashboard')
+                'dashboard': document.getElementById('dashboard'),
+                'aprovacoes': document.getElementById('aprovacoes') // Adiciona a nova página
             };
 
             // Função para trocar de página
@@ -636,12 +685,12 @@
                 pages[pageName].style.display = 'block';
 
                 menuItems.forEach(item => {
-                    if (item.getAttribute('data-page') === pageName) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
+                    item.classList.toggle('active', item.getAttribute('data-page') === pageName);
                 });
+
+                // Dispara um evento customizado para a página carregada
+                const event = new CustomEvent(`page-load:${pageName}`);
+                document.dispatchEvent(event);
             }
 
             // Event listeners para os itens do menu
@@ -650,24 +699,27 @@
                     e.preventDefault();
                     const pageName = this.getAttribute('data-page');
                     showPage(pageName);
-
-                    // Adicionado para carregar as solicitações ao clicar na aba
-                    if (pageName === 'minhasSolicitacoes') {
-                        // Usa um pequeno timeout para garantir que a aba esteja visível
-                        setTimeout(() => {
-                            // Chama a função de carregamento diretamente, pois o botão foi removido
-                            if (typeof carregarMinhasSolicitacoes === 'function') {
-                                const colaborador = document.getElementById("filtroColaborador").value;
-                                const mes = document.getElementById("filtroMes").value;
-                                carregarMinhasSolicitacoes(colaborador, mes);
-                            }
-                        }, 100);
-                    }
                 });
             });
 
-            // Mostrar a página inicial
+            // Lógica de visibilidade do menu de aprovações
+            function setupMenuPermissions() {
+                fetch('/planejamento-he/api/perfil-usuario')
+                    .then(res => res.json())
+                    .then(data => {
+                        const perfil = data.perfil || '';
+                        const menuAprovacoes = document.getElementById('menuAprovacoes');
+                        if (perfil.includes('HE_APROVADOR')) {
+                            menuAprovacoes.style.display = 'flex';
+                            showPage('aprovacoes');
+                        }
+                    })
+                    .catch(err => console.error("Erro ao buscar perfil do usuário:", err));
+            }
+
+            // Mostrar a página inicial e configurar permissões
             showPage('novaSolicitacao');
+            setupMenuPermissions();
 
             // JS para abrir/fechar sidebar de perfil
             document.getElementById("perfilLink").addEventListener("click", (e) => {

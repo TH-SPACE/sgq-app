@@ -292,18 +292,18 @@
 
                 document.getElementById('tratadoPor').value = nomeUsuario
 
-                document.getElementById('nomeUsuario').innerText = nomeUsuario.split(' ')[0]
+                document.getElementById('nomeUsuario1').innerText = nomeUsuario
 
-                if (perfilUsuario === 'ADM') {
+                if (perfilUsuario.includes('ADM')) {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
                 }
 
-                if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
+                if (perfilUsuario.includes('ADM') || perfilUsuario.includes('USER_UPLOAD')) {
                     document.getElementById('painelUpload').style.display = 'inline-block'
                 }
                 document.getElementById('posBd').style.display = 'inline-block';
                 document.getElementById('relatorios').style.display = 'inline-block';
-                 console.log('Acessos do usuário:', acessos);
+                console.log('Acessos do usuário:', acessos);
 
 
             });

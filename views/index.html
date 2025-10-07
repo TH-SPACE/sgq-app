@@ -142,16 +142,16 @@
 
                 document.getElementById('nomeUsuario1').innerText = nomeUsuario.split(' ')[0]
 
-                if (perfilUsuario === 'ADM') {
+                if (perfilUsuario.includes('ADM')) {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
                 }
 
-                if (perfilUsuario === 'ADM' || perfilUsuario === 'USER_UPLOAD') {
+                if (perfilUsuario.includes('ADM') || perfilUsuario.includes('USER_UPLOAD')) {
                     document.getElementById('painelUpload').style.display = 'inline-block'
                 }
                 document.getElementById('posBd').style.display = 'inline-block';
                 document.getElementById('vida_sigitm').style.display = 'inline-block';
-                 console.log('Acessos do usuário:', acessos);
+                console.log('Acessos do usuário:', acessos);
 
 
             });
