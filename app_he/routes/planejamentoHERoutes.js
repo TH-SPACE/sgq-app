@@ -7,9 +7,10 @@ const planejamentoHE = require("../controllers/planejamentoHEController");
 // Middlewares
 const heAuth = require("../middleware/heAuth");
 const heAprovadorAuth = require("../middleware/heAprovadorAuth");
+const heUserAuth = require("../middleware/heUserAuth");
 
 // Rota principal da aplicação de HE
-router.get("/", heAuth.requireHEAuth, (req, res) => {
+router.get("/", heAuth.requireHEAuth, heUserAuth.requireHEUser, (req, res) => {
   res.sendFile(path.join(__dirname, "../views/planejamento_he.html"));
 });
 

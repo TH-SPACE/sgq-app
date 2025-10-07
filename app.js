@@ -104,6 +104,18 @@ app.use("/consulta-ad", require("./consulta_ad/consulta_route"));
 // 🎯 Rotas específicas
 app.use("/planejamento-he", require("./app_he/routes/planejamentoHERoutes"));
 
+// Rota para logout por acesso negado
+app.get('/logout-acesso-negado', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Erro ao destruir a sessão:", err);
+            // Mesmo com erro, tenta enviar a página de acesso negado
+            return res.status(500).sendFile(path.join(__dirname, 'views', 'acesso_negado.html'));
+        }
+        res.sendFile(path.join(__dirname, 'views', 'acesso_negado.html'));
+    });
+});
+
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🔥 THANOS rodando em http://10.59.112.107:${PORT}`);
