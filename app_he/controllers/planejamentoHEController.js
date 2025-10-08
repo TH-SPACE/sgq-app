@@ -614,9 +614,9 @@ exports.exportarDados = async (req, res) => {
             }).join(",");
         }).join("\r\n");
 
-        const csv = header + csvData;
+        const csv = "\uFEFF" + header + csvData;
 
-        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Type", "text/csv; charset=utf-8");
         res.setHeader("Content-Disposition", "attachment; filename=planejamento_he.csv");
         res.status(200).send(csv);
 
