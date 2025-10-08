@@ -1,3 +1,4 @@
+const ExcelJS = require("exceljs");
 const path = require("path");
 const db = require("../../db/db");
 const { getValorHora } = require("../utils/valoresHE");
@@ -573,4 +574,54 @@ exports.tratarSolicitacoesEmMassa = async (req, res) => {
         mensagem: "Erro interno ao processar a solicitação em massa.",
       });
   }
+};
+
+exports.exportarDados = async (req, res) => {
+    const { mes, gerente } = req.query;
+    const user = req.session.usuario;
+    const ip = req.ip;
+
+    try {
+        const conexao = db.mysqlPool;
+        let query = `SELECT * FROM PLANEJAMENTO_HE WHERE 1=1`;
+        const params = [];
+
+        if (mes) {
+            query += ` AND MES = ?`;
+            params.push(mes);
+        }
+        if (gerente) {
+            query += ` AND GERENTE = ?`;
+            params.push(gerente);
+        }
+
+        const [rows] = await conexao.query(query, params);
+
+        if (rows.length === 0) {
+            return res.status(404).send("Nenhum dado encontrado para exportar com os filtros selecionados.");
+        }
+
+        // Constrói o CSV
+        const header = Object.keys(rows[0]).join(",") + "\r\n";
+        const csvData = rows.map(row => {
+            return Object.values(row).map(value => {
+                // Trata valores que podem conter vírgulas ou aspas
+                let strValue = String(value === null || value === undefined ? '' : value);
+                if (strValue.includes(",") || strValue.includes('"') || strValue.includes("\n")) {
+                    strValue = `"${strValue.replace(/"/g, '""')}"`;
+                }
+                return strValue;
+            }).join(",");
+        }).join("\r\n");
+
+        const csv = header + csvData;
+
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", "attachment; filename=planejamento_he.csv");
+        res.status(200).send(csv);
+
+    } catch (error) {
+        console.error(`[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao exportar dados.`, error);
+        res.status(500).send("Erro interno ao exportar os dados.");
+    }
 };

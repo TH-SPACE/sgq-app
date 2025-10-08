@@ -106,6 +106,7 @@ router.get("/api/cargo", heAuth.requireHEAuth, async (req, res) => {
 // APIs para Dashboards e resumos
 router.get("/api/resumo-he", heAuth.requireHEAuth, planejamentoHE.obterResumoHE);
 router.get("/api/dashboard-summary", heAuth.requireHEAuth, planejamentoHE.getDashboardData);
+router.get("/api/exportar", heAuth.requireHEAuth, planejamentoHE.exportarDados);
 
 
 // ================================================

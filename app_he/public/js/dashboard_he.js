@@ -16,6 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     filtroMes.addEventListener("change", () => carregarDashboard(filtroMes.value, filtroGerente.value));
     filtroGerente.addEventListener("change", () => carregarDashboard(filtroMes.value, filtroGerente.value));
+
+    document.getElementById("btnExportarDashboard").addEventListener("click", () => {
+        exportarDadosDashboard();
+    });
   }
 
   function preencherMeses() {
@@ -93,5 +97,33 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("kpiAprovadas").textContent = fmt(aprov);
     document.getElementById("kpiPendentes").textContent = fmt(pend);
     document.getElementById("kpiRecusadas").textContent = fmt(rec);
+  }
+
+  async function exportarDadosDashboard() {
+    const mes = filtroMes.value;
+    const gerente = filtroGerente.value;
+
+    try {
+        const response = await fetch(`/planejamento-he/api/exportar?mes=${encodeURIComponent(mes)}&gerente=${encodeURIComponent(gerente)}`);
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = `planejamento_he_${mes.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
+        
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+    } catch (error) {
+        console.error("Erro ao exportar dados:", error);
+        alert("Falha ao exportar os dados. Verifique o console para mais detalhes.");
+    }
   }
 });
