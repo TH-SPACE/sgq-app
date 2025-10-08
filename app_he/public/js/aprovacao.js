@@ -116,13 +116,12 @@ function criarTabelaAprovacoes(solicitacoes) {
                 <thead class="thead-light">
                     <tr>
                         <th class="text-center"><input type="checkbox" id="selectAllCheckbox"></th>
-                        <th>Data Envio</th>
+                        <th>Mês</th>
                         <th>Gerente</th>
                         <th>Colaborador</th>
                         <th>Horas</th>
                         <th>Tipo</th>
                         <th>Status</th>
-                        <th>Enviado Por</th>
                         <th class="text-center">Ações</th>
                     </tr>
                 </thead>
@@ -137,13 +136,12 @@ function criarTabelaAprovacoes(solicitacoes) {
         tabelaHtml += `
             <tr id="solicitacao-row-${s.id}">
                 <td class="text-center"><input type="checkbox" class="solicitacao-checkbox" data-id="${s.id}"></td>
-                <td>${s.DATA_ENVIO_FORMATADA || '-'}</td>
+                <td>${s.MES || '-'}</td>
                 <td>${s.GERENTE || '-'}</td>
                 <td>${s.COLABORADOR || '-'}</td>
                 <td>${s.HORAS || '0'}</td>
                 <td>${s.TIPO_HE || '-'}</td>
                 <td>${statusBadge}</td>
-                <td>${s.ENVIADO_POR || '-'}</td>
                 <td class="text-center">
                     ${s.STATUS === 'PENDENTE' ? `
                     <button class="btn btn-success btn-sm mr-1" onclick="processarAprovacao(${s.id}, true)" title="Aprovar">
