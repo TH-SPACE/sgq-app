@@ -20,6 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnExportarDashboard").addEventListener("click", () => {
         exportarDadosDashboard();
     });
+
+    // Botão para limpar filtros
+    document.getElementById("btnLimparFiltrosDashboard").addEventListener("click", () => {
+      const mesAtual = getMesAtual();
+      filtroMes.value = mesAtual;
+      filtroGerente.value = "";
+      carregarDashboard(mesAtual, "");
+    });
   }
 
   function preencherMeses() {
@@ -91,12 +99,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function atualizarKPIs(total, aprov, pend, rec) {
-    // Garante que sejam números e formata corretamente
-    const fmt = n => Number(n || 0).toLocaleString("pt-BR");
-    document.getElementById("kpiTotalHoras").textContent = fmt(total);
-    document.getElementById("kpiAprovadas").textContent = fmt(aprov);
-    document.getElementById("kpiPendentes").textContent = fmt(pend);
-    document.getElementById("kpiRecusadas").textContent = fmt(rec);
+    // Anima os números dos KPIs com efeito de contador
+    animarContador("kpiTotalHoras", total);
+    animarContador("kpiAprovadas", aprov);
+    animarContador("kpiPendentes", pend);
+    animarContador("kpiRecusadas", rec);
+  }
+
+  // Função para animar o contador dos números
+  function animarContador(elementId, valorFinal) {
+    const elemento = document.getElementById(elementId);
+    const valorAtual = parseInt(elemento.textContent.replace(/\./g, '').replace(',', '.')) || 0;
+    const duracao = 1000; // 1 segundo
+    const passos = 30;
+    const incremento = (valorFinal - valorAtual) / passos;
+    let contador = 0;
+
+    const intervalo = setInterval(() => {
+      contador++;
+      const valorAtualizado = Math.round(valorAtual + (incremento * contador));
+
+      if (contador >= passos) {
+        clearInterval(intervalo);
+        elemento.textContent = Number(valorFinal || 0).toLocaleString("pt-BR");
+      } else {
+        elemento.textContent = Number(valorAtualizado || 0).toLocaleString("pt-BR");
+      }
+    }, duracao / passos);
   }
 
   async function exportarDadosDashboard() {
@@ -115,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         a.style.display = "none";
         a.href = url;
         a.download = `planejamento_he_${mes.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
-        
+
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);

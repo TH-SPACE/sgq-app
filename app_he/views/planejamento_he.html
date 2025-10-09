@@ -128,7 +128,7 @@
         }
 
         .sidebar {
-            width: 200px;
+            width: 160px;
             background-color: var(--primary-color);
             color: white;
             display: flex;
@@ -139,7 +139,7 @@
         }
 
         .sidebar-header {
-            padding: 1.5rem;
+            padding: 1rem;
             background-color: var(--primary-light);
             color: var(--primary-color);
             text-align: center;
@@ -149,61 +149,118 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            gap: 0.3rem;
+            margin-bottom: 0.75rem;
         }
 
         .profile-icon {
-            width: 60px;
-            height: 60px;
+            width: 45px;
+            height: 45px;
             background-color: var(--primary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 2rem;
+            font-size: 1.5rem;
         }
 
         .profile-name {
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.85rem;
         }
 
         .profile-role {
             background-color: #42a5f5;
             color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.75rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
         }
 
         .menu-title {
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.75rem;
             font-weight: bold;
             color: #ccc;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .menu-item {
-            padding: 0.5rem 1rem;
-            color: white;
+            padding: 0.5rem 0.75rem;
+            color: white !important;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            text-decoration: none;
-            border-left: 4px solid transparent;
+            text-decoration: none !important;
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .menu-item i {
+            font-size: 1rem;
+            min-width: 20px;
+            text-align: center;
+            color: white !important;
         }
 
         .menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.15);
+            padding-left: 0.85rem;
+            color: white !important;
         }
 
         .menu-item.active {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.25);
             border-left-color: white;
+            font-weight: 600;
+        }
+
+        /* Separador para menu especial */
+        .menu-separator {
+            margin: 0.75rem 0.75rem 0.5rem 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .menu-section-title {
+            padding: 0.5rem 0.75rem 0.3rem 0.75rem;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Rodapé do sidebar */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem 0.75rem;
+            background-color: rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-footer img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 0.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar-footer .creator-text {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.3;
+        }
+
+        .sidebar-footer .creator-name {
             font-weight: bold;
+            color: white;
+            display: block;
+            margin-top: 0.2rem;
         }
 
         .content {
@@ -297,61 +354,172 @@
    AJUSTE VISUAL - DASHBOARD ANALÍTICA (KPI + TABELA)
    ============================ */
 
-        /* Compacta os cards do topo */
+        /* Cards modernos com gradientes e animações */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
         .summary-card {
-            background: #fff !important;
+            background: #fff;
             border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            padding: 0.6rem 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 0.75rem 0.5rem;
             text-align: center;
-            transition: transform 0.2s ease;
-            min-height: 80px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 90px;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        /* Efeitos de animação sequenciais para cada card */
+        .summary-card:nth-child(1) { animation-delay: 0.1s; }
+        .summary-card:nth-child(2) { animation-delay: 0.2s; }
+        .summary-card:nth-child(3) { animation-delay: 0.3s; }
+        .summary-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Efeito de brilho no fundo */
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .summary-card:hover::before {
+            opacity: 1;
         }
 
         .summary-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ícone no card */
+        .summary-card .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+            display: block;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.4rem auto;
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover .icon {
+            transform: rotate(360deg) scale(1.1);
         }
 
         .summary-card .title {
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 0.25rem;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .summary-card .value {
             font-size: 1.5rem;
-            font-weight: 700;
-            color: #333;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 1;
         }
 
-        /* Borda colorida por tipo */
+        /* Gradientes coloridos por tipo */
         .summary-card.purple {
-            border-left: 4px solid #6a1b9a;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .summary-card.green {
-            border-left: 4px solid #43a047;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
 
         .summary-card.orange {
-            border-left: 4px solid #fb8c00;
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
         }
 
         .summary-card.red {
-            border-left: 4px solid #e53935;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        /* Animação de contador nos números */
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .summary-card .value {
+            animation: countUp 0.5s ease-out;
         }
 
         /* Tabela da dashboard */
-        .table thead th {
+        #tabelaGerentes {
+            border: 1px solid #dee2e6;
+        }
+
+        #tabelaGerentes thead th {
             background: #f3f3f3;
             font-weight: bold;
             color: #444;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
         }
 
-        .table td {
+        #tabelaGerentes tbody td {
             vertical-align: middle;
             font-size: 0.9rem;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        #tabelaGerentes tbody td:first-child {
+            text-align: left;
+            font-weight: 500;
         }
 
         /* Ajuste de responsividade */
@@ -370,7 +538,7 @@
             }
 
             .sidebar {
-                margin-left: -200px;
+                margin-left: -160px;
             }
 
             .content {
@@ -437,8 +605,21 @@
             <a href="#" class="menu-item" data-page="minhasSolicitacoes"><i class="fas fa-list"></i> Minhas
                 Solicitações</a>
             <a href="#" class="menu-item" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+            <!-- Separador para menu especial -->
+            <div class="menu-separator"></div>
+            <div class="menu-section-title">GESTÃO</div>
             <a href="#" class="menu-item" data-page="aprovacoes" id="menuAprovacoes" style="display: none;"><i
                     class="fas fa-tasks"></i> Tratar Solicitações</a>
+
+            <!-- Rodapé com créditos -->
+            <div class="sidebar-footer">
+                <img src="/img/letra-t.gif" alt="Logo">
+                <div class="creator-text">
+                    Criado por
+                    <span class="creator-name">Thiago Alves Nunes</span>
+                </div>
+            </div>
         </div>
 
         <div class="content">
@@ -560,15 +741,20 @@
 
                     <!-- Filtros -->
                     <div class="row mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="dashboardFiltroMes">Mês</label>
                             <select id="dashboardFiltroMes" class="form-control"></select>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <label for="dashboardFiltroGerente">Gerência</label>
                             <select id="dashboardFiltroGerente" class="form-control">
                                 <option value="">Todas as Gerências</option>
                             </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button id="btnLimparFiltrosDashboard" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-eraser"></i> Limpar
+                            </button>
                         </div>
                         <div class="col-md-3 d-flex align-items-end">
                             <button id="btnExportarDashboard" class="btn btn-success w-100">
@@ -581,24 +767,36 @@
                     <div class="row text-center mb-4" id="dashboardKPIs">
                         <div class="col-md-3 col-6 mb-3">
                             <div class="summary-card purple">
+                                <div class="icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
                                 <div class="title">Total de Horas</div>
                                 <div class="value" id="kpiTotalHoras">0</div>
                             </div>
                         </div>
                         <div class="col-md-3 col-6 mb-3">
                             <div class="summary-card green">
+                                <div class="icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
                                 <div class="title">Aprovadas</div>
                                 <div class="value" id="kpiAprovadas">0</div>
                             </div>
                         </div>
                         <div class="col-md-3 col-6 mb-3">
                             <div class="summary-card orange">
+                                <div class="icon">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
                                 <div class="title">Pendentes</div>
                                 <div class="value" id="kpiPendentes">0</div>
                             </div>
                         </div>
                         <div class="col-md-3 col-6 mb-3">
                             <div class="summary-card red">
+                                <div class="icon">
+                                    <i class="fas fa-times-circle"></i>
+                                </div>
                                 <div class="title">Recusadas</div>
                                 <div class="value" id="kpiRecusadas">0</div>
                             </div>
