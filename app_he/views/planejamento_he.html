@@ -739,11 +739,11 @@
 
             <!-- Separador para menu especial -->
             <div class="menu-separator"></div>
-            <div class="menu-section-title">GESTÃO</div>
+            <div class="menu-section-title" id="menuGerencia" style="display: none;">GESTÃO</div>
             <a href="#" class="menu-item" data-page="selecaoGerencia" id="menuAprovacoes" style="display: none;"><i
                     class="fas fa-tasks"></i> Tratar Solicitações</a>
-            <a href="#" class="menu-item" data-page="gerenciarColaboradores" id="menuColaboradores" style="display: none;"><i
-                    class="fas fa-users-cog"></i> Gerenciar Colaboradores</a>
+            <a href="#" class="menu-item" data-page="gerenciarColaboradores" id="menuColaboradores"
+                style="display: none;"><i class="fas fa-users-cog"></i> Gerenciar Colaboradores</a>
 
             <!-- Rodapé com créditos -->
             <div class="sidebar-footer">
@@ -1073,26 +1073,32 @@
                     <div class="row mb-3">
                         <div class="col-md-3">
                             <label for="filtroNomeColaborador">Nome</label>
-                            <input type="text" id="filtroNomeColaborador" class="form-control form-control-sm" placeholder="Digite o nome...">
+                            <input type="text" id="filtroNomeColaborador" class="form-control form-control-sm"
+                                placeholder="Digite o nome...">
                         </div>
                         <div class="col-md-2">
                             <label for="filtroMatriculaColaborador">Matrícula</label>
-                            <input type="text" id="filtroMatriculaColaborador" class="form-control form-control-sm" placeholder="Matrícula...">
+                            <input type="text" id="filtroMatriculaColaborador" class="form-control form-control-sm"
+                                placeholder="Matrícula...">
                         </div>
                         <div class="col-md-2">
                             <label for="filtroCargoColaborador">Cargo</label>
-                            <input type="text" id="filtroCargoColaborador" class="form-control form-control-sm" placeholder="Cargo...">
+                            <input type="text" id="filtroCargoColaborador" class="form-control form-control-sm"
+                                placeholder="Cargo...">
                         </div>
                         <div class="col-md-2">
                             <label for="filtroRegionalColaborador">Regional</label>
-                            <input type="text" id="filtroRegionalColaborador" class="form-control form-control-sm" placeholder="Regional...">
+                            <input type="text" id="filtroRegionalColaborador" class="form-control form-control-sm"
+                                placeholder="Regional...">
                         </div>
                         <div class="col-md-2">
                             <label for="filtroCidadeColaborador">Cidade</label>
-                            <input type="text" id="filtroCidadeColaborador" class="form-control form-control-sm" placeholder="Cidade...">
+                            <input type="text" id="filtroCidadeColaborador" class="form-control form-control-sm"
+                                placeholder="Cidade...">
                         </div>
                         <div class="col-md-1 d-flex align-items-end">
-                            <button id="btnLimparFiltrosColaboradores" class="btn btn-outline-secondary btn-sm w-100" title="Limpar Filtros">
+                            <button id="btnLimparFiltrosColaboradores" class="btn btn-outline-secondary btn-sm w-100"
+                                title="Limpar Filtros">
                                 <i class="fas fa-eraser"></i>
                             </button>
                         </div>
@@ -1183,7 +1189,8 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="colaboradorEstado">Estado *</label>
-                                    <input type="text" class="form-control" id="colaboradorEstado" maxlength="2" placeholder="Ex: SP" required>
+                                    <input type="text" class="form-control" id="colaboradorEstado" maxlength="2"
+                                        placeholder="Ex: SP" required>
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -1211,7 +1218,8 @@
 
                         <div class="form-group">
                             <label for="colaboradorEmailGestor">Email do Gestor *</label>
-                            <input type="email" class="form-control" id="colaboradorEmailGestor" placeholder="exemplo@email.com" required>
+                            <input type="email" class="form-control" id="colaboradorEmailGestor"
+                                placeholder="exemplo@email.com" required>
                         </div>
                     </form>
                 </div>
@@ -1433,10 +1441,12 @@
                         const perfil = data.perfil || '';
                         const menuAprovacoes = document.getElementById('menuAprovacoes');
                         const menuColaboradores = document.getElementById('menuColaboradores');
+                        const menuGerencia = document.getElementById('menuGerencia');
 
                         if (perfil.includes('HE_APROVADOR')) {
                             menuAprovacoes.style.display = 'flex';
                             menuColaboradores.style.display = 'flex';
+                            menuGerencia.style.display = 'flex';
 
                             // Inicializa o mês antes de mostrar a tela
                             inicializarMesAtual();
