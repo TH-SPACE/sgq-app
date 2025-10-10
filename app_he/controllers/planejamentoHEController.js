@@ -429,10 +429,10 @@ exports.listarSolicitacoesPendentes = async (req, res) => {
 
   try {
     let query = `
-      SELECT 
-        id, GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR, 
+      SELECT
+        id, GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR,
         DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
-      FROM PLANEJAMENTO_HE 
+      FROM PLANEJAMENTO_HE
       WHERE 1=1`;
     const params = [];
 
@@ -451,7 +451,14 @@ exports.listarSolicitacoesPendentes = async (req, res) => {
 
     query += ` ORDER BY DATA_ENVIO ASC`;
     const [rows] = await conexao.query(query, params);
-    res.json(rows);
+
+    // Adiciona o valor hora calculado para cada solicitação
+    const rowsComValor = rows.map(row => ({
+      ...row,
+      VALOR_HORA: getValorHora(row.CARGO, row.TIPO_HE)
+    }));
+
+    res.json(rowsComValor);
   } catch (error) {
     console.error(
       `[ERRO] Usuário: ${
@@ -624,4 +631,307 @@ exports.exportarDados = async (req, res) => {
         console.error(`[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao exportar dados.`, error);
         res.status(500).send("Erro interno ao exportar os dados.");
     }
+};
+
+// ================================================
+// CRUD PARA COLABORADORES_CW
+// ================================================
+
+// Listar todos os colaboradores
+exports.listarColaboradores = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const user = req.session.usuario;
+  const ip = req.ip;
+
+  try {
+    const [rows] = await conexao.query(
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR
+       FROM COLABORADORES_CW
+       ORDER BY NOME`
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error(
+      `[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao listar colaboradores.`,
+      error
+    );
+    res.status(500).json({ erro: "Erro ao listar colaboradores." });
+  }
+};
+
+// Obter um colaborador por ID
+exports.obterColaborador = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const user = req.session.usuario;
+  const ip = req.ip;
+  const { id } = req.params;
+
+  try {
+    const [rows] = await conexao.query(
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR
+       FROM COLABORADORES_CW
+       WHERE ID = ?`,
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ erro: "Colaborador não encontrado." });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(
+      `[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao buscar colaborador ID: ${id}.`,
+      error
+    );
+    res.status(500).json({ erro: "Erro ao buscar colaborador." });
+  }
+};
+
+// Criar novo colaborador
+exports.criarColaborador = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const user = req.session.usuario;
+  const ip = req.ip;
+  const {
+    matricula,
+    nome,
+    cargo,
+    regional,
+    estado,
+    cidade,
+    gerente,
+    gestorDireto,
+    emailGestor,
+  } = req.body;
+
+  // Validação dos campos obrigatórios
+  if (!matricula || !nome || !cargo || !regional || !estado || !cidade || !gerente || !gestorDireto || !emailGestor) {
+    return res.status(400).json({
+      sucesso: false,
+      mensagem: "Todos os campos são obrigatórios.",
+    });
+  }
+
+  try {
+    // Verifica se a matrícula já existe
+    const [existe] = await conexao.query(
+      `SELECT ID FROM COLABORADORES_CW WHERE MATRICULA = ?`,
+      [matricula]
+    );
+
+    if (existe.length > 0) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: "Já existe um colaborador com esta matrícula.",
+      });
+    }
+
+    await conexao.query(
+      `INSERT INTO COLABORADORES_CW (MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        matricula,
+        nome,
+        cargo,
+        regional,
+        estado,
+        cidade,
+        gerente,
+        gestorDireto,
+        emailGestor,
+      ]
+    );
+
+    res.json({
+      sucesso: true,
+      mensagem: "Colaborador criado com sucesso!",
+    });
+  } catch (error) {
+    console.error(
+      `[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao criar colaborador.`,
+      error
+    );
+    res
+      .status(500)
+      .json({ sucesso: false, mensagem: "Erro ao criar colaborador." });
+  }
+};
+
+// Editar colaborador
+exports.editarColaborador = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const user = req.session.usuario;
+  const ip = req.ip;
+  const {
+    id,
+    matricula,
+    nome,
+    cargo,
+    regional,
+    estado,
+    cidade,
+    gerente,
+    gestorDireto,
+    emailGestor,
+  } = req.body;
+
+  // Validação dos campos obrigatórios
+  if (!id || !matricula || !nome || !cargo || !regional || !estado || !cidade || !gerente || !gestorDireto || !emailGestor) {
+    return res.status(400).json({
+      sucesso: false,
+      mensagem: "Todos os campos são obrigatórios.",
+    });
+  }
+
+  try {
+    // Verifica se a matrícula já existe em outro colaborador
+    const [existe] = await conexao.query(
+      `SELECT ID FROM COLABORADORES_CW WHERE MATRICULA = ? AND ID != ?`,
+      [matricula, id]
+    );
+
+    if (existe.length > 0) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: "Já existe outro colaborador com esta matrícula.",
+      });
+    }
+
+    const [result] = await conexao.query(
+      `UPDATE COLABORADORES_CW
+       SET MATRICULA = ?, NOME = ?, CARGO = ?, REGIONAL = ?, ESTADO = ?, CIDADE = ?, GERENTE = ?, GESTOR_DIRETO = ?, EMAIL_GESTOR = ?
+       WHERE ID = ?`,
+      [
+        matricula,
+        nome,
+        cargo,
+        regional,
+        estado,
+        cidade,
+        gerente,
+        gestorDireto,
+        emailGestor,
+        id,
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ sucesso: false, mensagem: "Colaborador não encontrado." });
+    }
+
+    res.json({
+      sucesso: true,
+      mensagem: "Colaborador atualizado com sucesso!",
+    });
+  } catch (error) {
+    console.error(
+      `[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao editar colaborador ID: ${id}.`,
+      error
+    );
+    res
+      .status(500)
+      .json({ sucesso: false, mensagem: "Erro ao atualizar colaborador." });
+  }
+};
+
+// Excluir colaborador
+exports.excluirColaborador = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const user = req.session.usuario;
+  const ip = req.ip;
+  const { id } = req.body;
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ sucesso: false, mensagem: "ID é obrigatório." });
+  }
+
+  try {
+    const [result] = await conexao.query(
+      `DELETE FROM COLABORADORES_CW WHERE ID = ?`,
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ sucesso: false, mensagem: "Colaborador não encontrado." });
+    }
+
+    res.json({
+      sucesso: true,
+      mensagem: "Colaborador excluído com sucesso!",
+    });
+  } catch (error) {
+    console.error(
+      `[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao excluir colaborador ID: ${id}.`,
+      error
+    );
+    res
+      .status(500)
+      .json({ sucesso: false, mensagem: "Erro ao excluir colaborador." });
+  }
+};
+
+// Exportar colaboradores em CSV
+exports.exportarColaboradores = async (req, res) => {
+  const conexao = db.mysqlPool;
+  const user = req.session.usuario;
+  const ip = req.ip;
+
+  try {
+    const [rows] = await conexao.query(
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR
+       FROM COLABORADORES_CW
+       ORDER BY NOME`
+    );
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .send("Nenhum colaborador encontrado para exportar.");
+    }
+
+    // Constrói o CSV
+    const header = Object.keys(rows[0]).join(",") + "\r\n";
+    const csvData = rows
+      .map((row) => {
+        return Object.values(row)
+          .map((value) => {
+            // Trata valores que podem conter vírgulas ou aspas
+            let strValue = String(
+              value === null || value === undefined ? "" : value
+            );
+            if (
+              strValue.includes(",") ||
+              strValue.includes('"') ||
+              strValue.includes("\n")
+            ) {
+              strValue = `"${strValue.replace(/"/g, '""')}"`;
+            }
+            return strValue;
+          })
+          .join(",");
+      })
+      .join("\r\n");
+
+    const csv = "\uFEFF" + header + csvData;
+
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=colaboradores.csv"
+    );
+    res.status(200).send(csv);
+  } catch (error) {
+    console.error(
+      `[ERRO] Usuário: ${user?.nome}, IP: ${ip}, Ação: Erro ao exportar colaboradores.`,
+      error
+    );
+    res.status(500).send("Erro interno ao exportar os colaboradores.");
+  }
 };

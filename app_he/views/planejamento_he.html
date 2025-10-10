@@ -15,13 +15,14 @@
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-            <style>
-            @media (min-width: 769px) {
-                #sidebarToggle {
-                    display: none;
-                }
+    <style>
+        @media (min-width: 769px) {
+            #sidebarToggle {
+                display: none;
             }
-            @keyframes shake {
+        }
+
+        @keyframes shake {
             0% {
                 transform: translateX(0);
             }
@@ -360,6 +361,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -367,9 +369,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }
@@ -379,6 +384,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -399,10 +405,21 @@
         }
 
         /* Efeitos de animação sequenciais para cada card */
-        .summary-card:nth-child(1) { animation-delay: 0.1s; }
-        .summary-card:nth-child(2) { animation-delay: 0.2s; }
-        .summary-card:nth-child(3) { animation-delay: 0.3s; }
-        .summary-card:nth-child(4) { animation-delay: 0.4s; }
+        .summary-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .summary-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .summary-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .summary-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
 
         /* Efeito de brilho no fundo */
         .summary-card::before {
@@ -412,7 +429,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -431,7 +448,7 @@
             font-size: 1.5rem;
             margin-bottom: 0.3rem;
             display: block;
-            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -486,6 +503,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -520,6 +538,119 @@
         #tabelaGerentes tbody td:first-child {
             text-align: left;
             font-weight: 500;
+        }
+
+        /* Tela de seleção de gerência */
+        .gerencia-list-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .gerencia-list-item:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .gerencia-list-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .gerencia-list-icon {
+            font-size: 2rem;
+            color: #667eea;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gerencia-list-details {
+            flex: 1;
+        }
+
+        .gerencia-list-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .gerencia-list-meta {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .gerencia-list-stats {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .gerencia-list-stat {
+            text-align: center;
+        }
+
+        .gerencia-list-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .gerencia-list-stat-value.pendente {
+            color: #ffc107;
+        }
+
+        .gerencia-list-stat-value.aprovado {
+            color: #28a745;
+        }
+
+        .gerencia-list-stat-value.recusado {
+            color: #dc3545;
+        }
+
+        .gerencia-list-stat-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+
+        .gerencia-list-arrow {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+
+        .btn-voltar {
+            margin-bottom: 1rem;
+        }
+
+        /* Tabela de colaboradores com fonte reduzida */
+        #tabelaColaboradores {
+            font-size: 0.75rem;
+        }
+
+        #tabelaColaboradores thead th {
+            font-size: 0.7rem;
+            padding: 0.4rem;
+            vertical-align: middle;
+        }
+
+        #tabelaColaboradores tbody td {
+            padding: 0.4rem;
+            vertical-align: middle;
         }
 
         /* Ajuste de responsividade */
@@ -609,8 +740,10 @@
             <!-- Separador para menu especial -->
             <div class="menu-separator"></div>
             <div class="menu-section-title">GESTÃO</div>
-            <a href="#" class="menu-item" data-page="aprovacoes" id="menuAprovacoes" style="display: none;"><i
+            <a href="#" class="menu-item" data-page="selecaoGerencia" id="menuAprovacoes" style="display: none;"><i
                     class="fas fa-tasks"></i> Tratar Solicitações</a>
+            <a href="#" class="menu-item" data-page="gerenciarColaboradores" id="menuColaboradores" style="display: none;"><i
+                    class="fas fa-users-cog"></i> Gerenciar Colaboradores</a>
 
             <!-- Rodapé com créditos -->
             <div class="sidebar-footer">
@@ -829,8 +962,56 @@
                     </div>
                 </div>
 
+                <!-- Tela: Seleção de Gerência -->
+                <div id="selecaoGerencia" class="card" style="display: none;">
+                    <h2 class="card-title"><i class="fas fa-users-cog"></i> Selecione a Gerência</h2>
+                    <p class="text-muted">Escolha a gerência que deseja gerenciar as solicitações de horas extras:</p>
+
+                    <!-- Filtros -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="selecaoGerenciaMes">Mês de Referência</label>
+                            <select id="selecaoGerenciaMes" class="form-control">
+                                <option value="Janeiro">Janeiro</option>
+                                <option value="Fevereiro">Fevereiro</option>
+                                <option value="Março">Março</option>
+                                <option value="Abril">Abril</option>
+                                <option value="Maio">Maio</option>
+                                <option value="Junho">Junho</option>
+                                <option value="Julho">Julho</option>
+                                <option value="Agosto">Agosto</option>
+                                <option value="Setembro">Setembro</option>
+                                <option value="Outubro">Outubro</option>
+                                <option value="Novembro">Novembro</option>
+                                <option value="Dezembro">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="selecaoGerenciaStatus">Status</label>
+                            <select id="selecaoGerenciaStatus" class="form-control">
+                                <option value="PENDENTE">Pendente</option>
+                                <option value="APROVADO">Aprovado</option>
+                                <option value="RECUSADO">Recusado</option>
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button id="btnLimparFiltrosSelecaoGerencia" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-eraser"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="gerenciasList">
+                        <!-- Lista será carregada dinamicamente -->
+                    </div>
+                </div>
+
                 <!-- Tela: Aprovações (NOVA) -->
                 <div id="aprovacoes" class="card" style="display: none;">
+                    <button class="btn btn-secondary btn-voltar" onclick="voltarSelecaoGerencia()">
+                        <i class="fas fa-arrow-left"></i> Voltar para Seleção
+                    </button>
                     <h2 class="card-title"><i class="fas fa-tasks"></i> Tratar Solicitações</h2>
 
                     <!-- Filtros da Tela de Aprovação -->
@@ -872,7 +1053,171 @@
                     <div id="tabelaAprovacoesContainer">
                         <p class="text-center text-muted">Carregando...</p>
                     </div>
+                </div>
 
+                <!-- Tela: Gerenciar Colaboradores -->
+                <div id="gerenciarColaboradores" class="card" style="display: none;">
+                    <h2 class="card-title"><i class="fas fa-users-cog"></i> Gerenciar Colaboradores</h2>
+
+                    <!-- Botões de Ação -->
+                    <div class="mb-3">
+                        <button id="btnNovoColaborador" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Novo Colaborador
+                        </button>
+                        <button id="btnExportarColaboradores" class="btn btn-success ml-2">
+                            <i class="fas fa-file-excel"></i> Exportar CSV
+                        </button>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="filtroNomeColaborador">Nome</label>
+                            <input type="text" id="filtroNomeColaborador" class="form-control form-control-sm" placeholder="Digite o nome...">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="filtroMatriculaColaborador">Matrícula</label>
+                            <input type="text" id="filtroMatriculaColaborador" class="form-control form-control-sm" placeholder="Matrícula...">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="filtroCargoColaborador">Cargo</label>
+                            <input type="text" id="filtroCargoColaborador" class="form-control form-control-sm" placeholder="Cargo...">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="filtroRegionalColaborador">Regional</label>
+                            <input type="text" id="filtroRegionalColaborador" class="form-control form-control-sm" placeholder="Regional...">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="filtroCidadeColaborador">Cidade</label>
+                            <input type="text" id="filtroCidadeColaborador" class="form-control form-control-sm" placeholder="Cidade...">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button id="btnLimparFiltrosColaboradores" class="btn btn-outline-secondary btn-sm w-100" title="Limpar Filtros">
+                                <i class="fas fa-eraser"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="filtroGerenteColaborador">Gerente</label>
+                            <select id="filtroGerenteColaborador" class="form-control form-control-sm">
+                                <option value="">Todos os Gerentes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tabela de Colaboradores -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm" id="tabelaColaboradores">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Matrícula</th>
+                                    <th>Nome</th>
+                                    <th>Cargo</th>
+                                    <th>Regional</th>
+                                    <th>Estado</th>
+                                    <th>Cidade</th>
+                                    <th>Gerente</th>
+                                    <th>Gestor Direto</th>
+                                    <th class="text-center" style="width: 100px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaColaboradoresBody">
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted">Carregando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Criar/Editar Colaborador -->
+    <div class="modal fade" id="modalColaborador" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalColaboradorTitle">Novo Colaborador</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formColaborador">
+                        <input type="hidden" id="colaboradorId">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="colaboradorMatricula">Matrícula *</label>
+                                    <input type="text" class="form-control" id="colaboradorMatricula" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="colaboradorNome">Nome *</label>
+                                    <input type="text" class="form-control" id="colaboradorNome" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="colaboradorCargo">Cargo *</label>
+                                    <input type="text" class="form-control" id="colaboradorCargo" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="colaboradorRegional">Regional *</label>
+                                    <input type="text" class="form-control" id="colaboradorRegional" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="colaboradorEstado">Estado *</label>
+                                    <input type="text" class="form-control" id="colaboradorEstado" maxlength="2" placeholder="Ex: SP" required>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="colaboradorCidade">Cidade *</label>
+                                    <input type="text" class="form-control" id="colaboradorCidade" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="colaboradorGerente">Gerente *</label>
+                                    <input type="text" class="form-control" id="colaboradorGerente" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="colaboradorGestorDireto">Gestor Direto *</label>
+                                    <input type="text" class="form-control" id="colaboradorGestorDireto" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="colaboradorEmailGestor">Email do Gestor *</label>
+                            <input type="email" class="form-control" id="colaboradorEmailGestor" placeholder="exemplo@email.com" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarColaborador">Salvar</button>
                 </div>
             </div>
         </div>
@@ -888,6 +1233,7 @@
     <script src="/public/js/minhas.js"></script>
     <script src="/public/js/dashboard_he.js"></script>
     <script src="/public/js/aprovacao.js"></script>
+    <script src="/public/js/colaboradores.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -896,11 +1242,13 @@
                 'novaSolicitacao': document.getElementById('novaSolicitacao'),
                 'minhasSolicitacoes': document.getElementById('minhasSolicitacoes'),
                 'dashboard': document.getElementById('dashboard'),
-                'aprovacoes': document.getElementById('aprovacoes') // Adiciona a nova página
+                'selecaoGerencia': document.getElementById('selecaoGerencia'),
+                'aprovacoes': document.getElementById('aprovacoes'),
+                'gerenciarColaboradores': document.getElementById('gerenciarColaboradores')
             };
 
             // Função para trocar de página
-            function showPage(pageName) {
+            window.showPage = function (pageName) {
                 Object.values(pages).forEach(page => page.style.display = 'none');
                 pages[pageName].style.display = 'block';
 
@@ -913,6 +1261,152 @@
                 document.dispatchEvent(event);
             }
 
+            // Função para voltar à seleção de gerências
+            window.voltarSelecaoGerencia = function () {
+                showPage('selecaoGerencia');
+            }
+
+            // Função para ir para aprovações de uma gerência específica
+            window.acessarGerencia = function (nomeGerencia) {
+                // Armazena a gerência selecionada
+                window.gerenciaSelecionada = nomeGerencia;
+
+                // Atualiza o filtro da tela de aprovações
+                const filtroGerente = document.getElementById('aprovacaoFiltroGerente');
+                if (filtroGerente) {
+                    filtroGerente.value = nomeGerencia;
+                }
+
+                // Vai para a tela de aprovações
+                showPage('aprovacoes');
+
+                // Dispara o evento para carregar os dados
+                if (typeof carregarSolicitacoesPendentes === 'function') {
+                    carregarSolicitacoesPendentes();
+                }
+            }
+
+            // Carrega as gerências para seleção
+            function carregarGerenciasParaSelecao() {
+                const mesSelecionado = document.getElementById('selecaoGerenciaMes').value;
+                const statusSelecionado = document.getElementById('selecaoGerenciaStatus').value;
+
+                fetch('/planejamento-he/api/gerentes')
+                    .then(r => r.json())
+                    .then(data => {
+                        const list = document.getElementById('gerenciasList');
+                        list.innerHTML = '<p class="text-center text-muted">Carregando...</p>';
+
+                        if (!data.gerentes || data.gerentes.length === 0) {
+                            list.innerHTML = '<p class="text-center text-muted">Nenhuma gerência disponível.</p>';
+                            return;
+                        }
+
+                        list.innerHTML = '';
+                        let gerenciasComSolicitacoes = 0;
+                        const statusTexto = statusSelecionado ? statusSelecionado.charAt(0) + statusSelecionado.slice(1).toLowerCase() : 'Total';
+
+                        data.gerentes.forEach(gerente => {
+                            // Monta a URL com os filtros
+                            let url = `/planejamento-he/api/solicitacoes-pendentes?gerente=${encodeURIComponent(gerente)}&mes=${encodeURIComponent(mesSelecionado)}`;
+                            if (statusSelecionado) {
+                                url += `&status=${statusSelecionado}`;
+                            }
+
+                            // Busca as solicitações filtradas
+                            fetch(url)
+                                .then(r => r.json())
+                                .then(solicitacoes => {
+                                    if (solicitacoes.length > 0) {
+                                        gerenciasComSolicitacoes++;
+
+                                        // Calcula totais
+                                        const totalHoras = solicitacoes.reduce((sum, sol) => sum + (parseFloat(sol.HORAS) || 0), 0);
+                                        const totalValor = solicitacoes.reduce((sum, sol) => {
+                                            const horas = parseFloat(sol.HORAS) || 0;
+                                            const valorHora = parseFloat(sol.VALOR_HORA) || 0;
+                                            return sum + (horas * valorHora);
+                                        }, 0);
+
+                                        // Define a cor baseada no status
+                                        let corStatus = '#350187'; // Padrão (todos)
+                                        if (statusSelecionado === 'PENDENTE') corStatus = '#350187';
+                                        else if (statusSelecionado === 'APROVADO') corStatus = '#034d19';
+                                        else if (statusSelecionado === 'RECUSADO') corStatus = '#6b0000';
+
+                                        const item = document.createElement('div');
+                                        item.className = 'gerencia-list-item';
+                                        item.onclick = () => acessarGerencia(gerente, mesSelecionado);
+                                        item.innerHTML = `
+                                            <div class="gerencia-list-info">
+                                                <div class="gerencia-list-icon">
+                                                    <i class="fas fa-user-tie"></i>
+                                                </div>
+                                                <div class="gerencia-list-details">
+                                                    <div class="gerencia-list-name">${gerente}</div>
+                                                    <div class="gerencia-list-meta">Mês de ${mesSelecionado}${statusSelecionado ? ` - ${statusTexto}` : ''}</div>
+                                                </div>
+                                            </div>
+                                            <div class="gerencia-list-stats">
+                                                <div class="gerencia-list-stat">
+                                                    <span class="gerencia-list-stat-value" style="color: ${corStatus};">${solicitacoes.length}</span>
+                                                    <span class="gerencia-list-stat-label">Solicitações</span>
+                                                </div>
+                                                <div class="gerencia-list-stat">
+                                                    <span class="gerencia-list-stat-value" style="color: ${corStatus};">${totalHoras.toFixed(1)}h</span>
+                                                    <span class="gerencia-list-stat-label">Total Horas</span>
+                                                </div>
+                                                <div class="gerencia-list-stat">
+                                                    <span class="gerencia-list-stat-value" style="color: ${corStatus}; font-size: 1.2rem; font-weight: bold;">${totalValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                                    <span class="gerencia-list-stat-label">Valor Total</span>
+                                                </div>
+                                            </div>
+                                            <div class="gerencia-list-arrow">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </div>
+                                        `;
+                                        list.appendChild(item);
+                                    }
+
+                                    // Verifica se não há gerências após processar todas
+                                    setTimeout(() => {
+                                        if (list.children.length === 0) {
+                                            const statusMsg = statusSelecionado ? `com status "${statusSelecionado}"` : '';
+                                            list.innerHTML = `<p class="text-center text-muted">Nenhuma gerência com solicitações ${statusMsg} em ${mesSelecionado}.</p>`;
+                                        }
+                                    }, 1000);
+                                });
+                        });
+                    })
+                    .catch(err => {
+                        console.error('Erro ao carregar gerências:', err);
+                        document.getElementById('gerenciasList').innerHTML = '<p class="text-center text-danger">Erro ao carregar gerências.</p>';
+                    });
+            }
+
+            // Função atualizada para passar o mês selecionado
+            window.acessarGerencia = function (nomeGerencia, mes) {
+                window.gerenciaSelecionada = nomeGerencia;
+                window.mesSelecionado = mes || document.getElementById('selecaoGerenciaMes').value;
+
+                // Mostra a página de aprovações primeiro
+                showPage('aprovacoes');
+
+                // Aguarda um pouco para garantir que o evento page-load:aprovacoes foi processado
+                setTimeout(() => {
+                    const filtroGerente = document.getElementById('aprovacaoFiltroGerente');
+                    const filtroMes = document.getElementById('aprovacaoFiltroMes');
+
+                    if (filtroGerente) filtroGerente.value = nomeGerencia;
+                    if (filtroMes) filtroMes.value = window.mesSelecionado;
+
+                    // Chama a função de carregamento de dados que existe no aprovacao.js
+                    if (typeof carregarDadosAprovacao === 'function') {
+                        carregarDadosAprovacao();
+                    }
+                }, 150);
+            }
+
             // Event listeners para os itens do menu
             menuItems.forEach(item => {
                 item.addEventListener('click', function (e) {
@@ -922,6 +1416,15 @@
                 });
             });
 
+            // Inicializa o mês atual e status no filtro
+            function inicializarMesAtual() {
+                const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                const mesAtual = meses[new Date().getMonth()];
+                document.getElementById('selecaoGerenciaMes').value = mesAtual;
+                document.getElementById('selecaoGerenciaStatus').value = 'PENDENTE';
+            }
+
             // Lógica de visibilidade do menu de aprovações
             function setupMenuPermissions() {
                 fetch('/planejamento-he/api/perfil-usuario')
@@ -929,13 +1432,43 @@
                     .then(data => {
                         const perfil = data.perfil || '';
                         const menuAprovacoes = document.getElementById('menuAprovacoes');
+                        const menuColaboradores = document.getElementById('menuColaboradores');
+
                         if (perfil.includes('HE_APROVADOR')) {
                             menuAprovacoes.style.display = 'flex';
-                            showPage('aprovacoes');
+                            menuColaboradores.style.display = 'flex';
+
+                            // Inicializa o mês antes de mostrar a tela
+                            inicializarMesAtual();
+                            // Mostra a tela de seleção de gerência
+                            showPage('selecaoGerencia');
+                            // Carrega as gerências com o mês já setado
+                            setTimeout(() => carregarGerenciasParaSelecao(), 100);
                         }
                     })
                     .catch(err => console.error("Erro ao buscar perfil do usuário:", err));
             }
+
+            // Carrega gerências quando acessa a tela de seleção
+            document.addEventListener('page-load:selecaoGerencia', function () {
+                inicializarMesAtual();
+                carregarGerenciasParaSelecao();
+            });
+
+            // Evento de mudança nos filtros
+            document.getElementById('selecaoGerenciaMes').addEventListener('change', function () {
+                carregarGerenciasParaSelecao();
+            });
+
+            document.getElementById('selecaoGerenciaStatus').addEventListener('change', function () {
+                carregarGerenciasParaSelecao();
+            });
+
+            // Botão para limpar filtros da seleção de gerência
+            document.getElementById('btnLimparFiltrosSelecaoGerencia').addEventListener('click', function () {
+                inicializarMesAtual(); // Reseta para mês atual e status PENDENTE
+                carregarGerenciasParaSelecao();
+            });
 
             // Mostrar a página inicial e configurar permissões
             showPage('novaSolicitacao');

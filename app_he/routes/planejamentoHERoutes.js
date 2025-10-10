@@ -119,5 +119,16 @@ router.post("/api/recusar-solicitacao", heAuth.requireHEAuth, heAprovadorAuth.re
 router.post("/api/tratar-em-massa", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.tratarSolicitacoesEmMassa);
 router.get("/api/approval-summary", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.getApprovalSummary);
 
+// ================================================
+// API PARA GERENCIAR COLABORADORES (CRUD)
+// ================================================
+
+router.get("/api/colaboradores/listar", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.listarColaboradores);
+router.get("/api/colaboradores/exportar", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.exportarColaboradores);
+router.get("/api/colaboradores/:id", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.obterColaborador);
+router.post("/api/colaboradores/criar", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.criarColaborador);
+router.post("/api/colaboradores/editar", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.editarColaborador);
+router.post("/api/colaboradores/excluir", heAuth.requireHEAuth, heAprovadorAuth.requireAprovadorHE, planejamentoHE.excluirColaborador);
+
 
 module.exports = router;
