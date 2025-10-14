@@ -121,17 +121,13 @@ router.post("/login", async (req, res) => {
       return res.redirect("/login?erro=email_nao_encontrado");
     }
 
-    // Converte acessos em array (separados por vírgula)
-    const acessos = user.acessos ? user.acessos.split(",") : [];
-
     // Cria sessão do usuário com informações essenciais
     req.session.usuario = {
       id: user.id,
       nome: user.nome,
       email: user.email,
       perfil: user.perfil,
-      cargo: user.cargo, // Adiciona o cargo à sessão
-      acessos: acessos,
+      cargo: user.cargo,
     };
 
     // Redirecionamento inteligente - usa redirect do body, query string ou padrão
