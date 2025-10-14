@@ -412,6 +412,7 @@ exports.getDashboardData = async (req, res) => {
 // Lista de gerentes únicos
 exports.getGerentes = async (req, res) => {
   const conexao = db.mysqlPool;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
 
@@ -419,9 +420,9 @@ exports.getGerentes = async (req, res) => {
     const [rows] = await conexao.query(`
       SELECT DISTINCT GERENTE AS nome
       FROM PLANEJAMENTO_HE
-      WHERE GERENTE IS NOT NULL AND GERENTE <> ''
+      WHERE GERENTE IS NOT NULL AND GERENTE <> '' AND (DIRETORIA = ? OR DIRETORIA IS NULL)
       ORDER BY GERENTE
-    `);
+    `, [diretoria]);
     res.json(rows);
   } catch (error) {
     console.error(
