@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   inicializarFiltros();
 
+  // Adiciona evento para recarregar quando a página é aberta
+  document.addEventListener('page-load:dashboard', function() {
+    carregarDashboard(filtroMes.value, filtroGerente.value);
+  });
+
   // Inicializa os filtros com mês atual e dropdown de gerentes
   async function inicializarFiltros() {
     preencherMeses();

@@ -126,6 +126,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   carregarMinhasSolicitacoes("", mesAtual);
 
+  // Adiciona evento para recarregar quando a página é aberta
+  document.addEventListener('page-load:minhasSolicitacoes', function() {
+    const colaborador = document.getElementById("filtroColaborador").value;
+    const mes = document.getElementById("filtroMes").value;
+    carregarMinhasSolicitacoes(colaborador, mes);
+  });
+
   let debounceTimer;
 
   function aplicarFiltros() {
