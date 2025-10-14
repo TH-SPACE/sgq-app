@@ -502,8 +502,12 @@ exports.aprovarSolicitacao = async (req, res) => {
 
   try {
     await conexao.query(
-      "UPDATE PLANEJAMENTO_HE SET STATUS = 'APROVADO' WHERE id = ?",
-      [id]
+      `UPDATE PLANEJAMENTO_HE
+       SET STATUS = 'APROVADO',
+           TRATADO_POR = ?,
+           DATA_TRATAMENTO = NOW()
+       WHERE id = ?`,
+      [user?.email || 'desconhecido', id]
     );
     res.json({ sucesso: true, mensagem: "Solicitação aprovada com sucesso!" });
   } catch (error) {
@@ -535,8 +539,12 @@ exports.recusarSolicitacao = async (req, res) => {
 
   try {
     await conexao.query(
-      "UPDATE PLANEJAMENTO_HE SET STATUS = 'RECUSADO' WHERE id = ?",
-      [id]
+      `UPDATE PLANEJAMENTO_HE
+       SET STATUS = 'RECUSADO',
+           TRATADO_POR = ?,
+           DATA_TRATAMENTO = NOW()
+       WHERE id = ?`,
+      [user?.email || 'desconhecido', id]
     );
     res.json({ sucesso: true, mensagem: "Solicitação recusada com sucesso!" });
   } catch (error) {
@@ -576,8 +584,12 @@ exports.tratarSolicitacoesEmMassa = async (req, res) => {
 
   try {
     const placeholders = ids.map(() => "?").join(",");
-    const query = `UPDATE PLANEJAMENTO_HE SET STATUS = ? WHERE id IN (${placeholders})`;
-    const params = [status, ...ids];
+    const query = `UPDATE PLANEJAMENTO_HE
+                   SET STATUS = ?,
+                       TRATADO_POR = ?,
+                       DATA_TRATAMENTO = NOW()
+                   WHERE id IN (${placeholders})`;
+    const params = [status, user?.email || 'desconhecido', ...ids];
     const [result] = await conexao.query(query, params);
 
     res.json({
