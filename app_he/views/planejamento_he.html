@@ -696,7 +696,7 @@
             </div>
             <div class="dropdown-menu">
                 <a href="#" id="perfilLink"><i class="fas fa-user"></i> Ver Perfil</a>
-                <a href="/admin" id="painelAdmBtn" style="display: none;"><i class="fas fa-user"></i> PAINEL ADM</a>
+                <a href="/admin" id="painelAdmBtn" style="display: none;"><i class="fas fa-cogs"></i> PAINEL ADM</a>
                 <a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Sair</a>
             </div>
         </div>
@@ -1443,6 +1443,12 @@
                         const menuAprovacoes = document.getElementById('menuAprovacoes');
                         const menuColaboradores = document.getElementById('menuColaboradores');
                         const menuGerencia = document.getElementById('menuGerencia');
+                        const painelAdmBtn = document.getElementById('painelAdmBtn');
+
+                        // Mostra PAINEL ADM apenas para quem tem perfil ADM
+                        if (perfil.includes('ADM')) {
+                            painelAdmBtn.style.display = 'block';
+                        }
 
                         if (perfil.includes('HE_APROVADOR')) {
                             menuAprovacoes.style.display = 'flex';

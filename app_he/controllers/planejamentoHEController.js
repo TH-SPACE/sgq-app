@@ -13,6 +13,7 @@ exports.getPerfilUsuario = (req, res) => {
 // Resumo de aprovação com limite financeiro
 exports.getApprovalSummary = async (req, res) => {
   const { gerente, mes } = req.query;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
 
@@ -25,8 +26,8 @@ exports.getApprovalSummary = async (req, res) => {
   try {
     const conexao = db.mysqlPool;
 
-    let query = `SELECT STATUS, CARGO, HORAS, TIPO_HE FROM PLANEJAMENTO_HE WHERE MES = ?`;
-    const params = [mes];
+    let query = `SELECT STATUS, CARGO, HORAS, TIPO_HE FROM PLANEJAMENTO_HE WHERE MES = ? AND (DIRETORIA = ? OR DIRETORIA IS NULL)`;
+    const params = [mes, diretoria];
 
     if (gerente) {
       query += ` AND GERENTE = ?`;
@@ -95,6 +96,7 @@ exports.telaEnvio = (req, res) => {
 exports.enviarSolicitacoesMultiplo = async (req, res) => {
   const conexao = db.mysqlPool;
   const enviadoPor = req.session.usuario?.email || "desconhecido";
+  const diretoria = req.diretoriaHE; // Vem do middleware
   const user = req.session.usuario;
   const ip = req.ip;
 
@@ -107,10 +109,18 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
     }
 
     for (const s of solicitacoes) {
+      // Busca a diretoria do colaborador na tabela COLABORADORES_CW
+      const [colabRows] = await conexao.query(
+        `SELECT DIRETORIA FROM COLABORADORES_CW WHERE MATRICULA = ? LIMIT 1`,
+        [s.matricula]
+      );
+
+      const diretoriaColab = colabRows.length > 0 ? colabRows[0].DIRETORIA : diretoria;
+
       await conexao.query(
-        `INSERT INTO PLANEJAMENTO_HE 
-          (GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDENTE', ?)`,
+        `INSERT INTO PLANEJAMENTO_HE
+          (GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR, DIRETORIA)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDENTE', ?, ?)`,
         [
           s.gerente,
           s.colaborador,
@@ -121,6 +131,7 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
           s.justificativa,
           s.tipoHE,
           enviadoPor,
+          diretoriaColab,
         ]
       );
     }
@@ -145,6 +156,7 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
 // Obter resumo financeiro de HE por gerente e mês
 exports.obterResumoHE = async (req, res) => {
   const { gerente, mes } = req.query;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
 
@@ -157,10 +169,10 @@ exports.obterResumoHE = async (req, res) => {
   try {
     const conexao = db.mysqlPool;
     const [rows] = await conexao.query(
-      `SELECT CARGO, HORAS, TIPO_HE, STATUS 
-       FROM PLANEJAMENTO_HE 
-       WHERE GERENTE = ? AND MES = ? AND STATUS IN ('APROVADO', 'PENDENTE')`,
-      [gerente, mes]
+      `SELECT CARGO, HORAS, TIPO_HE, STATUS
+       FROM PLANEJAMENTO_HE
+       WHERE GERENTE = ? AND MES = ? AND STATUS IN ('APROVADO', 'PENDENTE') AND (DIRETORIA = ? OR DIRETORIA IS NULL)`,
+      [gerente, mes, diretoria]
     );
 
     let totalAprovado = 0;
@@ -192,6 +204,7 @@ exports.obterResumoHE = async (req, res) => {
 exports.listarEnvios = async (req, res) => {
   const conexao = db.mysqlPool;
   const emailUsuario = req.session.usuario?.email;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
   const { colaborador, mes } = req.query;
@@ -202,12 +215,12 @@ exports.listarEnvios = async (req, res) => {
 
   try {
     let query = `
-      SELECT 
+      SELECT
         id, GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR,
         DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
-      FROM PLANEJAMENTO_HE 
-      WHERE ENVIADO_POR = ?`;
-    const params = [emailUsuario];
+      FROM PLANEJAMENTO_HE
+      WHERE ENVIADO_POR = ? AND (DIRETORIA = ? OR DIRETORIA IS NULL)`;
+    const params = [emailUsuario, diretoria];
 
     if (colaborador) {
       query += ` AND COLABORADOR LIKE ?`;
@@ -354,6 +367,7 @@ exports.excluirEnvio = async (req, res) => {
 exports.getDashboardData = async (req, res) => {
   const conexao = db.mysqlPool;
   const { mes, gerente } = req.query;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
 
@@ -363,7 +377,7 @@ exports.getDashboardData = async (req, res) => {
 
   try {
     let query = `
-      SELECT 
+      SELECT
         GERENTE,
         SUM(HORAS) as totalHoras,
         SUM(CASE WHEN STATUS = 'PENDENTE' THEN 1 ELSE 0 END) as pendentes,
@@ -373,8 +387,8 @@ exports.getDashboardData = async (req, res) => {
         SUM(CASE WHEN STATUS = 'APROVADO' THEN HORAS ELSE 0 END) as horasAprovadas,
         SUM(CASE WHEN STATUS = 'RECUSADO' THEN HORAS ELSE 0 END) as horasRecusadas
       FROM PLANEJAMENTO_HE
-      WHERE MES = ?`;
-    const params = [mes];
+      WHERE MES = ? AND (DIRETORIA = ? OR DIRETORIA IS NULL)`;
+    const params = [mes, diretoria];
 
     if (gerente) {
       query += ` AND GERENTE LIKE ?`;
@@ -423,6 +437,7 @@ exports.getGerentes = async (req, res) => {
 // Listar solicitações pendentes (para gestores)
 exports.listarSolicitacoesPendentes = async (req, res) => {
   const conexao = db.mysqlPool;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
   const { gerente, status, mes } = req.query;
@@ -433,8 +448,8 @@ exports.listarSolicitacoesPendentes = async (req, res) => {
         id, GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR,
         DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
       FROM PLANEJAMENTO_HE
-      WHERE 1=1`;
-    const params = [];
+      WHERE (DIRETORIA = ? OR DIRETORIA IS NULL)`;
+    const params = [diretoria];
 
     if (gerente) {
       query += ` AND GERENTE = ?`;
@@ -585,13 +600,14 @@ exports.tratarSolicitacoesEmMassa = async (req, res) => {
 
 exports.exportarDados = async (req, res) => {
     const { mes, gerente } = req.query;
+    const diretoria = req.diretoriaHE;
     const user = req.session.usuario;
     const ip = req.ip;
 
     try {
         const conexao = db.mysqlPool;
-        let query = `SELECT * FROM PLANEJAMENTO_HE WHERE 1=1`;
-        const params = [];
+        let query = `SELECT * FROM PLANEJAMENTO_HE WHERE (DIRETORIA = ? OR DIRETORIA IS NULL)`;
+        const params = [diretoria];
 
         if (mes) {
             query += ` AND MES = ?`;
@@ -640,14 +656,17 @@ exports.exportarDados = async (req, res) => {
 // Listar todos os colaboradores
 exports.listarColaboradores = async (req, res) => {
   const conexao = db.mysqlPool;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
 
   try {
     const [rows] = await conexao.query(
-      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA
        FROM COLABORADORES_CW
-       ORDER BY NOME`
+       WHERE (DIRETORIA = ? OR DIRETORIA IS NULL)
+       ORDER BY NOME`,
+      [diretoria]
     );
     res.json(rows);
   } catch (error) {
@@ -691,6 +710,7 @@ exports.obterColaborador = async (req, res) => {
 // Criar novo colaborador
 exports.criarColaborador = async (req, res) => {
   const conexao = db.mysqlPool;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
   const {
@@ -728,8 +748,8 @@ exports.criarColaborador = async (req, res) => {
     }
 
     await conexao.query(
-      `INSERT INTO COLABORADORES_CW (MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO COLABORADORES_CW (MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         matricula,
         nome,
@@ -740,6 +760,7 @@ exports.criarColaborador = async (req, res) => {
         gerente,
         gestorDireto,
         emailGestor,
+        diretoria,
       ]
     );
 
@@ -761,6 +782,7 @@ exports.criarColaborador = async (req, res) => {
 // Editar colaborador
 exports.editarColaborador = async (req, res) => {
   const conexao = db.mysqlPool;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
   const {
@@ -801,7 +823,7 @@ exports.editarColaborador = async (req, res) => {
     const [result] = await conexao.query(
       `UPDATE COLABORADORES_CW
        SET MATRICULA = ?, NOME = ?, CARGO = ?, REGIONAL = ?, ESTADO = ?, CIDADE = ?, GERENTE = ?, GESTOR_DIRETO = ?, EMAIL_GESTOR = ?
-       WHERE ID = ?`,
+       WHERE ID = ? AND (DIRETORIA = ? OR DIRETORIA IS NULL)`,
       [
         matricula,
         nome,
@@ -813,6 +835,7 @@ exports.editarColaborador = async (req, res) => {
         gestorDireto,
         emailGestor,
         id,
+        diretoria,
       ]
     );
 
@@ -840,6 +863,7 @@ exports.editarColaborador = async (req, res) => {
 // Excluir colaborador
 exports.excluirColaborador = async (req, res) => {
   const conexao = db.mysqlPool;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
   const { id } = req.body;
@@ -852,8 +876,8 @@ exports.excluirColaborador = async (req, res) => {
 
   try {
     const [result] = await conexao.query(
-      `DELETE FROM COLABORADORES_CW WHERE ID = ?`,
-      [id]
+      `DELETE FROM COLABORADORES_CW WHERE ID = ? AND (DIRETORIA = ? OR DIRETORIA IS NULL)`,
+      [id, diretoria]
     );
 
     if (result.affectedRows === 0) {
@@ -880,14 +904,17 @@ exports.excluirColaborador = async (req, res) => {
 // Exportar colaboradores em CSV
 exports.exportarColaboradores = async (req, res) => {
   const conexao = db.mysqlPool;
+  const diretoria = req.diretoriaHE;
   const user = req.session.usuario;
   const ip = req.ip;
 
   try {
     const [rows] = await conexao.query(
-      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA
        FROM COLABORADORES_CW
-       ORDER BY NOME`
+       WHERE (DIRETORIA = ? OR DIRETORIA IS NULL)
+       ORDER BY NOME`,
+      [diretoria]
     );
 
     if (rows.length === 0) {

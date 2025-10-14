@@ -293,7 +293,7 @@
             document.getElementById('editarNome').value = nome;
             document.getElementById('editarCargo').value = cargo || '';
 
-            const perfisDisponiveis = ['USER', 'ADM', 'HE_USER', 'HE_APROVADOR', 'USER_UPLOAD'];
+            const perfisDisponiveis = ['USER', 'ADM', 'HE_ENGENHARIA', 'HE_IMPLANTACAO', 'HE_APROVADOR', 'USER_UPLOAD'];
             const perfisUsuario = perfil.split(',').map(p => p.trim());
             const container = document.getElementById('editarPerfil');
             container.innerHTML = '';
