@@ -118,7 +118,7 @@ router.post("/login", async (req, res) => {
     // 5. Proteção - Verifica se o usuário foi encontrado/criado
     if (!user) {
       console.error("Erro: usuário não encontrado nem criado!");
-      return res.redirect("/?erro=email_nao_encontrado");
+      return res.redirect("/login?erro=email_nao_encontrado");
     }
 
     // Converte acessos em array (separados por vírgula)
@@ -134,8 +134,8 @@ router.post("/login", async (req, res) => {
       acessos: acessos,
     };
 
-    // Redirecionamento inteligente - usa redirect do body ou padrão
-    const redirectUrl = req.body.redirect || "/home";
+    // Redirecionamento inteligente - usa redirect do body, query string ou padrão
+    const redirectUrl = req.body.redirect || req.query.redirect || "/home";
 
     // Função para validar URL de redirecionamento (evita open redirect)
     function isValidRedirect(url) {
@@ -152,7 +152,7 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     // Em caso de erro, redireciona com código de erro
     console.error("Erro de autenticação:", err.message || err);
-    return res.redirect("/?erro=1");
+    return res.redirect("/login?erro=1");
   }
 });
 
@@ -160,7 +160,7 @@ router.post("/login", async (req, res) => {
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) console.error("Erro ao destruir sessão:", err);
-    res.redirect("/"); // Redireciona para página inicial após logout
+    res.redirect("/login"); // Redireciona para página de login após logout
   });
 });
 

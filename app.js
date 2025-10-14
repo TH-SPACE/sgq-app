@@ -68,8 +68,9 @@ app.use((req, res, next) => {
 });
 
 // 🚪 Rotas públicas
+// Rota raiz desabilitada - exibe página de erro
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "login.html"));
+  res.status(403).sendFile(path.join(__dirname, "views", "erro_rota.html"));
 });
 
 app.get("/login", (req, res) => {
