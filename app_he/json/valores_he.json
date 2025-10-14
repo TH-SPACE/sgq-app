@@ -3,6 +3,10 @@
         "50%": 57.52,
         "100%": 67.86
     },
+    "ANALISTA CONSTRUCAO REDES SR": {
+        "50%": 71.08,
+        "100%": 83.86
+    },
     "ANALISTA SERVICO CLIENTE JR": {
         "50%": 44.52,
         "100%": 52.53
@@ -19,20 +23,28 @@
         "50%": 30.04,
         "100%": 35.45
     },
+    "ANALISTA TÉCNICO SERVIÇO AO CLIENTE": {
+        "50%": 56.05,
+        "100%": 66.14
+    },
+    "APRENDIZ ADMINISTRATIVO": {
+        "50%": 19.92,
+        "100%": 23.5
+    },
     "ASSISTENTE ADMINISTRATIVO": {
         "50%": 24.23,
         "100%": 28.59
     },
     "ASSISTENTE TECNICO": {
         "50%": 19.92,
-        "100%": 23.50
+        "100%": 23.5
     },
     "ATENDENTE CONTROLE TECNICO": {
         "50%": 18.45,
         "100%": 21.77
     },
     "AUXILIAR LA": {
-        "50%": 14.40,
+        "50%": 14.4,
         "100%": 16.99
     },
     "CONSULTOR SERVICO AO CLIENTE": {
@@ -51,13 +63,21 @@
         "50%": 97.67,
         "100%": 115.24
     },
+    "COORDENADOR TELECOM": {
+        "50%": 97.67,
+        "100%": 115.24
+    },
     "ENGENHEIRO TELECOM PL": {
         "50%": 103.13,
         "100%": 121.69
     },
     "ENGENHEIRO TELECOM SR": {
-        "50%": 140.80,
+        "50%": 140.8,
         "100%": 166.13
+    },
+    "FISCAL QUALIDADE DE REDE": {
+        "50%": 32.72,
+        "100%": 38.61
     },
     "Instalador AT": {
         "50%": 14.41,
@@ -71,10 +91,6 @@
         "50%": 15.66,
         "100%": 18.47
     },
-    "TECNICO SERVICO AO CLIENTE": {
-        "50%": 18.37,
-        "100%": 21.68
-    },
     "SUPERVISOR AGENDAMENTO": {
         "50%": 31.07,
         "100%": 36.66
@@ -87,9 +103,9 @@
         "50%": 26.05,
         "100%": 30.74
     },
-    "ANALISTA TÉCNICO SERVIÇO AO CLIENTE": {
-        "50%": 56.05,
-        "100%": 66.14
+    "SUPERVISOR CORPORATIVO": {
+        "50%": 32.72,
+        "100%": 38.61
     },
     "SUPERVISOR SERVICOS AO CLIENTE": {
         "50%": 32.72,
@@ -108,8 +124,12 @@
         "100%": 27.35
     },
     "TECNICO CONSTRUCAO REDES SR": {
-        "50%": 58.20,
+        "50%": 58.2,
         "100%": 68.67
+    },
+    "TECNICO SERVICO AO CLIENTE": {
+        "50%": 18.37,
+        "100%": 21.68
     },
     "TECNICO SERVICOS B2B": {
         "50%": 56.41,
@@ -150,9 +170,5 @@
     "TECNICO TELECOM SR": {
         "50%": 87.79,
         "100%": 103.59
-    },
-    "FISCAL QUALIDADE DE REDE": {
-        "50%": 32.72,
-        "100%": 38.61
     }
 }
