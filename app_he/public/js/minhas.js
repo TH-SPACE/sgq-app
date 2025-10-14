@@ -1,5 +1,18 @@
-// minhas.js
+// ================================================================================
+// 📋 MINHAS SOLICITAÇÕES - Gerenciamento de Solicitações de HE
+// ================================================================================
+// Este arquivo controla a página "Minhas Solicitações", permitindo ao usuário
+// visualizar, filtrar, editar e excluir suas próprias solicitações de hora extra.
+// ================================================================================
 
+// ================================================================================
+// 🔧 Funções Auxiliares
+// ================================================================================
+
+/**
+ * Retorna o nome do mês atual em português
+ * @returns {string} Nome do mês (ex: "Janeiro", "Fevereiro", etc)
+ */
 function getMesAtualPortugues() {
   const meses = [
     "Janeiro",
@@ -18,34 +31,53 @@ function getMesAtualPortugues() {
   return meses[new Date().getMonth()];
 }
 
+// ================================================================================
+// 📊 Carregamento e Exibição de Dados
+// ================================================================================
+
+/**
+ * Carrega e exibe as solicitações do usuário logado
+ *
+ * Busca as solicitações na API e renderiza a tabela com os dados.
+ * Permite filtrar por colaborador e mês.
+ *
+ * @param {string} colaborador - Nome do colaborador para filtrar (opcional)
+ * @param {string} mes - Mês para filtrar (opcional)
+ */
 function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
   const container = document.getElementById("tabelaMinhasSolicitacoes");
   container.innerHTML = "<p>Carregando...</p>";
 
+  // Constrói os parâmetros da URL (query string)
   const params = new URLSearchParams();
   if (colaborador) params.append("colaborador", colaborador);
   if (mes) params.append("mes", mes);
 
+  // Monta a URL completa com os filtros aplicados
   const url = `/planejamento-he/api/minhas-solicitacoes${
     params.toString() ? "?" + params.toString() : ""
   }`;
 
+  // Faz a requisição para a API
   fetch(url)
     .then((response) => {
       if (!response.ok) throw new Error("Erro na resposta da API");
       return response.json();
     })
     .then((dados) => {
+      // Tratamento de erro retornado pela API
       if (dados.erro) {
         container.innerHTML = `<div class="alert alert-danger">${dados.erro}</div>`;
         return;
       }
 
+      // Caso não haja solicitações encontradas
       if (dados.length === 0) {
         container.innerHTML = `<p class="text-muted">Nenhuma solicitação encontrada.</p>`;
         return;
       }
 
+      // Inicia a construção da tabela HTML
       let tabelaHtml = `
         <div class="table-responsive">
           <table class="table table-bordered table-hover">
@@ -66,7 +98,9 @@ function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
             <tbody>
       `;
 
+      // Itera sobre cada solicitação e cria uma linha na tabela
       dados.forEach((s) => {
+        // Define a badge de status com cores diferentes
         const statusBadge =
           s.STATUS === "APROVADO"
             ? '<span class="badge badge-success">Aprovado</span>'
@@ -74,6 +108,7 @@ function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
             ? '<span class="badge badge-danger">Recusado</span>'
             : '<span class="badge badge-warning">Pendente</span>';
 
+        // Monta os botões de ação (editar sempre disponível, excluir apenas para pendentes)
         const acoes = `
   <button class="btn btn-sm btn-outline-primary" onclick="editarSolicitacao(${
     s.id
@@ -89,6 +124,7 @@ function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
   }
 `;
 
+        // Adiciona a linha da tabela
         tabelaHtml += `
   <tr>
     <td>${s.GERENTE || "-"}</td>
@@ -105,12 +141,14 @@ function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
 `;
       });
 
+      // Fecha a tabela
       tabelaHtml += `
             </tbody>
           </table>
         </div>
       `;
 
+      // Atualiza o HTML do container com a tabela completa
       container.innerHTML = tabelaHtml;
     })
     .catch((erro) => {
@@ -119,46 +157,77 @@ function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
     });
 }
 
-// Inicialização
+// ================================================================================
+// 🎬 Inicialização da Página
+// ================================================================================
+
+// Executa quando o DOM estiver completamente carregado
 document.addEventListener("DOMContentLoaded", () => {
+  // Define o mês atual como filtro padrão
   const mesAtual = getMesAtualPortugues();
   document.getElementById("filtroMes").value = mesAtual;
 
+  // Carrega as solicitações com o filtro de mês atual
   carregarMinhasSolicitacoes("", mesAtual);
 
-  // Adiciona evento para recarregar quando a página é aberta
+  // Event listener para recarregar dados quando a página é aberta via navegação SPA
   document.addEventListener('page-load:minhasSolicitacoes', function() {
     const colaborador = document.getElementById("filtroColaborador").value;
     const mes = document.getElementById("filtroMes").value;
     carregarMinhasSolicitacoes(colaborador, mes);
   });
 
+  // ================================================================================
+  // 🔍 Sistema de Filtros
+  // ================================================================================
+
+  // Timer para debounce (evita requisições excessivas durante digitação)
   let debounceTimer;
 
+  /**
+   * Aplica os filtros selecionados e recarrega os dados
+   */
   function aplicarFiltros() {
     const colaborador = document.getElementById("filtroColaborador").value;
     const mes = document.getElementById("filtroMes").value;
     carregarMinhasSolicitacoes(colaborador, mes);
   }
 
+  // Filtro de colaborador com debounce (aguarda 500ms após parar de digitar)
   document.getElementById("filtroColaborador").addEventListener("input", () => {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(aplicarFiltros, 500); // 500ms de atraso
+    debounceTimer = setTimeout(aplicarFiltros, 500);
   });
 
+  // Filtro de mês aplica imediatamente ao selecionar
   document.getElementById("filtroMes").addEventListener("change", aplicarFiltros);
 
+  // Botão para limpar todos os filtros
   document
     .getElementById("btnLimparFiltros")
     .addEventListener("click", limparFiltros);
 });
 
+/**
+ * Limpa todos os filtros e recarrega com valores padrão
+ */
 function limparFiltros() {
   document.getElementById("filtroColaborador").value = "";
   document.getElementById("filtroMes").value = getMesAtualPortugues();
   carregarMinhasSolicitacoes("", getMesAtualPortugues());
 }
 
+// ================================================================================
+// ✏️ Edição de Solicitações
+// ================================================================================
+
+/**
+ * Inicia o processo de edição de uma solicitação
+ *
+ * Busca os dados da solicitação na API e abre o modal de edição.
+ *
+ * @param {number} id - ID da solicitação a ser editada
+ */
 function editarSolicitacao(id) {
   fetch(`/planejamento-he/api/solicitacao/${id}`)
     .then((res) => res.json())
@@ -171,10 +240,20 @@ function editarSolicitacao(id) {
     });
 }
 
+/**
+ * Abre o modal de edição e preenche com os dados da solicitação
+ *
+ * Cria dinamicamente o HTML do modal, preenche os campos com os dados
+ * existentes e exibe o modal ao usuário.
+ *
+ * @param {Object} dados - Objeto com os dados da solicitação
+ */
 function abrirModalEdicao(dados) {
+  // Remove modal anterior caso exista (evita duplicação)
   const modalAntigo = document.getElementById("modalEdicao");
   if (modalAntigo) modalAntigo.remove();
 
+  // Template HTML do modal de edição
   const modalHTML = `
     <div class="modal fade" id="modalEdicao" tabindex="-1">
       <div class="modal-dialog">
@@ -223,9 +302,10 @@ function abrirModalEdicao(dados) {
     </div>
   `;
 
+  // Adiciona o modal ao final do body
   document.body.insertAdjacentHTML("beforeend", modalHTML);
 
-  // Preenche os campos existentes
+  // Preenche os campos com os dados da solicitação
   document.getElementById("editColaborador").value = dados.COLABORADOR || "";
   document.getElementById("editMes").value = dados.MES || "";
   document.getElementById("editHoras").value = dados.HORAS || "";
@@ -233,18 +313,27 @@ function abrirModalEdicao(dados) {
   document.getElementById("editJustificativa").value =
     dados.JUSTIFICATIVA || "";
 
+  // Exibe o modal (usando jQuery do Bootstrap)
   $("#modalEdicao").modal("show");
 
-  // Evento de salvar
+  // Adiciona evento de clique no botão salvar
   document
     .getElementById("btnSalvarEdicao")
     .addEventListener("click", salvarEdicao);
 }
 
+/**
+ * Salva as alterações feitas na solicitação
+ *
+ * Valida os dados, envia para a API e fecha o modal se bem-sucedido.
+ *
+ * @param {Event} event - Evento de clique no botão salvar
+ */
 function salvarEdicao(event) {
   const botao = event.currentTarget;
   const id = botao.getAttribute("data-id");
 
+  // Coleta os dados do formulário
   const dados = {
     id: id,
     mes: document.getElementById("editMes").value,
@@ -253,11 +342,13 @@ function salvarEdicao(event) {
     justificativa: document.getElementById("editJustificativa").value.trim(),
   };
 
+  // Validação básica dos campos obrigatórios
   if (!id || !dados.mes || !dados.horas || !dados.justificativa) {
     alert("Preencha todos os campos obrigatórios.");
     return;
   }
 
+  // Envia os dados para a API
   fetch("/planejamento-he/editar", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -266,7 +357,10 @@ function salvarEdicao(event) {
     .then((res) => res.json())
     .then((data) => {
       if (data.sucesso) {
+        // Fecha o modal
         $("#modalEdicao").modal("hide");
+
+        // Recarrega a tabela com os filtros atuais
         const colaborador = document.getElementById("filtroColaborador").value;
         const mes = document.getElementById("filtroMes").value;
         carregarMinhasSolicitacoes(colaborador, mes);
@@ -279,7 +373,20 @@ function salvarEdicao(event) {
     });
 }
 
+// ================================================================================
+// 🗑️ Exclusão de Solicitações
+// ================================================================================
+
+/**
+ * Exclui uma solicitação após confirmação do usuário
+ *
+ * Solicita confirmação, envia requisição de exclusão para a API e
+ * recarrega a tabela se bem-sucedido.
+ *
+ * @param {number} id - ID da solicitação a ser excluída
+ */
 function excluirSolicitacaoDireto(id) {
+  // Confirmação com o usuário
   if (
     !confirm(
       "Tem certeza que deseja excluir esta solicitação? Esta ação não pode ser desfeita."
@@ -288,6 +395,7 @@ function excluirSolicitacaoDireto(id) {
     return;
   }
 
+  // Envia requisição de exclusão para a API
   fetch("/planejamento-he/excluir", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -299,6 +407,7 @@ function excluirSolicitacaoDireto(id) {
     })
     .then((data) => {
       if (data.sucesso) {
+        // Recarrega a tabela com os filtros atuais
         const colaborador = document.getElementById("filtroColaborador").value;
         const mes = document.getElementById("filtroMes").value;
         carregarMinhasSolicitacoes(colaborador, mes);
