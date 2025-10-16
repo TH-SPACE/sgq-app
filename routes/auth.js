@@ -130,6 +130,17 @@ router.post("/login", async (req, res) => {
       cargo: user.cargo,
     };
 
+    // Lógica de redirecionamento pós-login
+    const perfilUsuario = user.perfil || '';
+    const redirectParam = req.body.redirect || req.query.redirect;
+
+    // Se não houver um redirect explícito, decide com base no perfil
+    if (!redirectParam) {
+      if (perfilUsuario.includes('HE_ENGENHARIA') || perfilUsuario.includes('HE_IMPLANTACAO')) {
+        return res.redirect('/planejamento-he');
+      }
+    }
+
     // Redirecionamento inteligente - usa redirect do body, query string ou padrão
     const redirectUrl = req.body.redirect || req.query.redirect || "/home";
 
