@@ -105,6 +105,10 @@ function requireAnyHEDiretoria(req, res, next) {
     const route = req.originalUrl;
     const user = req.session.usuario;
     const perfil = user?.perfil || '';
+
+    // DEBUG: Log para verificar o perfil exato na sessão
+    console.log(`[DEBUG_PERFIL] Perfil na sessão para ${user?.email}: '${perfil}'`);
+
     const diretoriaUsuario = extrairDiretoriaDoPerfil(perfil);
 
     // Verifica se o usuário tem perfil HE_ENGENHARIA ou HE_IMPLANTACAO
