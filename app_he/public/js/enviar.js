@@ -2,7 +2,7 @@
 // Função responsável por carregar os dados do usuário logado (nome, cargo, etc.)
 // e atualizar elementos da interface com essas informações.
 function carregarDadosUsuario() {
-  fetch("/home/usuario")
+  fetch("/auth/usuario")
     .then((res) => res.json())
     .then((data) => {
       const nomeCompleto = data.nome || "Usuário";
@@ -472,7 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     dropdown.style.display = "none"; // Fecha o dropdown
 
-    fetch("/home/usuario")
+    fetch("/auth/usuario")
       .then((r) => r.json())
       .then((data) => {
         document.getElementById("perfilNome").value = data.nome || "";

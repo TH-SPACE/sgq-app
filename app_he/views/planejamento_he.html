@@ -1494,7 +1494,7 @@
             // JS para abrir/fechar sidebar de perfil
             document.getElementById("perfilLink").addEventListener("click", (e) => {
                 e.preventDefault();
-                fetch("/home/usuario")
+                fetch("/auth/usuario")
                     .then((r) => r.json())
                     .then((data) => {
                         document.getElementById("perfilNome").value = data.nome || "";

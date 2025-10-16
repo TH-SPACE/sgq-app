@@ -179,4 +179,20 @@ router.get("/logout-he", (req, res) => {
   });
 });
 
+// 🔐 Rota para obter dados do usuário (acessível após login, para qualquer perfil)
+router.get("/usuario", (req, res) => {
+  if (!req.session.usuario) {
+    return res.status(401).json({ error: "Não autenticado" });
+  }
+  
+  res.json({
+    id: req.session.usuario.id,
+    nome: req.session.usuario.nome,
+    email: req.session.usuario.email,
+    perfil: req.session.usuario.perfil,
+    cargo: req.session.usuario.cargo, // Adicionado para exibir no popover de perfil
+    acessos: req.session.usuario.acessos,
+  });
+});
+
 module.exports = router;

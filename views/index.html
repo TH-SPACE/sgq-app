@@ -131,7 +131,7 @@
 
     <!-- JS Usuário -->
     <script>
-        fetch('/home/usuario')
+        fetch('/auth/usuario')
             .then(res => res.json())
             .then(data => {
                 const nomeUsuario = data.nome;

@@ -151,14 +151,14 @@
 
     <!-- JS Usuário -->
     <script>
-        fetch('/home/usuario')
+        fetch('/auth/usuario')
             .then(res => res.json())
             .then(data => {
                 const nomeUsuario = data.nome;
                 const perfilUsuario = data.perfil;
                 const acessos = data.acessos;
 
-                document.getElementById('nomeUsuario1').innerText = nomeUsuario
+                document.getElementById('nomeUsuario').innerText = nomeUsuario
 
                 if (perfilUsuario.includes('ADM')) {
                     document.getElementById('painelAdmBtn').style.display = 'inline-block';
