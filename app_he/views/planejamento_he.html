@@ -723,6 +723,10 @@
                 <label for="perfilCargo">Cargo</label>
                 <input type="text" class="form-control" id="perfilCargo" readonly>
             </div>
+            <div class="form-group">
+                <label for="perfilPerfil">Perfil</label>
+                <input type="text" class="form-control" id="perfilPerfil" readonly>
+            </div>
         </div>
     </div>
 
@@ -1500,6 +1504,7 @@
                         document.getElementById("perfilNome").value = data.nome || "";
                         document.getElementById("perfilEmail").value = data.email || "";
                         document.getElementById("perfilCargo").value = data.cargo || "";
+                        document.getElementById("perfilPerfil").value = data.perfil || "";
                         document.getElementById("perfilSidebar").classList.add("show");
                     });
             });
