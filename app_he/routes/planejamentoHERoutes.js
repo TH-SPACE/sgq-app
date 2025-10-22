@@ -11,6 +11,7 @@ const router = express.Router();
 const path = require("path");
 const db = require("../../db/db");
 const planejamentoHE = require("../controllers/planejamentoHEController");
+const frequenciaRoutes = require("./frequenciaHERoutes");
 
 // ================================================================================
 // 🔐 Middlewares de Autenticação
@@ -389,5 +390,8 @@ router.post("/api/colaboradores/excluir", heAuth.requireHEAuth, heDiretoriaAuth.
 // ================================================================================
 // 📤 EXPORT - Exporta o router para uso no app principal
 // ================================================================================
+
+// Inclui as rotas de frequência no router principal
+router.use('/', frequenciaRoutes);
 
 module.exports = router;

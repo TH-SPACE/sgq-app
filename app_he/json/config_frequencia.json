@@ -1,0 +1,24 @@
+{
+  "tabela_frequencia": {
+    "nome": "frequencia",
+    "colunas_obrigatorias": [
+      "NOME",
+      "CARGO",
+      "EVENTO",
+      "GERENTE_IMEDIATO",
+      "QTD_HORAS",
+      "DATA"
+    ],
+    "colunas_opcionais": [
+      "DIRETORIA",
+      "MATRICULA",
+      "CENTRO_CUSTO"
+    ],
+    "tipos_evento_validos": [
+      "Hora Extra 50%",
+      "HORAS EXTRAS 100%"
+    ],
+    "formato_data": "yyyy-MM-dd",
+    "descricao": "Tabela que contém as marcações de frequência de horas extras dos colaboradores"
+  }
+}

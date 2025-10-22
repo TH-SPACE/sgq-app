@@ -1,0 +1,81 @@
+/* Estilos personalizados para o painel de frequência */
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 575.98px) {
+  .table-responsive-sm {
+    font-size: 0.75rem;
+  }
+  
+  .table-responsive-sm th,
+  .table-responsive-sm td {
+    padding: 0.25rem !important;
+  }
+  
+  .btn-sm {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Ajustes para telas médias */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .table-responsive-md {
+    font-size: 0.8rem;
+  }
+  
+  .table-responsive-md th,
+  .table-responsive-md td {
+    padding: 0.3rem !important;
+  }
+}
+
+/* Ajustes para telas grandes */
+@media (min-width: 768px) {
+  .table-responsive-lg {
+    font-size: 0.85rem;
+  }
+}
+
+/* Ajustes específicos para a tabela de frequência */
+.frequencia-table th,
+.frequencia-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ajustes para melhor legibilidade em dispositivos móveis */
+@media (max-width: 767.98px) {
+  .frequencia-table th,
+  .frequencia-table td {
+    max-width: 100px;
+  }
+  
+  .nome-completo,
+  .primeiro-nome {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Ajustes para o botão de alternar colunas */
+.btn-alternar-execucao {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* Ajustes para melhor contraste em dispositivos móveis */
+@media (max-width: 767.98px) {
+  .table-bordered td,
+  .table-bordered th {
+    border: 1px solid #dee2e6;
+  }
+  
+  .thead-light th {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+  }
+}
