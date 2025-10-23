@@ -1,6 +1,6 @@
 {
   "tabela_frequencia": {
-    "nome": "frequencia",
+    "nome": "FREQUENCIA",
     "colunas_obrigatorias": [
       "NOME",
       "CARGO",
