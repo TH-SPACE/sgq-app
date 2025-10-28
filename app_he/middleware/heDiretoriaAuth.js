@@ -60,7 +60,7 @@ function requireDiretoria(diretoria) {
         // Verifica se o usuário está autenticado e pertence à diretoria solicitada
         if (user && diretoriaUsuario === diretoria) {
             // Log de acesso bem-sucedido
-            console.log(`[SUCESSO_${diretoria}] Usuário: ${user.nome}, IP: ${ip}, Rota: ${route}`);
+           // console.log(`[SUCESSO_${diretoria}] Usuário: ${user.nome}, IP: ${ip}, Rota: ${route}`);
             return next();
         } else {
             // Log de tentativa de acesso negada
@@ -118,7 +118,7 @@ function requireAnyHEDiretoria(req, res, next) {
         req.diretoriaHE = diretoriaUsuario;
 
         // Log de acesso bem-sucedido com identificação da diretoria
-        console.log(`[SUCESSO_HE] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
+      //  console.log(`[SUCESSO_HE] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
         return next();
     } else {
         // Log de tentativa de acesso sem perfil HE adequado
@@ -177,7 +177,7 @@ function requireAprovadorComDiretoria(req, res, next) {
         req.diretoriaHE = diretoriaUsuario;
 
         // Log de acesso bem-sucedido de aprovador
-        console.log(`[SUCESSO_APROVADOR] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
+       // console.log(`[SUCESSO_APROVADOR] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
         return next();
     } else {
         // Log de tentativa de acesso sem credenciais adequadas de aprovador

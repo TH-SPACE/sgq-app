@@ -80,12 +80,10 @@ function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
       // Inicia a construção da tabela HTML
       let tabelaHtml = `
         <div class="table-responsive">
-          <table class="table table-bordered table-hover">
+          <table class="table table-bordered table-hover table-sm">
             <thead class="thead-light">
               <tr>
-                <th>Gerente</th>
                 <th>Colaborador</th>
-                <th>Matrícula</th>
                 <th>Cargo</th>
                 <th>Mês</th>
                 <th>Horas</th>
@@ -108,28 +106,22 @@ function carregarMinhasSolicitacoes(colaborador = "", mes = "") {
             ? '<span class="badge badge-danger">Recusado</span>'
             : '<span class="badge badge-warning">Pendente</span>';
 
-        // Monta os botões de ação (editar sempre disponível, excluir apenas para pendentes)
+        // Monta os botões de ação (editar e excluir disponíveis para todas as solicitações)
         const acoes = `
-  <button class="btn btn-sm btn-outline-primary" onclick="editarSolicitacao(${
+  <button class="btn btn-sm btn-outline-primary mr-1" onclick="editarSolicitacao(${
     s.id
   })">
     <i class="fas fa-edit"></i>
   </button>
-  ${
-    s.STATUS === "PENDENTE"
-      ? `<button class="btn btn-sm btn-outline-danger" onclick="excluirSolicitacaoDireto(${s.id})">
-      <i class="fas fa-trash"></i>
-    </button>`
-      : ""
-  }
+  <button class="btn btn-sm btn-outline-danger" onclick="excluirSolicitacaoDireto(${s.id})">
+    <i class="fas fa-trash"></i>
+  </button>
 `;
 
         // Adiciona a linha da tabela
         tabelaHtml += `
   <tr>
-    <td>${s.GERENTE || "-"}</td>
     <td>${s.COLABORADOR || "-"}</td>
-    <td>${s.MATRICULA || "-"}</td>
     <td>${s.CARGO || "-"}</td>
     <td>${s.MES || "-"}</td>
     <td>${s.HORAS || "0"}</td>
@@ -290,6 +282,9 @@ function abrirModalEdicao(dados) {
               <label>Justificativa</label>
               <textarea class="form-control" id="editJustificativa" rows="3"></textarea>
             </div>
+            <div id="avisoHoras" class="alert alert-warning d-none" role="alert">
+              <i class="fas fa-exclamation-triangle"></i> Atenção: Você está aumentando a quantidade de horas. Recomenda-se criar uma nova solicitação para horas adicionais.
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -312,6 +307,25 @@ function abrirModalEdicao(dados) {
   document.getElementById("editTipoHE").value = dados.TIPO_HE || "50%";
   document.getElementById("editJustificativa").value =
     dados.JUSTIFICATIVA || "";
+
+  // Armazena o valor original de horas para comparação
+  const originalHoras = dados.HORAS || "";
+  document.getElementById("editHoras").setAttribute('data-original-value', originalHoras);
+  
+  // Adiciona evento para detectar mudanças no campo de horas
+  document.getElementById("editHoras").addEventListener('input', function() {
+    const originalValue = parseFloat(this.getAttribute('data-original-value')) || 0;
+    const newValue = parseFloat(this.value) || 0;
+    const avisoHoras = document.getElementById("avisoHoras");
+
+    if (newValue > originalValue) {
+      // Impede aumento de horas alterando para o valor original
+      this.value = originalValue;
+      avisoHoras.classList.remove('d-none');
+    } else {
+      avisoHoras.classList.add('d-none');
+    }
+  });
 
   // Exibe o modal (usando jQuery do Bootstrap)
   $("#modalEdicao").modal("show");
@@ -346,6 +360,15 @@ function salvarEdicao(event) {
   if (!id || !dados.mes || !dados.horas || !dados.justificativa) {
     alert("Preencha todos os campos obrigatórios.");
     return;
+  }
+
+  // Obtém o valor original de horas para comparação
+  const originalHoras = parseFloat(document.getElementById("editHoras").getAttribute('data-original-value')) || 0;
+  
+  // Verifica se está tentando aumentar as horas e impede
+  if (dados.horas > originalHoras) {
+    alert("Não é permitido aumentar a quantidade de horas. Apenas é possível diminuir. Crie uma nova solicitação para horas adicionais.");
+    return; // Cancela a operação
   }
 
   // Envia os dados para a API

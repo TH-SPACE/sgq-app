@@ -436,12 +436,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // Limpa a tabela de novas solicitações
             document.getElementById("linhasColaboradores").innerHTML = "";
             calcularCustoTotal(); // Recalcula o custo para zerar a estimativa
-
-            // Navega para a aba de "Minhas Solicitações" e a atualiza
-            showPage("minhasSolicitacoes");
-            if (typeof carregarMinhasSolicitacoes === "function") {
-              carregarMinhasSolicitacoes(); // Atualiza a lista
-            }
           });
         } else {
           Swal.fire({

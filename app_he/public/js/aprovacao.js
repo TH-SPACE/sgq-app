@@ -116,11 +116,12 @@ function criarTabelaAprovacoes(solicitacoes) {
                 <thead class="thead-light">
                     <tr>
                         <th class="text-center"><input type="checkbox" id="selectAllCheckbox"></th>
-                        <th>Mês</th>
-                        <th>Gerente</th>
                         <th>Colaborador</th>
+                        <th>Cargo</th>
+                        <th>Mês</th>
                         <th>Horas</th>
                         <th>Tipo</th>
+                        <th>Valor</th>
                         <th>Status</th>
                         <th class="text-center">Ações</th>
                     </tr>
@@ -133,14 +134,20 @@ function criarTabelaAprovacoes(solicitacoes) {
                           s.STATUS === 'RECUSADO' ? '<span class="badge badge-danger">Recusado</span>' :
                           '<span class="badge badge-warning">Pendente</span>';
 
+        // Calcula o valor da hora extra
+        const valorHora = s.VALOR_HORA || 0;
+        const horas = parseFloat(s.HORAS) || 0;
+        const valorTotal = (valorHora * horas).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
         tabelaHtml += `
             <tr id="solicitacao-row-${s.id}">
                 <td class="text-center"><input type="checkbox" class="solicitacao-checkbox" data-id="${s.id}"></td>
-                <td>${s.MES || '-'}</td>
-                <td>${s.GERENTE || '-'}</td>
                 <td>${s.COLABORADOR || '-'}</td>
+                <td>${s.CARGO || '-'}</td>
+                <td>${s.MES || '-'}</td>
                 <td>${s.HORAS || '0'}</td>
                 <td>${s.TIPO_HE || '-'}</td>
+                <td>${valorTotal}</td>
                 <td>${statusBadge}</td>
                 <td class="text-center">
                     ${s.STATUS === 'PENDENTE' ? `

@@ -478,8 +478,6 @@ exports.editarEnvio = async (req, res) => {
  *
  * Regras de segurança:
  * - Apenas o criador (ENVIADO_POR) pode excluir
- * - Apenas solicitações com STATUS='PENDENTE' podem ser excluídas
- * - Solicitações APROVADAS ou RECUSADAS não podem ser excluídas
  *
  * @param {Object} req - Request Express
  * @param {number} req.body.id - ID da solicitação a excluir
@@ -518,14 +516,7 @@ exports.excluirEnvio = async (req, res) => {
         });
     }
 
-    if (rows[0].STATUS !== "PENDENTE") {
-      return res
-        .status(400)
-        .json({
-          sucesso: false,
-          mensagem: "Só é possível excluir solicitações pendentes.",
-        });
-    }
+
 
     await conexao.query(
       "DELETE FROM PLANEJAMENTO_HE WHERE id = ? AND ENVIADO_POR = ?",
