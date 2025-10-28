@@ -141,8 +141,8 @@ router.post("/login", async (req, res) => {
       }
     }
 
-    // Redirecionamento inteligente - usa redirect do body, query string ou padrão
-    const redirectUrl = req.body.redirect || req.query.redirect || "/home";
+    // Redirecionamento inteligente - prioriza redirect do body, depois query string, e por fim o padrão
+    const redirectUrl = req.body.redirect || decodeURIComponent(req.query.redirect) || "/home";
 
     // Função para validar URL de redirecionamento (evita open redirect)
     function isValidRedirect(url) {
@@ -157,9 +157,11 @@ router.post("/login", async (req, res) => {
     res.redirect(safeRedirect);
 
   } catch (err) {
-    // Em caso de erro, redireciona com código de erro
+    // Em caso de erro, redireciona com código de erro e preserva o redirect original
     console.error("Erro de autenticação:", err.message || err);
-    return res.redirect("/login?erro=1");
+    const redirect = req.body.redirect || req.query.redirect;
+    const errorRedirect = redirect ? `/login?erro=1&redirect=${encodeURIComponent(redirect)}` : '/login?erro=1';
+    return res.redirect(errorRedirect);
   }
 });
 
