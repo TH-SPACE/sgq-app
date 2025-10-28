@@ -1,0 +1,218 @@
+/* 
+ * Arquivo de configuração de tamanhos de fonte
+ * Este arquivo contém configurações específicas de tamanho de fonte para fácil ajuste
+ */
+
+/* 
+ * Tamanhos de fonte padrão para elementos comuns
+ * Você pode ajustar esses valores conforme necessário
+ */
+
+/* Tamanhos de fonte base */
+:root {
+  /* Tamanhos de fonte para diferentes elementos */
+  --font-size-tiny: 0.65rem;     /* Muito pequeno - para badges, labels pequenas */
+  --font-size-xs: 0.7rem;        /* Extra pequeno - para textos secundários */
+  --font-size-sm: 0.75rem;       /* Pequeno - para legendas, notas de rodapé */
+  --font-size-base: 0.8rem;      /* Base - tamanho padrão do corpo */
+  --font-size-md: 0.85rem;       /* Médio - para texto principal */
+  --font-size-lg: 0.9rem;        /* Grande - para subtítulos */
+  --font-size-xl: 1rem;          /* Extra grande - para títulos importantes */
+  --font-size-xxl: 1.1rem;       /* Extra extra grande - para títulos principais */
+  --font-size-xxxl: 1.2rem;      /* Máximo - para títulos de destaque */
+  
+  /* Tamanhos específicos para elementos da interface */
+  --font-size-navbar: 1.1rem;
+  --font-size-sidebar-menu: 0.8rem;
+  --font-size-card-title: 1.3rem;
+  --font-size-form-label: 0.8rem;
+  --font-size-form-input: 0.8rem;
+  --font-size-button: 0.8rem;
+  --font-size-table-header: 0.8rem;
+  --font-size-table-cell: 0.8rem;
+  --font-size-badge: 0.7rem;
+}
+
+/* Aplicar tamanho de fonte base ao corpo */
+body {
+  font-size: var(--font-size-base);
+}
+
+/* Cabeçalhos */
+h1, .h1 { font-size: var(--font-size-xxxl); }
+h2, .h2 { font-size: var(--font-size-xxl); }
+h3, .h3 { font-size: var(--font-size-xl); }
+h4, .h4 { font-size: var(--font-size-lg); }
+h5, .h5 { font-size: var(--font-size-md); }
+h6, .h6 { font-size: var(--font-size-base); }
+
+/* Elementos da barra de navegação */
+.navbar-brand { font-size: var(--font-size-navbar); }
+
+/* Elementos do menu lateral */
+.menu-item { font-size: var(--font-size-sidebar-menu); }
+.menu-title { font-size: var(--font-size-xs); }
+.menu-section-title { font-size: var(--font-size-xs); }
+
+/* Perfis no menu */
+.profile-name { font-size: var(--font-size-sm); }
+.profile-role { font-size: var(--font-size-tiny); }
+
+/* Títulos de cards */
+.card-title { font-size: var(--font-size-card-title); }
+
+/* Elementos de formulário */
+.form-label, label { font-size: var(--font-size-form-label); }
+.form-control { font-size: var(--font-size-form-input); }
+.form-control-sm { font-size: var(--font-size-xs); }
+
+/* Botões */
+.btn { font-size: var(--font-size-button); }
+.btn-sm { font-size: var(--font-size-xs); }
+.btn-lg { font-size: var(--font-size-md); }
+
+/* Tabelas */
+.table th { font-size: var(--font-size-table-header); }
+.table td { font-size: var(--font-size-table-cell); }
+.table-sm th,
+.table-sm td { font-size: var(--font-size-xs); }
+
+/* Badges */
+.badge { font-size: var(--font-size-badge); }
+
+/* Textos auxiliares */
+.text-muted { font-size: var(--font-size-xs); }
+.small, small { font-size: var(--font-size-xs); }
+
+/* Dropdowns */
+.dropdown-menu { font-size: var(--font-size-sm); }
+
+/* Navegação */
+.nav-link { font-size: var(--font-size-sm); }
+.breadcrumb { font-size: var(--font-size-xs); }
+
+/* Alertas */
+.alert { font-size: var(--font-size-sm); }
+
+/* 
+ * Classes utilitárias para ajuste rápido de tamanho de fonte
+ * Use estas classes diretamente nos elementos HTML
+ */
+.font-tiny { font-size: var(--font-size-tiny) !important; }
+.font-xs { font-size: var(--font-size-xs) !important; }
+.font-sm { font-size: var(--font-size-sm) !important; }
+.font-base { font-size: var(--font-size-base) !important; }
+.font-md { font-size: var(--font-size-md) !important; }
+.font-lg { font-size: var(--font-size-lg) !important; }
+.font-xl { font-size: var(--font-size-xl) !important; }
+.font-xxl { font-size: var(--font-size-xxl) !important; }
+.font-xxxl { font-size: var(--font-size-xxxl) !important; }
+
+/* 
+ * Ajustes específicos para elementos da sua aplicação
+ */
+
+/* Títulos do dashboard */
+.summary-card .title { font-size: var(--font-size-xs); }
+.summary-card .value { font-size: var(--font-size-xl); }
+.summary-card .icon { font-size: var(--font-size-lg); }
+
+/* Lista de gerências */
+.gerencia-list-name { font-size: var(--font-size-md); }
+.gerencia-list-meta { font-size: var(--font-size-sm); }
+.gerencia-list-stat-value { font-size: var(--font-size-xl); }
+.gerencia-list-stat-label { font-size: var(--font-size-xs); }
+.gerencia-list-arrow { font-size: var(--font-size-lg); }
+
+/* Tabela de colaboradores */
+#tabelaColaboradores { font-size: var(--font-size-xs); }
+#tabelaColaboradores thead th { font-size: var(--font-size-xs); }
+#tabelaColaboradores tbody td { font-size: var(--font-size-xs); }
+
+/* Painel de frequência */
+#painelFrequencia .table th,
+#painelFrequencia .table td { font-size: var(--font-size-sm); }
+
+#tabelaComparativoFrequencia .table th,
+#tabelaComparativoFrequencia .table td { font-size: var(--font-size-sm); }
+
+#tabelaComparativoColaborador .table th,
+#tabelaComparativoColaborador .table td { font-size: var(--font-size-sm); }
+
+/* 
+ * Media queries para diferentes tamanhos de tela
+ * Estas regras ajustam automaticamente os tamanhos em diferentes dispositivos
+ */
+
+/* Telas muito pequenas (smartphones) */
+@media (max-width: 575.98px) {
+  :root {
+    --font-size-tiny: 0.6rem;
+    --font-size-xs: 0.65rem;
+    --font-size-sm: 0.7rem;
+    --font-size-base: 0.75rem;
+    --font-size-md: 0.8rem;
+    --font-size-lg: 0.85rem;
+    --font-size-xl: 0.9rem;
+    --font-size-xxl: 0.95rem;
+    --font-size-xxxl: 1rem;
+    
+    /* Ajustes específicos para elementos */
+    --font-size-card-title: 1.1rem;
+    --font-size-navbar: 1rem;
+  }
+  
+  /* Reduzir tamanho dos títulos em telas pequenas */
+  h1, .h1 { font-size: var(--font-size-xxl); }
+  h2, .h2 { font-size: var(--font-size-xl); }
+  h3, .h3 { font-size: var(--font-size-lg); }
+  
+  /* Ajustar tamanhos de elementos do dashboard */
+  .summary-card .title { font-size: var(--font-size-xs); }
+  .summary-card .value { font-size: var(--font-size-lg); }
+}
+
+/* Telas pequenas (tablets pequenos) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  :root {
+    --font-size-tiny: 0.65rem;
+    --font-size-xs: 0.7rem;
+    --font-size-sm: 0.75rem;
+    --font-size-base: 0.8rem;
+    --font-size-md: 0.85rem;
+    --font-size-lg: 0.9rem;
+    --font-size-xl: 0.95rem;
+    --font-size-xxl: 1rem;
+    --font-size-xxxl: 1.1rem;
+  }
+}
+
+/* Telas médias (desktops e tablets grandes) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  :root {
+    --font-size-tiny: 0.65rem;
+    --font-size-xs: 0.7rem;
+    --font-size-sm: 0.75rem;
+    --font-size-base: 0.8rem;
+    --font-size-md: 0.85rem;
+    --font-size-lg: 0.9rem;
+    --font-size-xl: 1rem;
+    --font-size-xxl: 1.1rem;
+    --font-size-xxxl: 1.2rem;
+  }
+}
+
+/* Telas grandes (desktops largos) */
+@media (min-width: 992px) {
+  :root {
+    --font-size-tiny: 0.65rem;
+    --font-size-xs: 0.7rem;
+    --font-size-sm: 0.75rem;
+    --font-size-base: 0.8rem;
+    --font-size-md: 0.85rem;
+    --font-size-lg: 0.9rem;
+    --font-size-xl: 1rem;
+    --font-size-xxl: 1.1rem;
+    --font-size-xxxl: 1.2rem;
+  }
+}

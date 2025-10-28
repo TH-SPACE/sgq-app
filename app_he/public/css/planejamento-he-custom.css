@@ -1,3 +1,8 @@
+/* 
+ * Configuração de fonte para o sistema de planejamento de horas extras
+ * Este CSS define tamanhos específicos de fonte para elementos do sistema
+ */
+
 @media (min-width: 769px) {
     #sidebarToggle {
         display: none;
@@ -42,6 +47,7 @@ tr.shake {
     --danger-color: #dc3545;
 }
 
+/* Ajustes gerais de tamanho de fonte */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f5f5;
@@ -50,6 +56,199 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    font-size: 0.9rem; /* Tamanho base para todo o corpo */
+}
+
+/* Definições específicas para elementos da aplicação */
+h1, .h1 { font-size: 1.5rem; }
+h2, .h2 { font-size: 1.4rem; }
+h3, .h3 { font-size: 1.3rem; }
+h4, .h4 { font-size: 1.2rem; }
+h5, .h5 { font-size: 1.1rem; }
+h6, .h6 { font-size: 1rem; }
+
+/* Título da página */
+.navbar-brand {
+    font-size: 1.2rem;
+}
+
+/* Título dos cards */
+.card-title {
+    font-size: 1.3rem;
+}
+
+/* Elementos do menu lateral */
+.menu-title {
+    font-size: 0.7rem;
+}
+
+.menu-item {
+    font-size: 0.85rem;
+}
+
+.menu-item i {
+    font-size: 1rem;
+}
+
+.menu-section-title {
+    font-size: 0.6rem;
+}
+
+/* Perfil no menu lateral */
+.profile-name {
+    font-size: 0.85rem;
+}
+
+.profile-role {
+    font-size: 0.6rem;
+}
+
+/* Elementos de formulário */
+.form-control {
+    font-size: 0.85rem;
+}
+
+.form-label, label {
+    font-size: 0.8rem;
+}
+
+/* Botões */
+.btn {
+    font-size: 0.85rem;
+}
+
+.btn-sm {
+    font-size: 0.7rem;
+}
+
+.btn-lg {
+    font-size: 1rem;
+}
+
+/* Tabelas */
+.table th {
+    font-size: 0.8rem;
+}
+
+.table td {
+    font-size: 0.8rem;
+}
+
+.table-sm th,
+.table-sm td {
+    font-size: 0.75rem;
+}
+
+/* Elementos da tabela de colaboradores */
+#tabelaColaboradores {
+    font-size: 0.75rem;
+}
+
+#tabelaColaboradores thead th {
+    font-size: 0.7rem;
+}
+
+#tabelaColaboradores tbody td {
+    font-size: 0.75rem;
+}
+
+/* Elementos da tabela do dashboard */
+#tabelaGerentes thead th {
+    font-size: 0.8rem;
+}
+
+#tabelaGerentes tbody td {
+    font-size: 0.8rem;
+}
+
+/* Elementos da visão de frequência */
+#painelFrequencia .table th,
+#painelFrequencia .table td {
+    font-size: 0.8rem;
+}
+
+#tabelaComparativoFrequencia .table th,
+#tabelaComparativoFrequencia .table td {
+    font-size: 0.8rem;
+}
+
+#tabelaComparativoColaborador .table th,
+#tabelaComparativoColaborador .table td {
+    font-size: 0.8rem;
+}
+
+/* Elementos dos cards de KPI */
+.summary-card .title {
+    font-size: 0.7rem;
+}
+
+.summary-card .value {
+    font-size: 1.3rem;
+}
+
+.summary-card .icon {
+    font-size: 1.3rem;
+}
+
+/* Elementos da lista de gerência */
+.gerencia-list-name {
+    font-size: 1rem;
+}
+
+.gerencia-list-meta {
+    font-size: 0.8rem;
+}
+
+.gerencia-list-stat-value {
+    font-size: 1.2rem;
+}
+
+.gerencia-list-stat-label {
+    font-size: 0.7rem;
+}
+
+.gerencia-list-arrow {
+    font-size: 1.2rem;
+}
+
+/* Elementos de texto auxiliares */
+.text-muted {
+    font-size: 0.8rem;
+}
+
+.small, small {
+    font-size: 0.7rem;
+}
+
+.lead {
+    font-size: 1.1rem;
+}
+
+/* Elementos de dropdowns e selects */
+.dropdown-menu {
+    font-size: 0.8rem;
+}
+
+.select2-container .select2-selection--single {
+    font-size: 0.8rem;
+}
+
+/* Elementos de alertas */
+.alert {
+    font-size: 0.85rem;
+}
+
+.badge {
+    font-size: 0.7rem;
+}
+
+/* Elementos de navegação */
+.nav-link {
+    font-size: 0.8rem;
+}
+
+.breadcrumb {
+    font-size: 0.75rem;
 }
 
 .navbar {
