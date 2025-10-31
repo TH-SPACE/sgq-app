@@ -220,21 +220,22 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
 
     // Itera sobre cada solicitação e insere no banco
     for (const s of solicitacoes) {
-      // Busca a diretoria do colaborador na tabela COLABORADORES_CW
-      // Isso garante que a solicitação seja vinculada à diretoria correta
+      // Busca a diretoria e gerente_divisão do colaborador na tabela COLABORADORES_CW
+      // Isso garante que a solicitação seja vinculada à diretoria e gerente_divisão corretos
       const [colabRows] = await conexao.query(
-        `SELECT DIRETORIA FROM COLABORADORES_CW WHERE MATRICULA = ? LIMIT 1`,
+        `SELECT DIRETORIA, GERENTE_DIVISAO FROM COLABORADORES_CW WHERE MATRICULA = ? LIMIT 1`,
         [s.matricula]
       );
 
-      // Usa a diretoria do colaborador se encontrada, senão usa a do usuário logado
+      // Usa a diretoria e gerente_divisão do colaborador se encontrados, senão usa os do usuário logado
       const diretoriaColab = colabRows.length > 0 ? colabRows[0].DIRETORIA : diretoria;
+      const gerenteDivisao = colabRows.length > 0 ? colabRows[0].GERENTE_DIVISAO : null;
 
       // Insere a solicitação com STATUS='PENDENTE'
       await conexao.query(
         `INSERT INTO PLANEJAMENTO_HE
-          (GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR, DIRETORIA)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDENTE', ?, ?)`,
+          (GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR, DIRETORIA, GERENTE_DIVISAO)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDENTE', ?, ?, ?)`,
         [
           s.gerente,
           s.colaborador,
@@ -246,6 +247,7 @@ exports.enviarSolicitacoesMultiplo = async (req, res) => {
           s.tipoHE,
           enviadoPor,
           diretoriaColab,
+          gerenteDivisao,
         ]
       );
     }
@@ -673,7 +675,7 @@ exports.listarSolicitacoesPendentes = async (req, res) => {
   try {
     let query = `
       SELECT
-        id, GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR,
+        id, GERENTE, COLABORADOR, MATRICULA, CARGO, MES, HORAS, JUSTIFICATIVA, TIPO_HE, STATUS, ENVIADO_POR, GERENTE_DIVISAO,
         DATE_FORMAT(DATA_ENVIO, '%d/%m/%Y %H:%i') AS DATA_ENVIO_FORMATADA
       FROM PLANEJAMENTO_HE
       WHERE (DIRETORIA = ? OR DIRETORIA IS NULL)`;
@@ -963,7 +965,7 @@ exports.listarColaboradores = async (req, res) => {
 
   try {
     const [rows] = await conexao.query(
-      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA, GERENTE_DIVISAO
        FROM COLABORADORES_CW
        WHERE (DIRETORIA = ? OR DIRETORIA IS NULL)
        ORDER BY NOME`,
@@ -996,7 +998,7 @@ exports.obterColaborador = async (req, res) => {
 
   try {
     const [rows] = await conexao.query(
-      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, GERENTE_DIVISAO
        FROM COLABORADORES_CW
        WHERE ID = ?`,
       [id]
@@ -1032,6 +1034,7 @@ exports.obterColaborador = async (req, res) => {
  * @param {string} req.body.gerente - Nome do gerente
  * @param {string} req.body.gestorDireto - Nome do gestor direto
  * @param {string} req.body.emailGestor - Email do gestor
+ * @param {string} req.body.gerenteDivisao - Nome do gerente de divisão (opcional)
  * @param {string} req.diretoriaHE - Diretoria (injetada automaticamente)
  * @param {Object} res - Response Express
  *
@@ -1052,6 +1055,7 @@ exports.criarColaborador = async (req, res) => {
     gerente,
     gestorDireto,
     emailGestor,
+    gerenteDivisao,
   } = req.body;
 
   // Validação dos campos obrigatórios
@@ -1077,8 +1081,8 @@ exports.criarColaborador = async (req, res) => {
     }
 
     await conexao.query(
-      `INSERT INTO COLABORADORES_CW (MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO COLABORADORES_CW (MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA, GERENTE_DIVISAO)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         matricula,
         nome,
@@ -1090,6 +1094,7 @@ exports.criarColaborador = async (req, res) => {
         gestorDireto,
         emailGestor,
         diretoria,
+        gerenteDivisao || null, // GERENTE_DIVISAO
       ]
     );
 
@@ -1125,6 +1130,7 @@ exports.criarColaborador = async (req, res) => {
  * @param {string} req.body.gerente - Novo gerente
  * @param {string} req.body.gestorDireto - Novo gestor direto
  * @param {string} req.body.emailGestor - Novo email do gestor
+ * @param {string} req.body.gerenteDivisao - Novo gerente de divisão (opcional)
  * @param {string} req.diretoriaHE - Diretoria do aprovador
  * @param {Object} res - Response Express
  *
@@ -1146,6 +1152,7 @@ exports.editarColaborador = async (req, res) => {
     gerente,
     gestorDireto,
     emailGestor,
+    gerenteDivisao,
   } = req.body;
 
   // Validação dos campos obrigatórios
@@ -1172,7 +1179,7 @@ exports.editarColaborador = async (req, res) => {
 
     const [result] = await conexao.query(
       `UPDATE COLABORADORES_CW
-       SET MATRICULA = ?, NOME = ?, CARGO = ?, REGIONAL = ?, ESTADO = ?, CIDADE = ?, GERENTE = ?, GESTOR_DIRETO = ?, EMAIL_GESTOR = ?
+       SET MATRICULA = ?, NOME = ?, CARGO = ?, REGIONAL = ?, ESTADO = ?, CIDADE = ?, GERENTE = ?, GESTOR_DIRETO = ?, EMAIL_GESTOR = ?, GERENTE_DIVISAO = ?
        WHERE ID = ? AND (DIRETORIA = ? OR DIRETORIA IS NULL)`,
       [
         matricula,
@@ -1184,6 +1191,7 @@ exports.editarColaborador = async (req, res) => {
         gerente,
         gestorDireto,
         emailGestor,
+        gerenteDivisao || null, // GERENTE_DIVISAO
         id,
         diretoria,
       ]
@@ -1283,7 +1291,7 @@ exports.exportarColaboradores = async (req, res) => {
 
   try {
     const [rows] = await conexao.query(
-      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA
+      `SELECT ID, MATRICULA, NOME, CARGO, REGIONAL, ESTADO, CIDADE, GERENTE, GESTOR_DIRETO, EMAIL_GESTOR, DIRETORIA, GERENTE_DIVISAO
        FROM COLABORADORES_CW
        WHERE (DIRETORIA = ? OR DIRETORIA IS NULL)
        ORDER BY NOME`,

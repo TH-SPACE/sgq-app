@@ -153,6 +153,7 @@ window.editarColaborador = function(id) {
             document.getElementById('colaboradorEstado').value = colab.ESTADO || '';
             document.getElementById('colaboradorCidade').value = colab.CIDADE || '';
             document.getElementById('colaboradorGerente').value = colab.GERENTE || '';
+            document.getElementById('colaboradorGerenteDivisao').value = colab.GERENTE_DIVISAO || '';
             document.getElementById('colaboradorGestorDireto').value = colab.GESTOR_DIRETO || '';
             document.getElementById('colaboradorEmailGestor').value = colab.EMAIL_GESTOR || '';
             $('#modalColaborador').modal('show');
@@ -176,6 +177,7 @@ function salvarColaborador() {
     const gerente = document.getElementById('colaboradorGerente').value.trim().toUpperCase();
     const gestorDireto = document.getElementById('colaboradorGestorDireto').value.trim().toUpperCase();
     const emailGestor = document.getElementById('colaboradorEmailGestor').value.trim().toUpperCase();
+    const gerenteDivisao = document.getElementById('colaboradorGerenteDivisao').value.trim().toUpperCase();
 
     // Validação dos campos obrigatórios
     if (!matricula || !nome || !cargo || !regional || !estado || !cidade || !gerente || !gestorDireto || !emailGestor) {
@@ -193,7 +195,8 @@ function salvarColaborador() {
         cidade,
         gerente,
         gestorDireto,
-        emailGestor
+        emailGestor,
+        gerenteDivisao
     };
     if (id) dados.id = id;
 
