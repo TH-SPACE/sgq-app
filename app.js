@@ -8,7 +8,6 @@ const { version } = require("./package.json");
 const multer = require("multer");
 
 // 📁 Controladores
-const batimentoB2B = require("./controllers/batimento_b2b");
 const rampaIrrController = require("./controllers/rampa_irr_controller");
 
 // 🔐 Middlewares
@@ -80,9 +79,6 @@ app.get("/login", (req, res) => {
 app.get("/painel_reparos", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "painel_reparos.html"));
 });
-
-// 📊 Rota para buscar tabela
-app.get("/buscar-tabela", batimentoB2B.buscarTabela);
 
 // --- Rotas Rampa IRR ---
 app.get("/rampa-irr", (req, res) => {
