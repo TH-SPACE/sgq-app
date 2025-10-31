@@ -20,63 +20,17 @@
  * extrairDiretoriaDoPerfil("OUTRO_PERFIL") // retorna null
  */
 function extrairDiretoriaDoPerfil(perfil) {
-    // Verifica se o perfil foi fornecido
-    if (!perfil) return null;
+  // Verifica se o perfil foi fornecido
+  if (!perfil) return null;
 
-    // Verifica se o perfil contém referência à diretoria de Engenharia
-    if (perfil.includes('HE_ENGENHARIA')) return 'ENGENHARIA';
+  // Verifica se o perfil contém referência à diretoria de Engenharia
+  if (perfil.includes("HE_ENGENHARIA")) return "ENGENHARIA";
 
-    // Verifica se o perfil contém referência à diretoria de Implantação
-    if (perfil.includes('HE_IMPLANTACAO')) return 'IMPLANTACAO';
+  // Verifica se o perfil contém referência à diretoria de Implantação
+  if (perfil.includes("HE_IMPLANTACAO")) return "IMPLANTACAO";
 
-    // Retorna null se nenhuma diretoria foi identificada
-    return null;
-}
-
-/**
- * 🔐 Middleware genérico que valida se o usuário tem perfil HE de uma diretoria específica
- *
- * Factory function que retorna um middleware Express configurado para validar
- * se o usuário possui acesso a uma diretoria específica (ENGENHARIA ou IMPLANTACAO).
- * Registra todas as tentativas de acesso (sucesso e falha) no console para auditoria.
- *
- * @param {string} diretoria - 'ENGENHARIA' ou 'IMPLANTACAO'
- * @returns {Function} Middleware Express (req, res, next)
- *
- * Comportamento:
- * - Se autorizado: Chama next() e permite acesso
- * - Se não autorizado (API): Retorna 403 com JSON
- * - Se não autorizado (HTML): Redireciona para /logout-acesso-negado
- */
-function requireDiretoria(diretoria) {
-    return (req, res, next) => {
-        // Coleta informações para logging e auditoria
-        const ip = req.ip;
-        const route = req.originalUrl;
-        const user = req.session.usuario;
-        const perfil = user?.perfil || '';
-        const diretoriaUsuario = extrairDiretoriaDoPerfil(perfil);
-
-        // Verifica se o usuário está autenticado e pertence à diretoria solicitada
-        if (user && diretoriaUsuario === diretoria) {
-            // Log de acesso bem-sucedido
-           // console.log(`[SUCESSO_${diretoria}] Usuário: ${user.nome}, IP: ${ip}, Rota: ${route}`);
-            return next();
-        } else {
-            // Log de tentativa de acesso negada
-            console.log(`[FALHA_${diretoria}] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Rota: ${route}, Motivo: Acesso negado. Perfil '${perfil}' não autorizado para ${diretoria}.`);
-
-            // Para chamadas de API (AJAX/Fetch), retorna JSON com erro 403
-            if (req.accepts('json') && !req.accepts('html')) {
-                return res.status(403).json({
-                    erro: `Acesso negado. Você não tem permissão para acessar dados da ${diretoria}.`
-                });
-            }
-
-            // Para requisições de páginas HTML, redireciona para logout
-            return res.redirect('/logout-acesso-negado');
-        }
-    };
+  // Retorna null se nenhuma diretoria foi identificada
+  return null;
 }
 
 /**
@@ -100,41 +54,52 @@ function requireDiretoria(diretoria) {
  * - Permite filtrar consultas SQL por diretoria
  */
 function requireAnyHEDiretoria(req, res, next) {
-    // Coleta informações para logging e auditoria
-    const ip = req.ip;
-    const route = req.originalUrl;
-    const user = req.session.usuario;
-    const perfil = user?.perfil || '';
+  // Coleta informações para logging e auditoria
+  const ip = req.ip;
+  const route = req.originalUrl;
+  const user = req.session.usuario;
+  const perfil = user?.perfil || "";
 
-    // DEBUG: Log para verificar o perfil exato na sessão
-    console.log(`[DEBUG_PERFIL] Perfil na sessão para ${user?.email}: '${perfil}'`);
+  // DEBUG: Log para verificar o perfil exato na sessão
+  //   console.log(
+  //     `[DEBUG_PERFIL] Perfil na sessão para ${user?.email}: '${perfil}'`
+  //   );
+  const diretoriaUsuario = extrairDiretoriaDoPerfil(perfil);
 
-    const diretoriaUsuario = extrairDiretoriaDoPerfil(perfil);
+  // Verifica se o usuário tem perfil HE_ENGENHARIA ou HE_IMPLANTACAO
+  if (user && diretoriaUsuario) {
+    // Adiciona a diretoria no objeto request para uso posterior nos controllers
+    // Isso permite que os controllers filtrem dados por diretoria automaticamente
+    req.diretoriaHE = diretoriaUsuario;
 
-    // Verifica se o usuário tem perfil HE_ENGENHARIA ou HE_IMPLANTACAO
-    if (user && diretoriaUsuario) {
-        // Adiciona a diretoria no objeto request para uso posterior nos controllers
-        // Isso permite que os controllers filtrem dados por diretoria automaticamente
-        req.diretoriaHE = diretoriaUsuario;
+    // Log de acesso bem-sucedido com identificação da diretoria
+    //  console.log(`[SUCESSO_HE] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
+    return next();
+  } else {
+    // Log de tentativa de acesso sem perfil HE adequado
+    console.log(
+      `[FALHA_HE] Usuário: ${
+        user?.nome || "desconhecido"
+      }, IP: ${ip}, Rota: ${route}, Motivo: Sem perfil HE ou diretoria não definida.`
+    );
 
-        // Log de acesso bem-sucedido com identificação da diretoria
-      //  console.log(`[SUCESSO_HE] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
-        return next();
+    // Para chamadas de API (AJAX/Fetch), destroi a sessão por segurança e retorna JSON
+    if (req.accepts("json") && !req.accepts("html")) {
+      req.session.destroy((err) => {
+        if (err) console.error("Erro ao destruir a sessão:", err);
+        return res
+          .status(403)
+          .json({ erro: "Acesso negado. Você foi desconectado." });
+      });
     } else {
-        // Log de tentativa de acesso sem perfil HE adequado
-        console.log(`[FALHA_HE] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Rota: ${route}, Motivo: Sem perfil HE ou diretoria não definida.`);
-
-        // Para chamadas de API (AJAX/Fetch), destroi a sessão por segurança e retorna JSON
-        if (req.accepts('json') && !req.accepts('html')) {
-            req.session.destroy((err) => {
-                if (err) console.error("Erro ao destruir a sessão:", err);
-                return res.status(403).json({ erro: "Acesso negado. Você foi desconectado." });
-            });
-        } else {
-            // Para requisições de páginas HTML, redireciona para logout
-            return res.redirect('/logout-acesso-negado');
-        }
+      const redirect = encodeURIComponent(req.originalUrl);
+      const errorRedirect = redirect
+        ? `/login?erro=3&redirect=${redirect}`
+        : "/login?erro=3";
+      // Para requisições de páginas HTML, redireciona para logout
+      return res.redirect(errorRedirect);
     }
+  }
 }
 
 /**
@@ -162,35 +127,45 @@ function requireAnyHEDiretoria(req, res, next) {
  * - Aprovadores de Engenharia não veem dados de Implantação e vice-versa
  */
 function requireAprovadorComDiretoria(req, res, next) {
-    // Coleta informações para logging e auditoria
-    const ip = req.ip;
-    const route = req.originalUrl;
-    const user = req.session.usuario;
-    const perfil = user?.perfil || '';
-    const diretoriaUsuario = extrairDiretoriaDoPerfil(perfil);
+  // Coleta informações para logging e auditoria
+  const ip = req.ip;
+  const route = req.originalUrl;
+  const user = req.session.usuario;
+  const perfil = user?.perfil || "";
+  const diretoriaUsuario = extrairDiretoriaDoPerfil(perfil);
 
-    // Valida se o usuário tem perfil de aprovador E diretoria definida
-    // Exemplo de perfil válido: "HE_APROVADOR,HE_ENGENHARIA"
-    if (user && perfil.includes('HE_APROVADOR') && diretoriaUsuario) {
-        // Adiciona a diretoria do aprovador no request para uso nos controllers
-        // Controllers usarão isso para filtrar apenas solicitações da mesma diretoria
-        req.diretoriaHE = diretoriaUsuario;
+  // Valida se o usuário tem perfil de aprovador E diretoria definida
+  // Exemplo de perfil válido: "HE_APROVADOR,HE_ENGENHARIA"
+  if (user && perfil.includes("HE_APROVADOR") && diretoriaUsuario) {
+    // Adiciona a diretoria do aprovador no request para uso nos controllers
+    // Controllers usarão isso para filtrar apenas solicitações da mesma diretoria
+    req.diretoriaHE = diretoriaUsuario;
 
-        // Log de acesso bem-sucedido de aprovador
-       // console.log(`[SUCESSO_APROVADOR] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
-        return next();
-    } else {
-        // Log de tentativa de acesso sem credenciais adequadas de aprovador
-        console.log(`[FALHA_APROVADOR] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Rota: ${route}, Motivo: Sem perfil de aprovador ou diretoria não definida. Perfil atual: '${perfil}'`);
+    // Log de acesso bem-sucedido de aprovador
+    // console.log(`[SUCESSO_APROVADOR] Usuário: ${user.nome}, Diretoria: ${diretoriaUsuario}, IP: ${ip}, Rota: ${route}`);
+    return next();
+  } else {
+    // Log de tentativa de acesso sem credenciais adequadas de aprovador
+    console.log(
+      `[FALHA_APROVADOR] Usuário: ${
+        user?.nome || "desconhecido"
+      }, IP: ${ip}, Rota: ${route}, Motivo: Sem perfil de aprovador ou diretoria não definida. Perfil atual: '${perfil}'`
+    );
 
-        // Para páginas HTML, retorna mensagem de erro formatada
-        if (req.accepts('html')) {
-            return res.status(403).send("<h1>Acesso Negado</h1><p>Você não tem permissão para acessar esta página.</p>");
-        }
-
-        // Para API, retorna JSON com erro 403
-        return res.status(403).json({ erro: "Acesso negado. Você não tem permissão para executar esta ação." });
+    // Para páginas HTML, retorna mensagem de erro formatada
+    if (req.accepts("html")) {
+      return res
+        .status(403)
+        .send(
+          "<h1>Acesso Negado</h1><p>Você não tem permissão para acessar esta página.</p>"
+        );
     }
+
+    // Para API, retorna JSON com erro 403
+    return res.status(403).json({
+      erro: "Acesso negado. Você não tem permissão para executar esta ação.",
+    });
+  }
 }
 
 // ================================================================================
@@ -198,20 +173,12 @@ function requireAprovadorComDiretoria(req, res, next) {
 // ================================================================================
 
 module.exports = {
-    // Função auxiliar para extrair diretoria do perfil
-    extrairDiretoriaDoPerfil,
+  // Função auxiliar para extrair diretoria do perfil
+  extrairDiretoriaDoPerfil,
 
-    // Middleware genérico que cria validação para diretoria específica
-    requireDiretoria,
+  // Middleware que aceita qualquer diretoria HE (mais permissivo)
+  requireAnyHEDiretoria,
 
-    // Middleware que aceita qualquer diretoria HE (mais permissivo)
-    requireAnyHEDiretoria,
-
-    // Middleware específico para aprovadores com controle de diretoria
-    requireAprovadorComDiretoria,
-
-    // 🔧 Atalhos pré-configurados para facilitar uso nas rotas
-    // Uso: router.get('/rota', requireEngenharia, controller)
-    requireEngenharia: requireDiretoria('ENGENHARIA'),
-    requireImplantacao: requireDiretoria('IMPLANTACAO')
+  // Middleware específico para aprovadores com controle de diretoria
+  requireAprovadorComDiretoria,
 };

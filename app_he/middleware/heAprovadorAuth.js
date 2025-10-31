@@ -31,7 +31,7 @@ function requireAprovadorHE(req, res, next) {
 
     // Verifica se o usuário está autenticado e possui perfil HE_APROVADOR
     if (user && perfil.includes('HE_APROVADOR')) {
-        console.log(`[SUCESSO_APROVADOR] Usuário: ${user.nome}, IP: ${ip}, Rota: ${route}`);
+        // console.log(`[SUCESSO_APROVADOR] Usuário: ${user.nome}, IP: ${ip}, Rota: ${route}`);
         return next(); // Permite o acesso à rota
     } else {
         console.log(`[FALHA_APROVADOR] Usuário: ${user?.nome || 'desconhecido'}, IP: ${ip}, Rota: ${route}, Motivo: Acesso negado. Perfil '${perfil}' não contém 'HE_APROVADOR'.`);

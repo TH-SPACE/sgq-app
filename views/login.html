@@ -122,6 +122,7 @@
         <div id="alertaErro" class="alert alert-danger" style="display:none;">Usuário ou senha inválidos.</div>
         <div id="alertaErro2" class="alert alert-warning" style="display:none;">Conta não aprovada pelo administrador.
         </div>
+        <div id="alertaErro3" class="alert alert-danger" style="display:none;">Você não possui acesso a esta área.</div>
 
         <form action="/auth/login" method="POST">
             <label for="email" class="form-label">Email</label>
@@ -150,6 +151,7 @@
         if (redirect) document.getElementById('redirectInput').value = redirect;
         if (erro === "1") document.getElementById("alertaErro").style.display = "block";
         else if (erro === "2") document.getElementById("alertaErro2").style.display = "block";
+        else if (erro === "3") document.getElementById("alertaErro3").style.display = "block";
         else if (erro === "email_nao_encontrado") document.getElementById("alertaErroEmail").style.display = "block";
     </script>
 
