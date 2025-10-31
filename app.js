@@ -7,21 +7,15 @@ const dotenv = require("dotenv");
 const { version } = require("./package.json");
 const multer = require("multer");
 
-// 📁 Controladores
-const rampaIrrController = require("./controllers/rampa_irr_controller");
-
 // 🔐 Middlewares
 const { verificaLogin, verificaADM, verificaUSER } = require("./middlewares/autenticacao");
+const { logMiddleware } = require("./middlewares/log");
 
 // ⚙️ Inicializações
 dotenv.config();
 const app = express();
 console.log("Aplicação criada por Thiago Alves Nunes");
 const PORT = process.env.PORT || 3000;
-
-// Configuração do Multer
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 // Configurações do app
 app.set("trust proxy", true);
@@ -48,49 +42,10 @@ app.use(
 );
 
 // ✅ Middleware de log personalizado
-app.use((req, res, next) => {
-  const start = Date.now();
+app.use(logMiddleware);
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    const ip =
-      req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-      req.socket.remoteAddress;
-    const user = req.session?.usuario?.email || "visitante";
-
-    console.log(
-      `[${user}] [${ip}] [${req.method}] ${req.originalUrl} ${res.statusCode} - ${duration} ms`
-    );
-  });
-
-  next();
-});
-
-// 🚪 Rotas públicas
-// Rota raiz desabilitada - exibe página de erro
-app.get("/", (req, res) => {
-  res.status(403).sendFile(path.join(__dirname, "views", "erro_rota.html"));
-});
-
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "login.html"));
-});
-
-app.get("/painel_reparos", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "painel_reparos.html"));
-});
-
-// --- Rotas Rampa IRR ---
-app.get("/rampa-irr", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "rampa_irr.html"));
-});
-
-app.post(
-  "/rampa-irr/upload",
-  upload.single("excelFile"),
-  rampaIrrController.processUpload
-);
-// --- Fim das Rotas Rampa IRR ---
+// 🧭 Rotas públicas
+app.use("/", require("./routes/public"));
 
 // 🧭 Rotas protegidas
 app.use("/auth", require("./routes/auth"));
@@ -100,18 +55,6 @@ app.use("/consulta-ad", require("./consulta_ad/consulta_route"));
 
 // 🎯 Rotas específicas
 app.use("/planejamento-he", require("./app_he/routes/planejamentoHERoutes"));
-
-// Rota para logout por acesso negado
-app.get('/logout-acesso-negado', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error("Erro ao destruir a sessão:", err);
-            // Mesmo com erro, tenta enviar a página de acesso negado
-            return res.status(500).sendFile(path.join(__dirname, 'views', 'acesso_negado.html'));
-        }
-        res.sendFile(path.join(__dirname, 'views', 'acesso_negado.html'));
-    });
-});
 
 // 🚀 Inicialização do servidor
 app.listen(PORT, "0.0.0.0", () => {
