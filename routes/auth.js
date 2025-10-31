@@ -16,7 +16,7 @@ const LOCAL_ADMIN_SENHA = process.env.ADMIN_SENHA;
 // 🔐 Rota de login - Processa autenticação de usuário
 router.post("/login", async (req, res) => {
   // Extrai email, senha e redirect do body da requisição
-  const { email, senha, redirect = "/home" } = req.body;
+  const { email, senha, redirect = "/thanos" } = req.body;
   let user; // Variável para armazenar o usuário autenticado
 
   try {
@@ -142,7 +142,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Redirecionamento inteligente - prioriza redirect do body, depois query string, e por fim o padrão
-    const redirectUrl = req.body.redirect || decodeURIComponent(req.query.redirect) || "/home";
+    const redirectUrl = req.body.redirect || decodeURIComponent(req.query.redirect) || "/thanos";
 
     // Função para validar URL de redirecionamento (evita open redirect)
     function isValidRedirect(url) {
@@ -153,7 +153,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Usa URL segura para redirecionamento
-    const safeRedirect = isValidRedirect(redirectUrl) ? redirectUrl : "/home";
+    const safeRedirect = isValidRedirect(redirectUrl) ? redirectUrl : "/thanos";
     res.redirect(safeRedirect);
 
   } catch (err) {
