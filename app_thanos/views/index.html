@@ -5,25 +5,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>ThanOS - Centro de Soluções</title>
-    <link rel="icon" type="image/png" href="/img/indicador.png">
+    <title>ThanOS - Conjunto de ferramentas e soluções</title>
+    <link rel="icon" type="image/png" href="/img/MANOPLA.gif">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/css/bootstrap/css/bootstrap.min.css">
+    <link rel=" stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link rel="stylesheet" href="/public/css/menu.css">
-    <link rel="stylesheet" href="/css/menu.css">
+    <link rel="stylesheet" href="/thanos/css/menu.css">
 </head>
 
 <body>
     <!-- Navbar -->
     <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/home">
+            <a class="navbar-brand d-flex align-items-center" href="/thanos">
                 <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
                 <span>ThanOS</span>
             </a>
@@ -35,11 +34,11 @@
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active" id="vida_sigitm">
-                        <a class="nav-link" href="/home/sigitm">VIDA B2B</a>
+                        <a class="nav-link" href="/thanos/sigitm">VIDA B2B</a>
                     </li>
 
                     <li class="nav-item active" id="posBd">
-                        <a class="nav-link" href="/home/pos_bd_b2b">PÓS BD B2B</a>
+                        <a class="nav-link" href="/thanos/pos_bd_b2b">PÓS BD B2B</a>
                     </li>
                     <li class="nav-item dropdown active">
                         <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
@@ -94,7 +93,7 @@
                         <span id="nomeUsuario">Usuário</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
-                        <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display: none;">
+                        <a id="painelUpload" class="dropdown-item" href="/thanos/upload_bases"" style=" display: none;">
                             <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
                         </a>
                         <a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
@@ -113,40 +112,21 @@
     <!-- Alerta -->
     <div class="container-fluid mt-1">
         <div class="alert alert-primary font-weight-bold" role="alert">
-            Bem-vindo(a) ao Painel de Upload de Bases!
+            Bem-vindo(a)!
+            <span id="nomeUsuario1">Usuário</span>
+            <h4 id="acesso"></h4>
         </div>
     </div>
 
-    <div class="container Larger shadow my-4">
-        <div class="row">
-            <div class="col-md-4 my-3">
-                <button onclick="envioPos()" class="btn btn-warning shadow-sm h-100 w-100 ">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Pós BD B2B</h5>
-                        <h6 class="card-subtitle mb-2 text-center">Subir base do Pós BD</h6>
-                    </div>
-                </button>
+    <!-- Banner de apresentação -->
+    <div class="container-fluid mb-4">
+        <div class="media bg-info text-white p-3 rounded shadow-sm">
+            <img class="mr-3" src="/img/th.jpg" alt="Ícone Métricas" style="width: 60px;">
+            <div class="media-body">
+                <h5 class="mt-0">Sitema online.</h5>
+                Selecione as opções no Menu acima.
             </div>
-            <div class="col-md-4 my-3">
-                <button onclick="location.href='/indicador1'" class="btn btn-info shadow-sm h-100 w-100 ">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">IRR B2B Avançado</h5>
-                        <h6 class="card-subtitle mb-2 text-center">Subir base dos Reincidentes</h6>
-                    </div>
-                </button>
-            </div>
-            <div class="col-md-4 my-3">
-                <button onclick="location.href='/indicador1'" class="btn btn-light shadow-sm h-100 w-100 ">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Instalações B2B Avançado</h5>
-                        <h6 class="card-subtitle mb-2 text-center">Subir base das Instalações</h6>
-                    </div>
-                </button>
-            </div>
-
-
         </div>
-
     </div>
 
     <!-- JS Usuário -->
@@ -168,75 +148,17 @@
                     document.getElementById('painelUpload').style.display = 'inline-block'
                 }
                 document.getElementById('posBd').style.display = 'inline-block';
-                document.getElementById('relatorios').style.display = 'inline-block';
+                document.getElementById('vida_sigitm').style.display = 'inline-block';
                 console.log('Acessos do usuário:', acessos);
 
 
             });
     </script>
 
-    <script>
-        async function envioPos() {
-            const { value: file } = await Swal.fire({
-                position: "top",
-                title: "Selecione o arquivo Excel em CSV baixado do GPS.",
-                input: "file",
-                inputAttributes: {
-                    accept: ".csv",
-                    "aria-label": "Upload de base de dados"
-                }
-            });
-
-            if (file) {
-                const formData = new FormData();
-                formData.append("arquivo", file);
-
-                try {
-
-                    //loading
-
-                    Swal.fire({
-                        position: "top",
-                        title: 'Aguarde...',
-                        text: 'Enviando Dados...',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    const res = await fetch("/home/upload_Posbd", {
-                        method: "POST",
-                        body: formData
-                    });
-
-                    const texto = await res.text();
-
-                    Swal.fire({
-                        position: "top",
-                        icon: res.ok ? "success" : "error",
-                        title: res.ok ? "Enviado com sucesso!" : "Erro ao enviar",
-                        html: texto
-                    });
-                } catch (err) {
-                    console.error(err);
-                    Swal.fire({
-                        position: "top",
-                        icon: "error",
-                        title: "Erro de conexão",
-                        text: "Não foi possível enviar o arquivo."
-                    });
-                }
-            }
-        }
-    </script>
-
-
-    <script src="/js/sweetalert2.all.min.js"></script>
-
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
-    <script src="/css/bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
 
 </body>
 

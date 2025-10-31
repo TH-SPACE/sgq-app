@@ -10,7 +10,9 @@ const upload = multer({ storage: storage });
 // 🚪 Rotas públicas
 // Rota raiz desabilitada - exibe página de erro
 router.get("/", (req, res) => {
-  res.status(403).sendFile(path.join(__dirname, "..", "views", "erro_rota.html"));
+  res
+    .status(403)
+    .sendFile(path.join(__dirname, "..", "views", "erro_rota.html"));
 });
 
 router.get("/login", (req, res) => {
@@ -32,15 +34,17 @@ router.post(
 // --- Fim das Rotas Rampa IRR ---
 
 // Rota para logout por acesso negado
-router.get('/logout-acesso-negado', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error("Erro ao destruir a sessão:", err);
-            // Mesmo com erro, tenta enviar a página de acesso negado
-            return res.status(500).sendFile(path.join(__dirname, '..', 'views', 'acesso_negado.html'));
-        }
-        res.sendFile(path.join(__dirname, '..', 'views', 'acesso_negado.html'));
-    });
+router.get("/logout-acesso-negado", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Erro ao destruir a sessão:", err);
+      // Mesmo com erro, tenta enviar a página de acesso negado
+      return res
+        .status(500)
+        .sendFile(path.join(__dirname, "..", "views", "acesso_negado.html"));
+    }
+    res.sendFile(path.join(__dirname, "..", "views", "acesso_negado.html"));
+  });
 });
 
 module.exports = router;

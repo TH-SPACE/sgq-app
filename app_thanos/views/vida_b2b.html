@@ -46,7 +46,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link rel="stylesheet" href="/css/menu.css">
+    <link rel="stylesheet" href="/thanos/css/menu.css">
 </head>
 
 <body>
@@ -54,7 +54,7 @@
         <!-- Navbar -->
         <nav id="topbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="/home">
+                <a class="navbar-brand d-flex align-items-center" href="/thanos">
                     <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle mr-2" alt="Logo">
                     <span>ThanOS</span>
                 </a>
@@ -66,11 +66,11 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item active" id="vida_sigitm">
-                            <a class="nav-link" href="/home/sigitm">VIDA B2B</a>
+                            <a class="nav-link" href="/thanos/sigitm">VIDA B2B</a>
                         </li>
 
                         <li class="nav-item active" id="posBd">
-                            <a class="nav-link" href="/home/pos_bd_b2b">PÓS BD B2B</a>
+                            <a class="nav-link" href="/thanos/pos_bd_b2b">PÓS BD B2B</a>
                         </li>
                         <li class="nav-item dropdown active">
                             <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
@@ -126,7 +126,7 @@
                             <span id="nomeUsuario">Usuário</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="usuarioDropdown">
-                            <a id="painelUpload" class="dropdown-item" href="/home/upload_bases"" style=" display:
+                            <a id="painelUpload" class="dropdown-item" href="/thanos/upload_bases"" style=" display:
                                 none;">
                                 <i class="fa-solid fa-upload text-info mr-2"></i>UPLOAD BASES
                             </a>
@@ -246,7 +246,7 @@
                 }
             });
 
-            fetch(`/home/oracle-data?startDate=${startDate}&endDate=${endDate}&gprNome=${encodeURIComponent(gprNome)}`)
+            fetch(`/thanos/oracle-data?startDate=${startDate}&endDate=${endDate}&gprNome=${encodeURIComponent(gprNome)}`)
                 .then(response => response.blob())
                 .then(blob => {
                     const url = window.URL.createObjectURL(blob);

@@ -8,7 +8,11 @@ const { version } = require("./package.json");
 const multer = require("multer");
 
 // 🔐 Middlewares
-const { verificaLogin, verificaADM, verificaUSER } = require("./middlewares/autenticacao");
+const {
+  verificaLogin,
+  verificaADM,
+  verificaUSER,
+} = require("./middlewares/autenticacao");
 const { logMiddleware } = require("./middlewares/log");
 
 // ⚙️ Inicializações
@@ -25,6 +29,11 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/json", express.static(path.join(__dirname, "app_he", "json")));
 app.use("/public", express.static(path.join(__dirname, "app_he", "public")));
+// Serve a pasta app_thanos para arquivos estáticos do ThanOS
+app.use(
+  "/thanos",
+  express.static(path.join(__dirname, "app_thanos", "public"))
+);
 // Serve a pasta consulta_ad como estática para o script.js
 app.use("/consulta_ad", express.static(path.join(__dirname, "consulta_ad")));
 
@@ -49,8 +58,8 @@ app.use("/", require("./routes/public"));
 
 // 🧭 Rotas protegidas
 app.use("/auth", require("./routes/auth"));
-app.use("/home", verificaLogin, verificaUSER, require("./routes/protected"));
-app.use("/admin", verificaLogin, verificaADM, require("./routes/admin"));
+app.use("/thanos", require("./app_thanos/routes/thanosRoutes"));
+app.use("/admin", require("./admin_app/routes/adminRoutes"));
 app.use("/consulta-ad", require("./consulta_ad/consulta_route"));
 
 // 🎯 Rotas específicas
@@ -60,4 +69,6 @@ app.use("/planejamento-he", require("./app_he/routes/planejamentoHERoutes"));
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🔥 THANOS rodando em http://10.59.112.107:${PORT}`);
   console.log(`📦 Versão THANOS: v${version}`);
+   //console.log("Encerrando a aplicação...");
+   //process.exit(0); // 0 indica saída bem-sucedida
 });

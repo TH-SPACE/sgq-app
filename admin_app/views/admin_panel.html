@@ -51,9 +51,9 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/home">
+            <a class="navbar-brand d-flex align-items-center" href="/admin">
                 <img src="/img/base-de-dados.gif" width="30" height="30" class="rounded-circle" alt="Logo">
-                <span>ThanOS</span>
+                <span>Admin Panel</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                 aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,44 +62,11 @@
 
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item" id="vida_sigitm">
-                        <a class="nav-link" href="/home/sigitm">VIDA B2B</a>
+                    <li class="nav-item" id="planejamentoHE">
+                        <a class="nav-link" href="/planejamento-he">Planejamento HE</a>
                     </li>
-                    <li class="nav-item" id="posBd">
-                        <a class="nav-link" href="/home/pos_bd_b2b">PÓS BD B2B</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="linksB2BDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">LINKS B2B</a>
-                        <ul class="dropdown-menu" aria-labelledby="linksB2BDropdown">
-                            <li><a class="dropdown-item"
-                                    href="https://brtdtlts0002fu.redecorp.br/gps/dashboard_b2b/index    "
-                                    target="_blank" rel="noopener noreferrer">GPS EMPRESARIAL</a></li>
-                            <li><a class="dropdown-item"
-                                    href="https://app.powerbi.com/groups/me/reports/3138e4a6-bc78-4424-9ce6-c67b6a55644d/ReportSectionb445b0614e5c0e30a351?experience=power-bi&clientSideAuth=0"
-                                    target="_blank" rel="noopener noreferrer">IRR/IRT B2B</a></li>
-                            <li><a class="dropdown-item"
-                                    href="  https://app.powerbi.com/groups/me/reports/8448e95d-70a3-4dcd-8b5f-74cf7de5c377/ReportSection1d11583f2f338d57ce8e?experience=power-bi"
-                                    target="_blank" rel="noopener noreferrer">ABERTOS E ENCERRADOS / VUST</a></li>
-                            <li><a class="dropdown-item"
-                                    href="  https://app.powerbi.com/groups/me/reports/77ce5d9e-0de8-4a24-992c-5905c57c1e3b/ReportSection?experience=power-bi"
-                                    target="_blank" rel="noopener noreferrer">PLANTA B2B</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="powerAppsDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">POWER APPS B2B</a>
-                        <ul class="dropdown-menu" aria-labelledby="powerAppsDropdown">
-                            <li><a class="dropdown-item"
-                                    href="  https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/4a6e89fa-81bd-43f3-82b7-5799ed6f108f?hidenavbar=true"
-                                    target="_blank" rel="noopener noreferrer">QUALIDADE B2B</a></li>
-                            <li><a class="dropdown-item"
-                                    href="  https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/ba24c9cb-d58a-431c-88bf-30719d3f054f?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609437&source=portal"
-                                    target="_blank" rel="noopener noreferrer">IRR B2B</a></li>
-                            <li><a class="dropdown-item"
-                                    href="  https://apps.powerapps.com/play/e/default-9744600e-3e04-492e-baa1-25ec245c6f10/a/a28a8168-8d3b-44fd-8d97-30772b7b8263?tenantId=9744600e-3e04-492e-baa1-25ec245c6f10&sourcetime=1754675609435&source=portal"
-                                    target="_blank" rel="noopener noreferrer">B2B VUST</a></li>
-                        </ul>
+                    <li class="nav-item" id="thanosApp">
+                        <a class="nav-link" href="/thanos">ThanOS</a>
                     </li>
                 </ul>
 
@@ -111,9 +78,6 @@
                         <span id="nomeUsuario">Usuário</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="usuarioDropdown">
-                        <li><a id="painelUpload" class="dropdown-item" href="/home/upload_bases" style="display: none;">
-                                <i class="fa-solid fa-upload text-info me-2"></i> UPLOAD BASES
-                            </a></li>
                         <li><a id="painelAdmBtn" class="dropdown-item" href="/admin" style="display: none;">
                                 <i class="fas fa-cogs text-warning me-2"></i> PAINEL ADM
                             </a></li>
