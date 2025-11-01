@@ -121,12 +121,13 @@ exports.getComparativoFrequencia = async (req, res) => {
     }
 
     // Obtemos todas as horas executadas (da tabela FREQUENCIA) agrupadas por colaborador e gerente
-    // Não aplicamos filtro por DIRETORIA pois a coluna não existe na tabela frequencia
+    // Agora adicionando também a coluna GERENTE_DIVISAO para agrupamento hierárquico
     
     let queryExecutado = `
       SELECT 
         ${colunas[3]} as gerente,
         ${colunas[0]} as colaborador,
+        COALESCE(GERENTE_DIVISAO, '') as gerente_divisao,
         SUM(CASE WHEN ${colunas[2]} = 'Hora Extra 50%' THEN ${colunas[4]} ELSE 0 END) as executado_50,
         SUM(CASE WHEN ${colunas[2]} = 'Horas extras 100%' THEN ${colunas[4]} ELSE 0 END) as executado_100
       FROM ${nomeTabela}
@@ -139,7 +140,7 @@ exports.getComparativoFrequencia = async (req, res) => {
       paramsExecutado.push(gerente);
     }
 
-    queryExecutado += ` GROUP BY ${colunas[3]}, ${colunas[0]}
+    queryExecutado += ` GROUP BY ${colunas[3]}, ${colunas[0]}, GERENTE_DIVISAO
         ORDER BY ${colunas[3]}, ${colunas[0]}`;
 
     const [executado] = await conexao.query(queryExecutado, paramsExecutado);
@@ -174,11 +175,13 @@ exports.getComparativoFrequencia = async (req, res) => {
       if (!mapaExecutado[key]) {
         mapaExecutado[key] = {
           executado_50: 0,
-          executado_100: 0
+          executado_100: 0,
+          gerente_divisao: item.gerente_divisao
         };
       }
       mapaExecutado[key].executado_50 += parseFloat(item.executado_50 || 0);
       mapaExecutado[key].executado_100 += parseFloat(item.executado_100 || 0);
+      mapaExecutado[key].gerente_divisao = item.gerente_divisao;
     });
 
     const mapaAutorizado = {};
@@ -213,16 +216,18 @@ exports.getComparativoFrequencia = async (req, res) => {
     ])];
 
     for (const key of todasChaves) {
-      const [gerente, colaborador] = key.split('_');
+      const [nomeGerente, colaborador] = key.split('_');
       
-      if (!mapaTotalPorGerente[gerente]) {
-        mapaTotalPorGerente[gerente] = {
+      if (!mapaTotalPorGerente[nomeGerente]) {
+        const exec = mapaExecutado[key];
+        mapaTotalPorGerente[nomeGerente] = {
           executado_50: 0,
           executado_100: 0,
           autorizado_50: 0,
           autorizado_100: 0,
           nao_autorizado_50: 0,
-          nao_autorizado_100: 0
+          nao_autorizado_100: 0,
+          gerente_divisao: exec ? exec.gerente_divisao : ''
         };
       }
       
@@ -235,23 +240,33 @@ exports.getComparativoFrequencia = async (req, res) => {
       const nao_aut_100 = Math.max(0, exec.executado_100 - aut.autorizado_100);
       
       // Somamos ao total do gerente
-      mapaTotalPorGerente[gerente].executado_50 += exec.executado_50;
-      mapaTotalPorGerente[gerente].executado_100 += exec.executado_100;
+      mapaTotalPorGerente[nomeGerente].executado_50 += exec.executado_50;
+      mapaTotalPorGerente[nomeGerente].executado_100 += exec.executado_100;
       // Para os totais autorizados e não autorizados, usamos os valores calculados individualmente
-      mapaTotalPorGerente[gerente].nao_autorizado_50 += nao_aut_50;
-      mapaTotalPorGerente[gerente].nao_autorizado_100 += nao_aut_100;
+      mapaTotalPorGerente[nomeGerente].nao_autorizado_50 += nao_aut_50;
+      mapaTotalPorGerente[nomeGerente].nao_autorizado_100 += nao_aut_100;
+    }
+
+    // Obter informações de divisão para agrupamento hierárquico
+    const gerentesComDivisao = {};
+    for (const nomeGerente of Object.keys(mapaTotalPorGerente)) {
+      const dados = mapaTotalPorGerente[nomeGerente];
+      gerentesComDivisao[nomeGerente] = {
+        ...dados,
+        gerente_divisao: dados.gerente_divisao
+      };
     }
 
     // Montamos o resultado combinando todos os dados por gerente
-    const resultado = Object.keys(mapaTotalPorGerente).map(gerenteNome => {
-      const dados = mapaTotalPorGerente[gerenteNome];
+    const resultado = Object.keys(gerentesComDivisao).map(nomeGerente => {
+      const dados = gerentesComDivisao[nomeGerente];
       
       // Calculamos o total autorizado como executado - não autorizado (apenas o que foi coberto)
       const autorizado_50 = dados.executado_50 - dados.nao_autorizado_50;
       const autorizado_100 = dados.executado_100 - dados.nao_autorizado_100;
       
       return {
-        gerente: gerenteNome,
+        gerente: nomeGerente,
         executado_50: dados.executado_50,
         executado_100: dados.executado_100,
         autorizado_50: Math.max(0, autorizado_50),  // Não pode ser negativo
@@ -260,7 +275,8 @@ exports.getComparativoFrequencia = async (req, res) => {
         nao_autorizado_100: dados.nao_autorizado_100,
         total_executado: dados.executado_50 + dados.executado_100,
         total_autorizado: Math.max(0, autorizado_50) + Math.max(0, autorizado_100),
-        total_nao_autorizado: dados.nao_autorizado_50 + dados.nao_autorizado_100
+        total_nao_autorizado: dados.nao_autorizado_50 + dados.nao_autorizado_100,
+        gerente_divisao: dados.gerente_divisao
       };
     });
 

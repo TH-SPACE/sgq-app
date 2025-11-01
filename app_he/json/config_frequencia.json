@@ -12,7 +12,8 @@
     "colunas_opcionais": [
       "DIRETORIA",
       "MATRICULA",
-      "CENTRO_CUSTO"
+      "CENTRO_CUSTO",
+      "GERENTE_DIVISAO"
     ],
     "tipos_evento_validos": [
       "Hora Extra 50%",

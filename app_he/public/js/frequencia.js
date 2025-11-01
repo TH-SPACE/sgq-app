@@ -16,8 +16,18 @@
  */
 function getMesAtualPortugues() {
   const meses = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
   return meses[new Date().getMonth()];
 }
@@ -28,13 +38,14 @@ function getMesAtualPortugues() {
 
 /**
  * Carrega e exibe o comparativo de horas executadas vs autorizadas por gerente
- * 
+ *
  * @param {string} mes - Mês para filtrar (obrigatório)
  * @param {string} gerente - Nome do gerente para filtrar (opcional)
  */
 function carregarComparativoFrequencia(mes, gerente = "") {
   const container = document.getElementById("tabelaComparativoFrequencia");
-  container.innerHTML = '<p class="text-center text-muted">Carregando comparativo...</p>';
+  container.innerHTML =
+    '<p class="text-center text-muted">Carregando comparativo...</p>';
 
   const params = new URLSearchParams();
   params.append("mes", mes);
@@ -43,39 +54,45 @@ function carregarComparativoFrequencia(mes, gerente = "") {
   const url = `/planejamento-he/api/comparativo-frequencia?${params.toString()}`;
 
   fetch(url)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
       return response.json();
     })
-    .then(dados => {
+    .then((dados) => {
       if (dados.erro) {
         container.innerHTML = `<div class="alert alert-danger">${dados.erro}</div>`;
         return;
       }
 
       if (!Array.isArray(dados) || dados.length === 0) {
-        container.innerHTML = '<p class="text-center text-muted">Nenhum dado encontrado para o filtro selecionado.</p>';
+        container.innerHTML =
+          '<p class="text-center text-muted">Nenhum dado encontrado para o filtro selecionado.</p>';
         return;
       }
 
       container.innerHTML = criarTabelaComparativo(dados);
     })
-    .catch(erro => {
-      console.error('Erro ao carregar comparativo de frequência:', erro);
+    .catch((erro) => {
+      console.error("Erro ao carregar comparativo de frequência:", erro);
       container.innerHTML = `<div class="alert alert-danger">Erro ao carregar dados. Tente novamente.</div>`;
     });
 }
 
 /**
  * Carrega e exibe o comparativo detalhado por colaborador
- * 
+ *
  * @param {string} mes - Mês para filtrar (obrigatório)
  * @param {string} gerente - Nome do gerente para filtrar (opcional)
  * @param {string} colaborador - Nome do colaborador para filtrar (opcional)
  */
-function carregarComparativoPorColaborador(mes, gerente = "", colaborador = "") {
+function carregarComparativoPorColaborador(
+  mes,
+  gerente = "",
+  colaborador = ""
+) {
   const container = document.getElementById("tabelaComparativoColaborador");
-  container.innerHTML = '<p class="text-center text-muted">Carregando comparativo detalhado...</p>';
+  container.innerHTML =
+    '<p class="text-center text-muted">Carregando comparativo detalhado...</p>';
 
   const params = new URLSearchParams();
   params.append("mes", mes);
@@ -85,25 +102,26 @@ function carregarComparativoPorColaborador(mes, gerente = "", colaborador = "") 
   const url = `/planejamento-he/api/comparativo-colaborador?${params.toString()}`;
 
   fetch(url)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
       return response.json();
     })
-    .then(dados => {
+    .then((dados) => {
       if (dados.erro) {
         container.innerHTML = `<div class="alert alert-danger">${dados.erro}</div>`;
         return;
       }
 
       if (!Array.isArray(dados) || dados.length === 0) {
-        container.innerHTML = '<p class="text-center text-muted">Nenhum dado encontrado para o filtro selecionado.</p>';
+        container.innerHTML =
+          '<p class="text-center text-muted">Nenhum dado encontrado para o filtro selecionado.</p>';
         return;
       }
 
       container.innerHTML = criarTabelaComparativoColaborador(dados);
     })
-    .catch(erro => {
-      console.error('Erro ao carregar comparativo por colaborador:', erro);
+    .catch((erro) => {
+      console.error("Erro ao carregar comparativo por colaborador:", erro);
       container.innerHTML = `<div class="alert alert-danger">Erro ao carregar dados. Tente novamente.</div>`;
     });
 }
@@ -114,7 +132,7 @@ function carregarComparativoPorColaborador(mes, gerente = "", colaborador = "") 
 
 /**
  * Cria a tabela HTML do comparativo por gerente
- * 
+ *
  * @param {Array} dados - Array de objetos com os dados comparativos
  * @returns {string} HTML da tabela
  */
@@ -126,6 +144,44 @@ function criarTabelaComparativo(dados) {
   let totalNaoAutorizado50 = 0;
   let totalNaoAutorizado100 = 0;
 
+  // Agrupa os dados por gerente de divisão para cálculo de totais
+  const dadosAgrupados = {};
+  dados.forEach((item) => {
+    const divisao = item.gerente_divisao || "Sem Divisão";
+    if (!dadosAgrupados[divisao]) {
+      dadosAgrupados[divisao] = {
+        total_executado_50: 0,
+        total_executado_100: 0,
+        total_autorizado_50: 0,
+        total_autorizado_100: 0,
+        total_nao_autorizado_50: 0,
+        total_nao_autorizado_100: 0,
+        total_executado: 0,
+        total_autorizado: 0,
+        total_nao_autorizado: 0,
+        gerentes: [],
+      };
+    }
+
+    dadosAgrupados[divisao].total_executado_50 += item.executado_50 || 0;
+    dadosAgrupados[divisao].total_executado_100 += item.executado_100 || 0;
+    dadosAgrupados[divisao].total_autorizado_50 += item.autorizado_50 || 0;
+    dadosAgrupados[divisao].total_autorizado_100 += item.autorizado_100 || 0;
+    dadosAgrupados[divisao].total_nao_autorizado_50 += Math.max(
+      0,
+      (item.executado_50 || 0) - (item.autorizado_50 || 0)
+    );
+    dadosAgrupados[divisao].total_nao_autorizado_100 += Math.max(
+      0,
+      (item.executado_100 || 0) - (item.autorizado_100 || 0)
+    );
+    dadosAgrupados[divisao].total_executado += item.total_executado || 0;
+    dadosAgrupados[divisao].total_autorizado += item.total_autorizado || 0;
+    dadosAgrupados[divisao].total_nao_autorizado +=
+      item.total_nao_autorizado || 0;
+    dadosAgrupados[divisao].gerentes.push(item);
+  });
+
   let html = `
     <div class="d-flex justify-content-between align-items-center mb-2">
       <button id="btnAlternarExecucao" class="btn btn-sm btn-outline-primary" onclick="alternarColunasExecucao()">
@@ -135,9 +191,9 @@ function criarTabelaComparativo(dados) {
     </div>
     <div class="table-responsive-sm table-responsive-md table-responsive-lg">
       <table class="table table-bordered table-hover table-sm w-100">
-        <thead class="thead-light">
+        <thead class="thead" style="background-color: #8700d4ff; text-color: white; color: white;">
           <tr>
-            <th class="text-left">Gerente</th>
+            <th class="text-left">Gerência SR</th>
             <th class="text-center executado-col" style="display: none;">Executado 50%</th>
             <th class="text-center executado-col" style="display: none;">Executado 100%</th>
             <th class="text-center autorizado-col" style="display: none;">Autorizado 50%</th>
@@ -152,57 +208,140 @@ function criarTabelaComparativo(dados) {
         <tbody>
   `;
 
-  dados.forEach(item => {
-    const naoAut50 = Math.max(0, (item.executado_50 || 0) - (item.autorizado_50 || 0));
-    const naoAut100 = Math.max(0, (item.executado_100 || 0) - (item.autorizado_100 || 0));
-    
-    // Extrai o primeiro nome e nome completo do gerente
-    const primeiroNome = item.gerente ? item.gerente.split(' ')[0] : '-';
-    const nomeCompleto = item.gerente || '-';
+  // Ordena as divisões e adiciona os dados à tabela
+  Object.keys(dadosAgrupados)
+    .sort()
+    .forEach((divisao) => {
+      const dadosDivisao = dadosAgrupados[divisao];
+      const gerentes = dadosDivisao.gerentes;
 
-    html += `
-      <tr>
-        <td class="text-left"><strong class="nome-completo">${nomeCompleto}</strong><strong class="primeiro-nome" style="display: none;">${primeiroNome}</strong></td>
-        <td class="text-center executado-col" style="display: none;">${(item.executado_50 || 0).toFixed(2)}</td>
-        <td class="text-center executado-col" style="display: none;">${(item.executado_100 || 0).toFixed(2)}</td>
-        <td class="text-center autorizado-col" style="display: none;">${(item.autorizado_50 || 0).toFixed(2)}</td>
-        <td class="text-center autorizado-col" style="display: none;">${(item.autorizado_100 || 0).toFixed(2)}</td>
-        <td class="text-center nao-autorizado-col" style="display: none;">${naoAut50.toFixed(2)}</td>
-        <td class="text-center nao-autorizado-col" style="display: none;">${naoAut100.toFixed(2)}</td>
-        <td class="text-center">${(item.total_executado || 0).toFixed(2)}</td>
-        <td class="text-center">${(item.total_autorizado || 0).toFixed(2)}</td>
-        <td class="text-center">${(item.total_nao_autorizado || 0).toFixed(2)}</td>
+      // Adiciona uma linha para o gerente de divisão com os totais consolidados nas colunas
+      html += `
+      <tr class="table font-weight-bold" style="background-color: #f3dbfdff;">
+        <td class="text-left"><i class="fa-solid fa-users"></i> <strong>${divisao}</strong></td>
+        <td class="text-center executado-col" style="display: none;"><strong>${dadosDivisao.total_executado_50.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center executado-col" style="display: none;"><strong>${dadosDivisao.total_executado_100.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center autorizado-col" style="display: none;"><strong>${dadosDivisao.total_autorizado_50.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center autorizado-col" style="display: none;"><strong>${dadosDivisao.total_autorizado_100.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center nao-autorizado-col" style="display: none;"><strong>${dadosDivisao.total_nao_autorizado_50.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center nao-autorizado-col" style="display: none;"><strong>${dadosDivisao.total_nao_autorizado_100.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center"><strong>${dadosDivisao.total_executado.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center"><strong>${dadosDivisao.total_autorizado.toFixed(
+          2
+        )}</strong></td>
+        <td class="text-center"><strong>${dadosDivisao.total_nao_autorizado.toFixed(
+          2
+        )}</strong></td>
       </tr>
     `;
 
-    // Acumula totais
-    totalExecutado50 += item.executado_50 || 0;
-    totalExecutado100 += item.executado_100 || 0;
-    totalAutorizado50 += item.autorizado_50 || 0;
-    totalAutorizado100 += item.autorizado_100 || 0;
-    totalNaoAutorizado50 += naoAut50;
-    totalNaoAutorizado100 += naoAut100;
-  });
+      // Adiciona linha para cada gerente sob a divisão
+      gerentes.forEach((item) => {
+        const naoAut50 = Math.max(
+          0,
+          (item.executado_50 || 0) - (item.autorizado_50 || 0)
+        );
+        const naoAut100 = Math.max(
+          0,
+          (item.executado_100 || 0) - (item.autorizado_100 || 0)
+        );
 
-  // Adiciona linha de total
+        // Extrai o primeiro nome e nome completo do gerente
+        const primeiroNome = item.gerente ? item.gerente.split(" ")[0] : "-";
+        const nomeCompleto = item.gerente || "-";
+
+        html += `
+        <tr>
+          <td class="text-left"><strong class="nome-completo">${nomeCompleto}</strong><strong class="primeiro-nome" style="display: none;">${primeiroNome}</strong></td>
+          <td class="text-center executado-col" style="display: none;">${(
+            item.executado_50 || 0
+          ).toFixed(2)}</td>
+          <td class="text-center executado-col" style="display: none;">${(
+            item.executado_100 || 0
+          ).toFixed(2)}</td>
+          <td class="text-center autorizado-col" style="display: none;">${(
+            item.autorizado_50 || 0
+          ).toFixed(2)}</td>
+          <td class="text-center autorizado-col" style="display: none;">${(
+            item.autorizado_100 || 0
+          ).toFixed(2)}</td>
+          <td class="text-center nao-autorizado-col" style="display: none;">${naoAut50.toFixed(
+            2
+          )}</td>
+          <td class="text-center nao-autorizado-col" style="display: none;">${naoAut100.toFixed(
+            2
+          )}</td>
+          <td class="text-center">${(item.total_executado || 0).toFixed(2)}</td>
+          <td class="text-center">${(item.total_autorizado || 0).toFixed(
+            2
+          )}</td>
+          <td class="text-center">${(item.total_nao_autorizado || 0).toFixed(
+            2
+          )}</td>
+        </tr>
+      `;
+
+        // Acumula totais
+        totalExecutado50 += item.executado_50 || 0;
+        totalExecutado100 += item.executado_100 || 0;
+        totalAutorizado50 += item.autorizado_50 || 0;
+        totalAutorizado100 += item.autorizado_100 || 0;
+        totalNaoAutorizado50 += naoAut50;
+        totalNaoAutorizado100 += naoAut100;
+      });
+    });
+
+  // Adiciona linha de total geral
   html += `
+        </tbody>
         <tfoot class="font-weight-bold" style="background-color: #f8f9fa;">
           <tr>
-            <td class="text-left">TOTAL</td>
-            <td class="text-center executado-col" style="display: none;">${totalExecutado50.toFixed(2)}</td>
-            <td class="text-center executado-col" style="display: none;">${totalExecutado100.toFixed(2)}</td>
-            <td class="text-center autorizado-col" style="display: none;">${totalAutorizado50.toFixed(2)}</td>
-            <td class="text-center autorizado-col" style="display: none;">${totalAutorizado100.toFixed(2)}</td>
-            <td class="text-center nao-autorizado-col" style="display: none;">${totalNaoAutorizado50.toFixed(2)}</td>
-            <td class="text-center nao-autorizado-col" style="display: none;">${totalNaoAutorizado100.toFixed(2)}</td>
-            <td class="text-center">${(totalExecutado50 + totalExecutado100).toFixed(2)}</td>
-            <td class="text-center">${(totalAutorizado50 + totalAutorizado100).toFixed(2)}</td>
-            <td class="text-center">${(totalNaoAutorizado50 + totalNaoAutorizado100).toFixed(2)}</td>
+            <td class="text-left">TOTAL GERAL</td>
+            <td class="text-center executado-col" style="display: none;">${totalExecutado50.toFixed(
+              2
+            )}</td>
+            <td class="text-center executado-col" style="display: none;">${totalExecutado100.toFixed(
+              2
+            )}</td>
+            <td class="text-center autorizado-col" style="display: none;">${totalAutorizado50.toFixed(
+              2
+            )}</td>
+            <td class="text-center autorizado-col" style="display: none;">${totalAutorizado100.toFixed(
+              2
+            )}</td>
+            <td class="text-center nao-autorizado-col" style="display: none;">${totalNaoAutorizado50.toFixed(
+              2
+            )}</td>
+            <td class="text-center nao-autorizado-col" style="display: none;">${totalNaoAutorizado100.toFixed(
+              2
+            )}</td>
+            <td class="text-center">${(
+              totalExecutado50 + totalExecutado100
+            ).toFixed(2)}</td>
+            <td class="text-center">${(
+              totalAutorizado50 + totalAutorizado100
+            ).toFixed(2)}</td>
+            <td class="text-center">${(
+              totalNaoAutorizado50 + totalNaoAutorizado100
+            ).toFixed(2)}</td>
           </tr>
         </tfoot>
-      </tbody>
-    </table>
-  </div>
+      </table>
+    </div>
   `;
 
   return html;
@@ -210,7 +349,7 @@ function criarTabelaComparativo(dados) {
 
 /**
  * Cria a tabela HTML do comparativo detalhado por colaborador
- * 
+ *
  * @param {Array} dados - Array de objetos com os dados comparativos por colaborador
  * @returns {string} HTML da tabela
  */
@@ -237,15 +376,21 @@ function criarTabelaComparativoColaborador(dados) {
         <tbody>
   `;
 
-  dados.forEach(item => {
-    const naoAut50 = Math.max(0, (item.executado_50 || 0) - (item.autorizado_50 || 0));
-    const naoAut100 = Math.max(0, (item.executado_100 || 0) - (item.autorizado_100 || 0));
+  dados.forEach((item) => {
+    const naoAut50 = Math.max(
+      0,
+      (item.executado_50 || 0) - (item.autorizado_50 || 0)
+    );
+    const naoAut100 = Math.max(
+      0,
+      (item.executado_100 || 0) - (item.autorizado_100 || 0)
+    );
 
     html += `
       <tr>
-        <td class="text-left"><strong>${item.colaborador || '-'}</strong></td>
-        <td class="text-left">${item.cargo || '-'}</td>
-        <td class="text-left">${item.gerente || '-'}</td>
+        <td class="text-left"><strong>${item.colaborador || "-"}</strong></td>
+        <td class="text-left">${item.cargo || "-"}</td>
+        <td class="text-left">${item.gerente || "-"}</td>
         <td class="text-center">${(item.executado_50 || 0).toFixed(2)}</td>
         <td class="text-center">${(item.executado_100 || 0).toFixed(2)}</td>
         <td class="text-center">${(item.autorizado_50 || 0).toFixed(2)}</td>
@@ -254,7 +399,9 @@ function criarTabelaComparativoColaborador(dados) {
         <td class="text-center">${naoAut100.toFixed(2)}</td>
         <td class="text-center">${(item.total_executado || 0).toFixed(2)}</td>
         <td class="text-center">${(item.total_autorizado || 0).toFixed(2)}</td>
-        <td class="text-center">${(item.total_nao_autorizado || 0).toFixed(2)}</td>
+        <td class="text-center">${(item.total_nao_autorizado || 0).toFixed(
+          2
+        )}</td>
       </tr>
     `;
   });
@@ -283,7 +430,9 @@ async function exportarDadosComparativo() {
     const params = new URLSearchParams({ mes });
     if (gerente) params.append("gerente", gerente);
 
-    const response = await fetch(`/planejamento-he/api/exportar-comparativo?${params.toString()}`);
+    const response = await fetch(
+      `/planejamento-he/api/exportar-comparativo?${params.toString()}`
+    );
 
     if (!response.ok) {
       throw new Error(`Erro na requisição: ${response.statusText}`);
@@ -291,18 +440,22 @@ async function exportarDadosComparativo() {
 
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
+    const a = document.createElement("a");
+    a.style.display = "none";
     a.href = url;
-    a.download = `comparativo_he_${mes.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `comparativo_he_${mes.toLowerCase()}_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
 
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
   } catch (error) {
-    console.error('Erro ao exportar dados comparativos:', error);
-    alert('Falha ao exportar os dados. Verifique o console para mais detalhes.');
+    console.error("Erro ao exportar dados comparativos:", error);
+    alert(
+      "Falha ao exportar os dados. Verifique o console para mais detalhes."
+    );
   }
 }
 
@@ -316,22 +469,34 @@ async function exportarDadosComparativo() {
 function inicializarPainelFrequencia() {
   // Preenche o seletor de meses
   const meses = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
   const mesSelect = document.getElementById("filtroMesComparativo");
-  mesSelect.innerHTML = meses.map(m => `<option value="${m}">${m}</option>`).join('');
+  mesSelect.innerHTML = meses
+    .map((m) => `<option value="${m}">${m}</option>`)
+    .join("");
   mesSelect.value = getMesAtualPortugues();
 
   // Carrega a lista de gerentes
-  fetch('/planejamento-he/api/gerentes')
-    .then(r => r.json())
-    .then(data => {
+  fetch("/planejamento-he/api/gerentes")
+    .then((r) => r.json())
+    .then((data) => {
       const gerenteSelect = document.getElementById("filtroGerenteComparativo");
       gerenteSelect.innerHTML = '<option value="">Todos os Gerentes</option>';
       if (data.gerentes) {
-        data.gerentes.forEach(g => {
-          const opt = document.createElement('option');
+        data.gerentes.forEach((g) => {
+          const opt = document.createElement("option");
           opt.value = g;
           opt.textContent = g;
           gerenteSelect.appendChild(opt);
@@ -344,29 +509,38 @@ function inicializarPainelFrequencia() {
   carregarComparativoPorColaborador(getMesAtualPortugues());
 
   // Configura event listeners
-  document.getElementById("filtroMesComparativo").addEventListener("change", function () {
-    const mes = this.value;
-    const gerente = document.getElementById("filtroGerenteComparativo").value;
-    carregarComparativoFrequencia(mes, gerente);
-    carregarComparativoPorColaborador(mes, gerente);
-  });
+  document
+    .getElementById("filtroMesComparativo")
+    .addEventListener("change", function () {
+      const mes = this.value;
+      const gerente = document.getElementById("filtroGerenteComparativo").value;
+      carregarComparativoFrequencia(mes, gerente);
+      carregarComparativoPorColaborador(mes, gerente);
+    });
 
-  document.getElementById("filtroGerenteComparativo").addEventListener("change", function () {
-    const mes = document.getElementById("filtroMesComparativo").value;
-    const gerente = this.value;
-    carregarComparativoFrequencia(mes, gerente);
-    carregarComparativoPorColaborador(mes, gerente);
-  });
+  document
+    .getElementById("filtroGerenteComparativo")
+    .addEventListener("change", function () {
+      const mes = document.getElementById("filtroMesComparativo").value;
+      const gerente = this.value;
+      carregarComparativoFrequencia(mes, gerente);
+      carregarComparativoPorColaborador(mes, gerente);
+    });
 
-  document.getElementById("btnExportarComparativo").addEventListener("click", exportarDadosComparativo);
+  document
+    .getElementById("btnExportarComparativo")
+    .addEventListener("click", exportarDadosComparativo);
 
   // Botão para limpar filtros
-  document.getElementById("btnLimparFiltrosComparativo").addEventListener("click", function () {
-    document.getElementById("filtroGerenteComparativo").value = "";
-    document.getElementById("filtroMesComparativo").value = getMesAtualPortugues();
-    carregarComparativoFrequencia(getMesAtualPortugues());
-    carregarComparativoPorColaborador(getMesAtualPortugues());
-  });
+  document
+    .getElementById("btnLimparFiltrosComparativo")
+    .addEventListener("click", function () {
+      document.getElementById("filtroGerenteComparativo").value = "";
+      document.getElementById("filtroMesComparativo").value =
+        getMesAtualPortugues();
+      carregarComparativoFrequencia(getMesAtualPortugues());
+      carregarComparativoPorColaborador(getMesAtualPortugues());
+    });
 }
 
 // ================================================================================
@@ -379,45 +553,51 @@ let colunasExecucaoExpandidas = false;
  * Alterna a visibilidade das colunas de execução (50% e 100%)
  */
 function alternarColunasExecucao() {
-  const iconesExecucao = document.querySelectorAll('#iconeExecucao, .execucao-resumo i');
-  const textoBtn = document.getElementById('textoBtnExecucao');
-  const colunasExecutado = document.querySelectorAll('.executado-col');
-  const colunasAutorizado = document.querySelectorAll('.autorizado-col');
-  const colunasNaoAutorizado = document.querySelectorAll('.nao-autorizado-col');
-  const nomesCompletos = document.querySelectorAll('.nome-completo');
-  const primeiroNomes = document.querySelectorAll('.primeiro-nome');
+  const iconesExecucao = document.querySelectorAll(
+    "#iconeExecucao, .execucao-resumo i"
+  );
+  const textoBtn = document.getElementById("textoBtnExecucao");
+  const colunasExecutado = document.querySelectorAll(".executado-col");
+  const colunasAutorizado = document.querySelectorAll(".autorizado-col");
+  const colunasNaoAutorizado = document.querySelectorAll(".nao-autorizado-col");
+  const nomesCompletos = document.querySelectorAll(".nome-completo");
+  const primeiroNomes = document.querySelectorAll(".primeiro-nome");
 
   colunasExecucaoExpandidas = !colunasExecucaoExpandidas;
 
   // Atualiza o ícone e o texto do botão
-  iconesExecucao.forEach(icone => {
-    icone.className = colunasExecucaoExpandidas ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+  iconesExecucao.forEach((icone) => {
+    icone.className = colunasExecucaoExpandidas
+      ? "fas fa-chevron-up"
+      : "fas fa-chevron-down";
   });
 
-  textoBtn.textContent = colunasExecucaoExpandidas ? 'Recolher Detalhes' : 'Expandir Detalhes';
+  textoBtn.textContent = colunasExecucaoExpandidas
+    ? "Recolher Detalhes"
+    : "Expandir Detalhes";
 
   // Alterna a visibilidade das colunas
-  colunasExecutado.forEach(coluna => {
-    coluna.style.display = colunasExecucaoExpandidas ? 'table-cell' : 'none';
+  colunasExecutado.forEach((coluna) => {
+    coluna.style.display = colunasExecucaoExpandidas ? "table-cell" : "none";
   });
 
-  colunasAutorizado.forEach(coluna => {
-    coluna.style.display = colunasExecucaoExpandidas ? 'table-cell' : 'none';
+  colunasAutorizado.forEach((coluna) => {
+    coluna.style.display = colunasExecucaoExpandidas ? "table-cell" : "none";
   });
 
-  colunasNaoAutorizado.forEach(coluna => {
-    coluna.style.display = colunasExecucaoExpandidas ? 'table-cell' : 'none';
+  colunasNaoAutorizado.forEach((coluna) => {
+    coluna.style.display = colunasExecucaoExpandidas ? "table-cell" : "none";
   });
-  
+
   // Alterna entre nome completo e primeiro nome
   // Quando recolhido (estado inicial), mostra nome completo
   // Quando expandido, mostra primeiro nome
-  nomesCompletos.forEach(nome => {
-    nome.style.display = colunasExecucaoExpandidas ? 'none' : 'inline';
+  nomesCompletos.forEach((nome) => {
+    nome.style.display = colunasExecucaoExpandidas ? "none" : "inline";
   });
-  
-  primeiroNomes.forEach(nome => {
-    nome.style.display = colunasExecucaoExpandidas ? 'inline' : 'none';
+
+  primeiroNomes.forEach((nome) => {
+    nome.style.display = colunasExecucaoExpandidas ? "inline" : "none";
   });
 }
 
@@ -425,9 +605,9 @@ function alternarColunasExecucao() {
 // 📊 Evento de Carregamento da Página
 // ================================================================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Adiciona ouvinte de evento para quando a página for carregada
-  document.addEventListener('page-load:painelFrequencia', function () {
+  document.addEventListener("page-load:painelFrequencia", function () {
     inicializarPainelFrequencia();
   });
 });
