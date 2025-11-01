@@ -69,6 +69,6 @@ app.use("/planejamento-he", require("./app_he/routes/planejamentoHERoutes"));
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🔥 THANOS rodando em http://10.59.112.107:${PORT}`);
   console.log(`📦 Versão THANOS: v${version}`);
-   console.log("Encerrando a aplicação...");
-   process.exit(0); // 0 indica saída bem-sucedida
+  //  console.log("Encerrando a aplicação...");
+  //  process.exit(0); // 0 indica saída bem-sucedida
 });

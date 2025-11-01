@@ -25,8 +25,8 @@
   --font-size-navbar: 1.1rem;
   --font-size-sidebar-menu: 0.8rem;
   --font-size-card-title: 1.3rem;
-  --font-size-form-label: 0.8rem;
-  --font-size-form-input: 0.8rem;
+  --font-size-form-label: 0.7rem;
+  --font-size-form-input: 0.7rem;
   --font-size-button: 0.8rem;
   --font-size-table-header: 0.8rem;
   --font-size-table-cell: 0.8rem;
@@ -50,9 +50,9 @@ h6, .h6 { font-size: var(--font-size-base); }
 .navbar-brand { font-size: var(--font-size-navbar); }
 
 /* Elementos do menu lateral */
-.menu-item { font-size: var(--font-size-sidebar-menu); }
-.menu-title { font-size: var(--font-size-xs); }
-.menu-section-title { font-size: var(--font-size-xs); }
+.menu-item { font-size: var(--font-size-xs); }
+.menu-title { font-size: var(--font-size-sm); }
+.menu-section-title { font-size: var(--font-size-sm); }
 
 /* Perfis no menu */
 .profile-name { font-size: var(--font-size-sm); }
@@ -113,7 +113,7 @@ h6, .h6 { font-size: var(--font-size-base); }
  */
 
 /* Títulos do dashboard */
-.summary-card .title { font-size: var(--font-size-xs); }
+.summary-card .title { font-size: var(--font-size-xx); }
 .summary-card .value { font-size: var(--font-size-xl); }
 .summary-card .icon { font-size: var(--font-size-lg); }
 
